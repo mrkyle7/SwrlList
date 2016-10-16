@@ -30,8 +30,8 @@ Finally, if you want to run all the instrumented tests against AWS Device Farm, 
  3. DEVICEFARMACCESSKEY
  4. DEVICEFARMSECRETKEY
  
- See http://docs.aws.amazon.com/devicefarm/latest/developerguide/aws-device-farm-gradle-plugin-setting-up.html for details.
+See http://docs.aws.amazon.com/devicefarm/latest/developerguide/aws-device-farm-gradle-plugin-setting-up.html for details.
  
- Then run:
+Then run:
  
      ./gradlew devicefarmUpload
