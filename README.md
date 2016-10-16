@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/mrkyle7/SwrlList.svg?branch=master)](https://travis-ci.org/mrkyle7/SwrlList)
+
 # Swrl List
 
 Sister app to http://swrl.co, Swrl List is an Android app where you can quickly create a list of things you **S**hould **W**atch **R**ead or **L**isten to.
