@@ -16,7 +16,7 @@ If you wish to use gradle directly...
 
 For Unit tests:
 
-    gradle test
+    ./gradlew test
     
 For all tests including Espresso tests:
 
