@@ -2,6 +2,10 @@ language: android
 android:
   components:
 
+    - tools
+    - platform-tools
+    - extra-android-m2repository
+
     # The BuildTools version used by your project
     - build-tools-24.0.2
 
