@@ -27,3 +27,14 @@ dependencies {
     compile 'com.android.support:appcompat-v7:22.2.1'
     testCompile 'junit:junit:4.12'
 }
+
+apply plugin: 'devicefarm'
+
+devicefarm {
+    projectName System.getenv('DEVICEFARMPROJECTNAME') ?: 'Swrl List'
+    devicePool System.getenv('DEVICEFARMDEVICEPOOL') ?: 'Android Phone'
+    authentication {
+        accessKey System.getenv('DEVICEFARMACCESSKEY') ?: 'none'
+        secretKey System.getenv('DEVICEFARMSECRETKEY') ?: 'none'
+    }
+}
