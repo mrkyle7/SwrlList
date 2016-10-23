@@ -104,3 +104,5 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 /.idea/
+app/play-store-keys.json
+/export_passwords.sh
