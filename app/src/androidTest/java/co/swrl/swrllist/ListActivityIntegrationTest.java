@@ -63,6 +63,16 @@ public class ListActivityIntegrationTest {
         onView(withId(R.id.activity_list)).check(matches(isCompletelyDisplayed()));
     }
 
+    @Test
+    public void canAddAnItemToTheList() throws Exception {
+        avoidWhatsNewDialog();
+    }
+
+    private void avoidWhatsNewDialog() {
+        setSavedVersionToHugeNumber();
+        launchAndWakeUpActivity();
+    }
+
     private void clearAllSettings() {
         Context applicationContext = InstrumentationRegistry.getTargetContext();
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(applicationContext);
