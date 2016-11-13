@@ -1,0 +1,18 @@
+Sister app to http://swrl.co, Swrl List is an Android app where you can quickly create a list of things you Should Watch Read or Listen to.
+
+What does it currently do?
+
+- Nothing! Stage 0 has been building the delivery pipeline to enable automated testing and promotion to the Play Store. It's also all opensource, so if you want to contribute, please see: https://github.com/mrkyle7/SwrlList
+
+What will it do?
+
+Possible features will include:
+
+- Add Films, TV Shows, Books and Music Albums quickly for later viewing
+- Grab reviews, images and descriptions from online databases (eg the TVDB)
+- Share and recommend items using http://swrl.co and native Android sharing
+- Notifications for when Films are released to DVD
+- Buy items directly from the app
+- And many more!
+
+Screenshots designed by Rwdd_Studios / Freepik

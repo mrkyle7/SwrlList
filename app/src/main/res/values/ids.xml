@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="whatsNew" type="id" />
+    <item name="dismissWhatsNewButton" type="id" />
+    <item name="whatsNewMessage" type="id" />
+    <item name="whatsNewMoreButton" type="id" />
+</resources>

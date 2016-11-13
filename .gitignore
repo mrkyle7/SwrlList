@@ -106,3 +106,5 @@ fabric.properties
 /.idea/
 app/play-store-keys.json
 /export_passwords.sh
+/keystore.properties
+/app/keystore.properties

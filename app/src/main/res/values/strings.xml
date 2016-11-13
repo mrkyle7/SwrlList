@@ -1,3 +1,19 @@
 <resources>
     <string name="app_name">SwrlList</string>
+    <string name="ok">OK</string>
+    <string name="whatsNewTitle">What\'s new?</string>
+    <string name="pkey_version_number">version_number</string>
+    <string name="whatsNewLatest">
+        <![CDATA[
+        <h4>Version 1 (13 November 2016)</h4>
+        \u2022 What\'s New Dialog
+        <br>
+        \u2022 End to end UI Integration Tests
+        <br>
+        \u2022 Automatic promotion to Play Store
+        ]]>
+    </string>
+    <string name="whatsNewMoreButtonText">Show full history</string>
+    <string name="typeMe">typeMe</string>
+    <string name="add">add</string>
 </resources>
