@@ -5,17 +5,29 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.action.EspressoKey;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
+import android.view.KeyEvent;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.Adapter;
+import android.widget.AdapterView;
 
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static android.support.test.espresso.Espresso.onData;
+import static android.support.test.espresso.action.ViewActions.pressKey;
+import static android.support.test.espresso.action.ViewActions.typeText;
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 
 import static android.support.test.espresso.Espresso.onView;
@@ -23,11 +35,19 @@ import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.*;
 import static android.support.test.espresso.matcher.ViewMatchers.*;
 import static android.support.test.espresso.matcher.RootMatchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.Matchers.not;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
 public class ListActivityIntegrationTest {
     private Activity activity = null;
+    private static final EspressoKey ENTER_KEY = new EspressoKey.Builder().withKeyCode(KeyEvent.KEYCODE_ENTER).build();
 
     @Rule
     public ActivityTestRule listActivityActivityTestRule = new ActivityTestRule<>(ListActivity.class, false, false);
@@ -64,8 +84,64 @@ public class ListActivityIntegrationTest {
     }
 
     @Test
-    public void canAddAnItemToTheList() throws Exception {
+    public void canAddAnItemToTheListThenClearsTextAndRetainsFocus() throws Exception {
         avoidWhatsNewDialog();
+
+        onView(withId(R.id.addItemEditText)).perform(typeText("The Matrix"));
+        onView(withId(R.id.addItemButton)).perform(click());
+
+        onData(allOf(is(instanceOf(String.class)), is("The Matrix"))).check(matches(isDisplayed()));
+        onView(withId(R.id.addItemEditText)).check(matches(hasFocus()));
+        onView(withId(R.id.addItemEditText)).check(matches(withText(isEmptyString())));
+    }
+
+    @Test
+    public void canAddAnItemToTheListOnEnterKeyThenClearsTextAndRetainsFocus() throws Exception {
+        avoidWhatsNewDialog();
+
+        onView(withId(R.id.addItemEditText))
+                .perform(typeText("The Matrix"))
+                .perform(pressKey(ENTER_KEY));
+
+        onData(allOf(is(instanceOf(String.class)), is("The Matrix"))).check(matches(isDisplayed()));
+        onView(withId(R.id.addItemEditText)).check(matches(hasFocus()));
+        onView(withId(R.id.addItemEditText)).check(matches(withText(isEmptyString())));
+
+    }
+
+    @Test
+    public void newItemsInTheListAreAddedOnTop() throws Exception {
+        avoidWhatsNewDialog();
+
+        onView(withId(R.id.addItemEditText))
+                .perform(typeText("First Item"))
+                .perform(pressKey(ENTER_KEY));
+
+        onData(is(instanceOf(String.class))).inAdapterView(withId(R.id.itemListView)).atPosition(0).check(matches(withText(containsString("First Item"))));
+
+        onView(withId(R.id.addItemEditText))
+                .perform(typeText("The Matrix"))
+                .perform(pressKey(ENTER_KEY));
+
+        onData(is(instanceOf(String.class))).inAdapterView(withId(R.id.itemListView)).atPosition(0).check(matches(withText(containsString("The Matrix"))));
+
+
+        onView(withId(R.id.addItemEditText)).perform(typeText("The Jungle Book"));
+        onView(withId(R.id.addItemButton)).perform(click());
+
+        onData(is(instanceOf(String.class))).inAdapterView(withId(R.id.itemListView)).atPosition(0).check(matches(withText(containsString("The Jungle Book"))));
+    }
+
+    @Test
+    public void emptyTextIsNotAddedToTheList() throws Exception {
+        avoidWhatsNewDialog();
+
+        onView(withId(R.id.addItemEditText)).check(matches(withText(isEmptyString())));
+
+        onView(withId(R.id.addItemButton)).perform(click());
+        onView(withId(R.id.addItemEditText)).perform(pressKey(ENTER_KEY));
+
+        onView(withId(R.id.itemListView)).check(matches(not(withAdaptedData(isEmptyString()))));
     }
 
     private void avoidWhatsNewDialog() {
@@ -107,6 +183,32 @@ public class ListActivityIntegrationTest {
     private void stopActivity() {
         activity.finish();
         activity = null;
+    }
+
+    private static Matcher<View> withAdaptedData(final Matcher<String> dataMatcher) {
+        return new TypeSafeMatcher<View>() {
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("with class name: ");
+                dataMatcher.describeTo(description);
+            }
+
+            @Override
+            public boolean matchesSafely(View view) {
+                if (!(view instanceof AdapterView)) {
+                    return false;
+                }
+                @SuppressWarnings("rawtypes")
+                Adapter adapter = ((AdapterView) view).getAdapter();
+                for (int i = 0; i < adapter.getCount(); i++) {
+                    if (dataMatcher.matches(adapter.getItem(i))) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
     }
 }
 

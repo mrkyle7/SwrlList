@@ -10,15 +10,31 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="co.swrl.swrllist.ListActivity">
 
-    <TextView
-        android:text="TextView"
+    <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
         android:layout_alignParentTop="true"
-        android:id="@+id/textView"
-        tools:text="Coming Soon!"
-        android:layout_alignParentEnd="true"
         android:layout_alignParentStart="true"
-        android:textAppearance="@android:style/TextAppearance.Material.Title"
-        android:gravity="center_horizontal" />
+        android:id="@+id/addItemEditText"
+        android:layout_toStartOf="@+id/addItemButton"
+        android:hint="@string/addItemText"
+        android:nextFocusDown="@id/addItemEditText"/>
+
+    <Button
+        android:text="@string/add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/addItemButton"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:labelFor="@id/addItemEditText"/>
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/addItemButton"
+        android:id="@+id/itemListView" />
 </RelativeLayout>

@@ -4,4 +4,8 @@
     <item name="dismissWhatsNewButton" type="id" />
     <item name="whatsNewMessage" type="id" />
     <item name="whatsNewMoreButton" type="id" />
+    <item name="addItemEditText" type="id" />
+    <item name="addItemButton" type="id" />
+    <item name="itemListView" type="id" />
+    <item name="listItem" type="id" />
 </resources>
