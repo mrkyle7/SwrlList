@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static android.support.test.espresso.Espresso.onData;
+import static android.support.test.espresso.action.ViewActions.pressImeActionButton;
 import static android.support.test.espresso.action.ViewActions.pressKey;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static org.hamcrest.Matchers.allOf;
@@ -47,7 +48,6 @@ import static org.hamcrest.Matchers.not;
 @LargeTest
 public class ListActivityIntegrationTest {
     private Activity activity = null;
-    private static final EspressoKey ENTER_KEY = new EspressoKey.Builder().withKeyCode(KeyEvent.KEYCODE_ENTER).build();
 
     @Rule
     public ActivityTestRule listActivityActivityTestRule = new ActivityTestRule<>(ListActivity.class, false, false);
@@ -101,7 +101,7 @@ public class ListActivityIntegrationTest {
 
         onView(withId(R.id.addItemEditText))
                 .perform(typeText("The Matrix"))
-                .perform(pressKey(ENTER_KEY));
+                .perform(pressImeActionButton());
 
         onData(allOf(is(instanceOf(String.class)), is("The Matrix"))).check(matches(isDisplayed()));
         onView(withId(R.id.addItemEditText)).check(matches(hasFocus()));
@@ -115,13 +115,13 @@ public class ListActivityIntegrationTest {
 
         onView(withId(R.id.addItemEditText))
                 .perform(typeText("First Item"))
-                .perform(pressKey(ENTER_KEY));
+                .perform(pressImeActionButton());
 
         onData(is(instanceOf(String.class))).inAdapterView(withId(R.id.itemListView)).atPosition(0).check(matches(withText(containsString("First Item"))));
 
         onView(withId(R.id.addItemEditText))
                 .perform(typeText("The Matrix"))
-                .perform(pressKey(ENTER_KEY));
+                .perform(pressImeActionButton());
 
         onData(is(instanceOf(String.class))).inAdapterView(withId(R.id.itemListView)).atPosition(0).check(matches(withText(containsString("The Matrix"))));
 
@@ -139,7 +139,7 @@ public class ListActivityIntegrationTest {
         onView(withId(R.id.addItemEditText)).check(matches(withText(isEmptyString())));
 
         onView(withId(R.id.addItemButton)).perform(click());
-        onView(withId(R.id.addItemEditText)).perform(pressKey(ENTER_KEY));
+        onView(withId(R.id.addItemEditText)).perform(pressImeActionButton());
 
         onView(withId(R.id.itemListView)).check(matches(not(withAdaptedData(isEmptyString()))));
     }

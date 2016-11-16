@@ -20,7 +20,9 @@
         android:id="@+id/addItemEditText"
         android:layout_toStartOf="@+id/addItemButton"
         android:hint="@string/addItemText"
-        android:nextFocusDown="@id/addItemEditText"/>
+        android:nextFocusDown="@id/addItemEditText"
+        android:imeOptions="actionDone"
+        />
 
     <Button
         android:text="@string/add"
