@@ -2,7 +2,7 @@ Sister app to http://swrl.co, Swrl List is an Android app where you can quickly 
 
 What does it currently do?
 
-- Nothing! Stage 0 has been building the delivery pipeline to enable automated testing and promotion to the Play Store. It's also all opensource, so if you want to contribute, please see: https://github.com/mrkyle7/SwrlList
+- Adds simple items to the list. No persistence or images yet, but that's soon to come!
 
 What will it do?
 
