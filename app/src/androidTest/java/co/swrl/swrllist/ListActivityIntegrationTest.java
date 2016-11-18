@@ -20,6 +20,7 @@ import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,6 +49,8 @@ import static org.hamcrest.Matchers.not;
 @LargeTest
 public class ListActivityIntegrationTest {
     private Activity activity = null;
+    private static final EspressoKey ENTER_KEY = new EspressoKey.Builder().withKeyCode(KeyEvent.KEYCODE_ENTER).build();
+    private static final Swrl THE_MATRIX = new Swrl("The Matrix");
 
     @Rule
     public ActivityTestRule listActivityActivityTestRule = new ActivityTestRule<>(ListActivity.class, false, false);
@@ -90,7 +93,7 @@ public class ListActivityIntegrationTest {
         onView(withId(R.id.addItemEditText)).perform(typeText("The Matrix"));
         onView(withId(R.id.addItemButton)).perform(click());
 
-        onData(allOf(is(instanceOf(String.class)), is("The Matrix"))).check(matches(isDisplayed()));
+        onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX))).check(matches(isDisplayed()));
         onView(withId(R.id.addItemEditText)).check(matches(hasFocus()));
         onView(withId(R.id.addItemEditText)).check(matches(withText(isEmptyString())));
     }
@@ -103,7 +106,7 @@ public class ListActivityIntegrationTest {
                 .perform(typeText("The Matrix"))
                 .perform(pressImeActionButton());
 
-        onData(allOf(is(instanceOf(String.class)), is("The Matrix"))).check(matches(isDisplayed()));
+        onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX))).check(matches(isDisplayed()));
         onView(withId(R.id.addItemEditText)).check(matches(hasFocus()));
         onView(withId(R.id.addItemEditText)).check(matches(withText(isEmptyString())));
 
@@ -117,31 +120,48 @@ public class ListActivityIntegrationTest {
                 .perform(typeText("First Item"))
                 .perform(pressImeActionButton());
 
-        onData(is(instanceOf(String.class))).inAdapterView(withId(R.id.itemListView)).atPosition(0).check(matches(withText(containsString("First Item"))));
+        onData(is(instanceOf(Swrl.class))).inAdapterView(withId(R.id.itemListView)).atPosition(0).check(matches(withText(containsString("First Item"))));
 
         onView(withId(R.id.addItemEditText))
                 .perform(typeText("The Matrix"))
                 .perform(pressImeActionButton());
 
-        onData(is(instanceOf(String.class))).inAdapterView(withId(R.id.itemListView)).atPosition(0).check(matches(withText(containsString("The Matrix"))));
+        onData(is(instanceOf(Swrl.class))).inAdapterView(withId(R.id.itemListView)).atPosition(0).check(matches(withText(containsString("The Matrix"))));
 
 
         onView(withId(R.id.addItemEditText)).perform(typeText("The Jungle Book"));
         onView(withId(R.id.addItemButton)).perform(click());
 
-        onData(is(instanceOf(String.class))).inAdapterView(withId(R.id.itemListView)).atPosition(0).check(matches(withText(containsString("The Jungle Book"))));
+        onData(is(instanceOf(Swrl.class))).inAdapterView(withId(R.id.itemListView)).atPosition(0).check(matches(withText(containsString("The Jungle Book"))));
     }
 
     @Test
     public void emptyTextIsNotAddedToTheList() throws Exception {
         avoidWhatsNewDialog();
 
+        Swrl emptySwrl = new Swrl("");
+
         onView(withId(R.id.addItemEditText)).check(matches(withText(isEmptyString())));
 
         onView(withId(R.id.addItemButton)).perform(click());
         onView(withId(R.id.addItemEditText)).perform(pressImeActionButton());
 
-        onView(withId(R.id.itemListView)).check(matches(not(withAdaptedData(isEmptyString()))));
+        onView(withId(R.id.itemListView)).check(matches(not(withAdaptedData(equalTo(emptySwrl)))));
+    }
+
+    @Test @Ignore("Not yet implemented")
+    public void itemsOnTheListArePersistedAfterRestart() throws Exception {
+        avoidWhatsNewDialog();
+
+        onView(withId(R.id.addItemEditText)).perform(typeText("The Matrix"));
+        onView(withId(R.id.addItemButton)).perform(click());
+
+        onData(allOf(is(instanceOf(String.class)), is("The Matrix"))).check(matches(isDisplayed()));
+
+        stopActivity();
+        launchAndWakeUpActivity();
+
+        onData(allOf(is(instanceOf(String.class)), is("The Matrix"))).check(matches(isDisplayed()));
     }
 
     private void avoidWhatsNewDialog() {
@@ -185,7 +205,7 @@ public class ListActivityIntegrationTest {
         activity = null;
     }
 
-    private static Matcher<View> withAdaptedData(final Matcher<String> dataMatcher) {
+    private static Matcher<View> withAdaptedData(final Matcher<Swrl> dataMatcher) {
         return new TypeSafeMatcher<View>() {
 
             @Override

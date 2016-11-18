@@ -1,11 +1,10 @@
 package co.swrl.swrllist;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -18,7 +17,7 @@ public class ListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         showWhatsNewDialogIfNewVersion(new SwrlPreferences(this), new SwrlDialogs(this));
-        setUpViewElements();
+        setUpViewElements(new SqlLiteCollectionManager());
     }
 
     public static void showWhatsNewDialogIfNewVersion(SwrlPreferences preferences, SwrlDialogs dialogs) {
@@ -28,27 +27,27 @@ public class ListActivity extends AppCompatActivity {
         }
     }
 
-    private void setUpViewElements() {
+    private void setUpViewElements(CollectionManager collectionManager) {
         setContentView(R.layout.activity_list);
-        ArrayAdapter<String> listItems = setUpList();
-        setUpInputs(listItems);
+        ArrayList<Swrl> swrls = (ArrayList<Swrl>) collectionManager.getSwrls();
+        SwrlRowAdapter swrlRows = new SwrlRowAdapter(this, R.layout.list_item, swrls);
+        setUpList(swrlRows);
+        setUpInputs(swrlRows);
     }
 
-    private ArrayAdapter<String> setUpList() {
-        ArrayAdapter<String> listItems = new ArrayAdapter<>(this, R.layout.list_item, new ArrayList<String>());
+    private void setUpList(SwrlRowAdapter swrlRows) {
         ListView list = (ListView) findViewById(R.id.itemListView);
-        list.setAdapter(listItems);
-        return listItems;
+        list.setAdapter(swrlRows);
     }
 
-    private void setUpInputs(final ArrayAdapter<String> listItems) {
+    private void setUpInputs(final SwrlRowAdapter swrlRows) {
         final Button addItem = (Button) findViewById(R.id.addItemButton);
         final EditText input = (EditText) findViewById(R.id.addItemEditText);
 
         addItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addItemToListIfNotEmptyInput(listItems);
+                addItemToListIfNotEmptyInput(swrlRows);
                 clearAndFocus(input);
             }
         });
@@ -56,7 +55,7 @@ public class ListActivity extends AppCompatActivity {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (enterKeyPressedOrActionDone(actionId, event)) {
-                    addItemToListIfNotEmptyInput(listItems);
+                    addItemToListIfNotEmptyInput(swrlRows);
                     clearAndFocus(input);
                     return true;
                 } else {
@@ -66,11 +65,11 @@ public class ListActivity extends AppCompatActivity {
         });
     }
 
-    private void addItemToListIfNotEmptyInput(ArrayAdapter<String> listItems) {
+    private void addItemToListIfNotEmptyInput(SwrlRowAdapter swrlRows) {
         EditText input = (EditText) findViewById(R.id.addItemEditText);
-        String item = String.valueOf(input.getText());
-        if (!item.isEmpty()) {
-            listItems.insert(item, 0);
+        String title = String.valueOf(input.getText());
+        if (!title.isEmpty()) {
+            swrlRows.insert(new Swrl(title), 0);
         }
     }
 
