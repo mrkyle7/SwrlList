@@ -1,3 +1,7 @@
+Version 4 (20 November 2016)
+==============================
+- List items are persisted after restart
+<br />
 Version 3.1 (16 November 2016)
 ==============================
 - Fix bug with keyboard enter button

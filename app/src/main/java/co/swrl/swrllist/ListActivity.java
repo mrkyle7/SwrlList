@@ -17,7 +17,7 @@ public class ListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         showWhatsNewDialogIfNewVersion(new SwrlPreferences(this), new SwrlDialogs(this));
-        setUpViewElements(new SqlLiteCollectionManager());
+        setUpViewElements(new SqlLiteCollectionManager(this));
     }
 
     public static void showWhatsNewDialogIfNewVersion(SwrlPreferences preferences, SwrlDialogs dialogs) {
@@ -32,7 +32,7 @@ public class ListActivity extends AppCompatActivity {
         ArrayList<Swrl> swrls = (ArrayList<Swrl>) collectionManager.getSwrls();
         SwrlRowAdapter swrlRows = new SwrlRowAdapter(this, R.layout.list_item, swrls);
         setUpList(swrlRows);
-        setUpInputs(swrlRows);
+        setUpInputs(swrlRows, collectionManager);
     }
 
     private void setUpList(SwrlRowAdapter swrlRows) {
@@ -40,14 +40,14 @@ public class ListActivity extends AppCompatActivity {
         list.setAdapter(swrlRows);
     }
 
-    private void setUpInputs(final SwrlRowAdapter swrlRows) {
+    private void setUpInputs(final SwrlRowAdapter swrlRows, final CollectionManager collectionManager) {
         final Button addItem = (Button) findViewById(R.id.addItemButton);
         final EditText input = (EditText) findViewById(R.id.addItemEditText);
 
         addItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addItemToListIfNotEmptyInput(swrlRows);
+                addItemToListAndPersistIfNewAndNotEmptyInput(swrlRows, collectionManager);
                 clearAndFocus(input);
             }
         });
@@ -55,7 +55,7 @@ public class ListActivity extends AppCompatActivity {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (enterKeyPressedOrActionDone(actionId, event)) {
-                    addItemToListIfNotEmptyInput(swrlRows);
+                    addItemToListAndPersistIfNewAndNotEmptyInput(swrlRows, collectionManager);
                     clearAndFocus(input);
                     return true;
                 } else {
@@ -65,12 +65,22 @@ public class ListActivity extends AppCompatActivity {
         });
     }
 
-    private void addItemToListIfNotEmptyInput(SwrlRowAdapter swrlRows) {
+    private void addItemToListAndPersistIfNewAndNotEmptyInput(SwrlRowAdapter swrlRows, CollectionManager collectionManager) {
         EditText input = (EditText) findViewById(R.id.addItemEditText);
         String title = String.valueOf(input.getText());
-        if (!title.isEmpty()) {
-            swrlRows.insert(new Swrl(title), 0);
+        Swrl swrl = new Swrl(title);
+        if (titleIsNotBlank(title) && swrlIsNew(swrlRows, swrl)) {
+            swrlRows.insert(swrl, 0);
+            collectionManager.saveSwrl(swrl);
         }
+    }
+
+    private boolean titleIsNotBlank(String title) {
+        return !title.isEmpty();
+    }
+
+    private boolean swrlIsNew(SwrlRowAdapter swrlRows, Swrl swrl) {
+        return swrlRows.getPosition(swrl) == -1;
     }
 
     private void clearAndFocus(EditText input) {

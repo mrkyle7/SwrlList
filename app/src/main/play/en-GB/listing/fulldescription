@@ -2,7 +2,7 @@ Sister app to http://swrl.co, Swrl List is an Android app where you can quickly 
 
 What does it currently do?
 
-- Adds simple items to the list. No persistence or images yet, but that's soon to come!
+- Adds simple items to the list and persists them. No images yet, but that's soon to come!
 
 What will it do?
 

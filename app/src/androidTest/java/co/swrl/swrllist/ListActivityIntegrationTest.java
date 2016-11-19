@@ -11,6 +11,7 @@ import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Adapter;
 import android.widget.AdapterView;
@@ -20,7 +21,6 @@ import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,9 +55,20 @@ public class ListActivityIntegrationTest {
     @Rule
     public ActivityTestRule listActivityActivityTestRule = new ActivityTestRule<>(ListActivity.class, false, false);
 
-    @Before @After
-    public void setUpAndTearDown() {
+    @Before
+    public void setUp() {
         clearAllSettings();
+    }
+
+    @After
+    public void tearDown(){
+        clearAllSettings();
+        purgeDatabase();
+    }
+
+    private void purgeDatabase() {
+        SqlLiteCollectionManager db = new SqlLiteCollectionManager(activity);
+        db.permanentlyDeleteAll();
     }
 
     @Test
@@ -113,6 +124,22 @@ public class ListActivityIntegrationTest {
     }
 
     @Test
+    public void cannotAddDuplicateItems() throws Exception {
+        avoidWhatsNewDialog();
+
+        onView(withId(R.id.addItemEditText))
+                .perform(typeText("The Matrix"))
+                .perform(pressImeActionButton());
+
+
+        onView(withId(R.id.addItemEditText))
+                .perform(typeText("The Matrix"))
+                .perform(pressImeActionButton());
+
+        onView(withId(R.id.itemListView)).check(matches(numberOfChildren(is(1))));
+    }
+
+    @Test
     public void newItemsInTheListAreAddedOnTop() throws Exception {
         avoidWhatsNewDialog();
 
@@ -149,19 +176,20 @@ public class ListActivityIntegrationTest {
         onView(withId(R.id.itemListView)).check(matches(not(withAdaptedData(equalTo(emptySwrl)))));
     }
 
-    @Test @Ignore("Not yet implemented")
+
+    @Test
     public void itemsOnTheListArePersistedAfterRestart() throws Exception {
         avoidWhatsNewDialog();
 
         onView(withId(R.id.addItemEditText)).perform(typeText("The Matrix"));
         onView(withId(R.id.addItemButton)).perform(click());
 
-        onData(allOf(is(instanceOf(String.class)), is("The Matrix"))).check(matches(isDisplayed()));
+        onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX))).check(matches(isDisplayed()));
 
         stopActivity();
         launchAndWakeUpActivity();
 
-        onData(allOf(is(instanceOf(String.class)), is("The Matrix"))).check(matches(isDisplayed()));
+        onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX))).check(matches(isDisplayed()));
     }
 
     private void avoidWhatsNewDialog() {
@@ -227,6 +255,27 @@ public class ListActivityIntegrationTest {
                     }
                 }
                 return false;
+            }
+        };
+    }
+    public static Matcher<View> numberOfChildren(final Matcher<Integer> numChildrenMatcher) {
+        return new TypeSafeMatcher<View>() {
+
+            /**
+             * matching with viewgroup.getChildCount()
+             */
+            @Override
+            public boolean matchesSafely(View view) {
+                return view instanceof ViewGroup && numChildrenMatcher.matches(((ViewGroup)view).getChildCount());
+            }
+
+            /**
+             * gets the description
+             */
+            @Override
+            public void describeTo(Description description) {
+                description.appendText(" a view with # children is ");
+                numChildrenMatcher.describeTo(description);
             }
         };
     }
