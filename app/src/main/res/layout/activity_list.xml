@@ -10,33 +10,42 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="co.swrl.swrllist.ListActivity">
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:ems="10"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:id="@+id/addItemEditText"
-        android:layout_toStartOf="@+id/addItemButton"
-        android:hint="@string/addItemText"
-        android:nextFocusDown="@id/addItemEditText"
-        android:imeOptions="actionDone"
-        />
-
-    <Button
-        android:text="@string/add"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/addItemButton"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:labelFor="@id/addItemEditText"/>
-
     <ListView
+        android:id="@+id/itemListView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/addItemButton"
-        android:id="@+id/itemListView" />
+        android:layout_below="@+id/input_header" />
+
+    <RelativeLayout
+        android:id="@+id/input_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true">
+
+        <EditText
+            android:id="@+id/addItemEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_toStartOf="@id/addItemButton"
+            android:hint="@string/addItemText"
+            android:imeOptions="actionDone"
+            android:inputType="textPersonName"
+            android:nextFocusDown="@id/addItemEditText" />
+
+        <ImageButton
+            android:id="@+id/addItemButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:background="@null"
+            android:contentDescription="@string/add"
+            android:labelFor="@id/addItemEditText"
+            android:src="@android:drawable/ic_menu_add" />
+    </RelativeLayout>
+
 </RelativeLayout>

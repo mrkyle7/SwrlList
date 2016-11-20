@@ -51,6 +51,8 @@ public class ListActivityIntegrationTest {
     private Activity activity = null;
     private static final EspressoKey ENTER_KEY = new EspressoKey.Builder().withKeyCode(KeyEvent.KEYCODE_ENTER).build();
     private static final Swrl THE_MATRIX = new Swrl("The Matrix");
+    private static final Swrl THE_MATRIX_RELOADED = new Swrl("The Matrix Reloaded");
+    private static final Swrl THE_MATRIX_REVOLUTIONS = new Swrl("The Matrix Revolutions");
 
     @Rule
     public ActivityTestRule listActivityActivityTestRule = new ActivityTestRule<>(ListActivity.class, false, false);
@@ -61,13 +63,13 @@ public class ListActivityIntegrationTest {
     }
 
     @After
-    public void tearDown(){
+    public void tearDown() {
         clearAllSettings();
         purgeDatabase();
     }
 
     private void purgeDatabase() {
-        SqlLiteCollectionManager db = new SqlLiteCollectionManager(activity);
+        SQLiteCollectionManager db = new SQLiteCollectionManager(activity);
         db.permanentlyDeleteAll();
     }
 
@@ -83,8 +85,7 @@ public class ListActivityIntegrationTest {
         onView(withId(R.id.whatsNew)).check(doesNotExist());
         onView(withId(R.id.activity_list)).check(matches(isCompletelyDisplayed()));
 
-        stopActivity();
-        launchAndWakeUpActivity();
+        restartActivity();
 
         onView(withId(R.id.activity_list)).check(matches(isCompletelyDisplayed()));
     }
@@ -98,68 +99,56 @@ public class ListActivityIntegrationTest {
     }
 
     @Test
-    public void canAddAnItemToTheListThenClearsTextAndRetainsFocus() throws Exception {
+    public void newItemsInTheListAreAddedOnTopAndTextInputIsClearedAndFocused() throws Exception {
         avoidWhatsNewDialog();
 
-        onView(withId(R.id.addItemEditText)).perform(typeText("The Matrix"));
-        onView(withId(R.id.addItemButton)).perform(click());
-
-        onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX))).check(matches(isDisplayed()));
-        onView(withId(R.id.addItemEditText)).check(matches(hasFocus()));
-        onView(withId(R.id.addItemEditText)).check(matches(withText(isEmptyString())));
-    }
-
-    @Test
-    public void canAddAnItemToTheListOnEnterKeyThenClearsTextAndRetainsFocus() throws Exception {
-        avoidWhatsNewDialog();
-
+        //With IME Action Button
         onView(withId(R.id.addItemEditText))
-                .perform(typeText("The Matrix"))
+                .perform(typeText("First Item"))
                 .perform(pressImeActionButton());
 
-        onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX))).check(matches(isDisplayed()));
+        onData(is(instanceOf(Swrl.class)))
+                .inAdapterView(withId(R.id.itemListView)).atPosition(0)
+                .onChildView(withId(R.id.list_title))
+                .check(matches(withText(containsString("First Item"))));
         onView(withId(R.id.addItemEditText)).check(matches(hasFocus()));
         onView(withId(R.id.addItemEditText)).check(matches(withText(isEmptyString())));
 
+        //With Enter key
+        onView(withId(R.id.addItemEditText))
+                .perform(typeText("Second Item"))
+                .perform(pressKey(ENTER_KEY));
+
+        onData(is(instanceOf(Swrl.class)))
+                .inAdapterView(withId(R.id.itemListView)).atPosition(0)
+                .onChildView(withId(R.id.list_title))
+                .check(matches(withText(containsString("Second Item"))));
+        onView(withId(R.id.addItemEditText)).check(matches(hasFocus()));
+        onView(withId(R.id.addItemEditText)).check(matches(withText(isEmptyString())));
+
+        //With Add Button
+        onView(withId(R.id.addItemEditText)).perform(typeText("Third Item"));
+        onView(withId(R.id.addItemButton)).perform(click());
+
+        onData(is(instanceOf(Swrl.class)))
+                .inAdapterView(withId(R.id.itemListView)).atPosition(0)
+                .onChildView(withId(R.id.list_title))
+                .check(matches(withText(containsString("Third Item"))));
+        onView(withId(R.id.addItemEditText)).check(matches(hasFocus()));
+        onView(withId(R.id.addItemEditText)).check(matches(withText(isEmptyString())));
     }
 
     @Test
     public void cannotAddDuplicateItems() throws Exception {
         avoidWhatsNewDialog();
 
-        onView(withId(R.id.addItemEditText))
-                .perform(typeText("The Matrix"))
-                .perform(pressImeActionButton());
-
+        addSwrlsToList(new Swrl[]{THE_MATRIX});
 
         onView(withId(R.id.addItemEditText))
                 .perform(typeText("The Matrix"))
                 .perform(pressImeActionButton());
 
         onView(withId(R.id.itemListView)).check(matches(numberOfChildren(is(1))));
-    }
-
-    @Test
-    public void newItemsInTheListAreAddedOnTop() throws Exception {
-        avoidWhatsNewDialog();
-
-        onView(withId(R.id.addItemEditText))
-                .perform(typeText("First Item"))
-                .perform(pressImeActionButton());
-
-        onData(is(instanceOf(Swrl.class))).inAdapterView(withId(R.id.itemListView)).atPosition(0).check(matches(withText(containsString("First Item"))));
-
-        onView(withId(R.id.addItemEditText))
-                .perform(typeText("The Matrix"))
-                .perform(pressImeActionButton());
-
-        onData(is(instanceOf(Swrl.class))).inAdapterView(withId(R.id.itemListView)).atPosition(0).check(matches(withText(containsString("The Matrix"))));
-
-
-        onView(withId(R.id.addItemEditText)).perform(typeText("The Jungle Book"));
-        onView(withId(R.id.addItemButton)).perform(click());
-
-        onData(is(instanceOf(Swrl.class))).inAdapterView(withId(R.id.itemListView)).atPosition(0).check(matches(withText(containsString("The Jungle Book"))));
     }
 
     @Test
@@ -173,7 +162,7 @@ public class ListActivityIntegrationTest {
         onView(withId(R.id.addItemButton)).perform(click());
         onView(withId(R.id.addItemEditText)).perform(pressImeActionButton());
 
-        onView(withId(R.id.itemListView)).check(matches(not(withAdaptedData(equalTo(emptySwrl)))));
+        onView(withId(R.id.itemListView)).check(matches(not(exists(equalTo(emptySwrl)))));
     }
 
 
@@ -181,15 +170,57 @@ public class ListActivityIntegrationTest {
     public void itemsOnTheListArePersistedAfterRestart() throws Exception {
         avoidWhatsNewDialog();
 
-        onView(withId(R.id.addItemEditText)).perform(typeText("The Matrix"));
-        onView(withId(R.id.addItemButton)).perform(click());
+        addSwrlsToList(new Swrl[]{THE_MATRIX});
+
+        restartActivity();
 
         onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX))).check(matches(isDisplayed()));
+    }
 
+    @Test
+    public void canDeleteAndReAddItemsOnTheList() throws Exception {
+        avoidWhatsNewDialog();
+
+        addSwrlsToList(new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED});
+
+        onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX)))
+                .onChildView(withId(R.id.list_item_delete))
+                .perform(click());
+
+        onView(withId(R.id.itemListView)).check(matches(not(exists(equalTo(THE_MATRIX)))));
+        onView(withId(R.id.itemListView)).check(matches(numberOfChildren(is(1))));
+        onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX_RELOADED))).check(matches(isDisplayed()));
+
+        restartActivity();
+
+        onView(withId(R.id.itemListView)).check(matches(not(exists(equalTo(THE_MATRIX)))));
+        onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX_RELOADED))).check(matches(isDisplayed()));
+        onView(withId(R.id.itemListView)).check(matches(numberOfChildren(is(1))));
+
+        addSwrlsToList(new Swrl[]{THE_MATRIX});
+
+        onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX))).check(matches(isDisplayed()));
+        onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX_RELOADED))).check(matches(isDisplayed()));
+        onView(withId(R.id.itemListView)).check(matches(numberOfChildren(is(2))));
+
+        restartActivity();
+
+        onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX))).check(matches(isDisplayed()));
+        onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX_RELOADED))).check(matches(isDisplayed()));
+        onView(withId(R.id.itemListView)).check(matches(numberOfChildren(is(2))));
+    }
+
+    private void addSwrlsToList(Swrl[] swrls) {
+        for (Swrl swrl : swrls) {
+            onView(withId(R.id.addItemEditText)).perform(typeText(swrl.getTitle()));
+            onView(withId(R.id.addItemButton)).perform(click());
+            onData(allOf(is(instanceOf(Swrl.class)), equalTo(swrl))).check(matches(isDisplayed()));
+        }
+    }
+
+    private void restartActivity() {
         stopActivity();
         launchAndWakeUpActivity();
-
-        onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX))).check(matches(isDisplayed()));
     }
 
     private void avoidWhatsNewDialog() {
@@ -233,7 +264,7 @@ public class ListActivityIntegrationTest {
         activity = null;
     }
 
-    private static Matcher<View> withAdaptedData(final Matcher<Swrl> dataMatcher) {
+    private static Matcher<View> exists(final Matcher<Swrl> dataMatcher) {
         return new TypeSafeMatcher<View>() {
 
             @Override
@@ -258,6 +289,7 @@ public class ListActivityIntegrationTest {
             }
         };
     }
+
     public static Matcher<View> numberOfChildren(final Matcher<Integer> numChildrenMatcher) {
         return new TypeSafeMatcher<View>() {
 
@@ -266,7 +298,7 @@ public class ListActivityIntegrationTest {
              */
             @Override
             public boolean matchesSafely(View view) {
-                return view instanceof ViewGroup && numChildrenMatcher.matches(((ViewGroup)view).getChildCount());
+                return view instanceof ViewGroup && numChildrenMatcher.matches(((ViewGroup) view).getChildCount());
             }
 
             /**
@@ -274,7 +306,7 @@ public class ListActivityIntegrationTest {
              */
             @Override
             public void describeTo(Description description) {
-                description.appendText(" a view with # children is ");
+                description.appendText(" a view with # children ");
                 numChildrenMatcher.describeTo(description);
             }
         };

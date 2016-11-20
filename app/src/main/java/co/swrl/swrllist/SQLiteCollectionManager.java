@@ -12,10 +12,10 @@ import java.util.List;
 import static co.swrl.swrllist.DBContract.*;
 
 
-class SqlLiteCollectionManager implements CollectionManager {
+class SQLiteCollectionManager implements CollectionManager {
     private final DBHelper db;
 
-    SqlLiteCollectionManager(Context context) {
+    SQLiteCollectionManager(Context context) {
         db = new DBHelper(context);
     }
 
@@ -75,7 +75,22 @@ class SqlLiteCollectionManager implements CollectionManager {
 
     @Override
     public void markAsDeleted(Swrl swrl) {
+        SQLiteDatabase dbWriter = db.getWritableDatabase();
 
+        ContentValues values = new ContentValues();
+        values.put(Swrls.COLUMN_NAME_STATUS, Swrls.STATUS_DELETED);
+
+        String title = swrl.getTitle();
+        String whereClause = Swrls.COLUMN_NAME_TITLE + " = ?";
+        String[] whereArgs = {title};
+
+        dbWriter.update(
+                Swrls.TABLE_NAME,
+                values,
+                whereClause,
+                whereArgs
+        );
+        dbWriter.close();
     }
 
     @Override

@@ -16,5 +16,6 @@
     <string name="whatsNewMoreButtonText">Show full history</string>
     <string name="typeMe">typeMe</string>
     <string name="add">add</string>
-    <string name="addItemText">Type item name</string>
+    <string name="addItemText">Enter title</string>
+    <string name="delete_item">Delete Item</string>
 </resources>
