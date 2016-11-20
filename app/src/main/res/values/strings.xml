@@ -5,6 +5,9 @@
     <string name="pkey_version_number">version_number</string>
     <string name="whatsNewLatest">
         <![CDATA[
+        <h4>Version 5 (20 November 2016)</h4>
+        \u2022 Can delete items
+        \u2022 Formatting changes and icons
         <h4>Version 4 (20 November 2016)</h4>
         \u2022 List items are persisted after restart
         <h4>Version 3.1 (16 November 2016)</h4>

@@ -1,12 +1,8 @@
+Version 5 (20 November 2016)
+==============================
+- Can delete items
+- Formatting changes and icons
+<br />
 Version 4 (20 November 2016)
 ==============================
 - List items are persisted after restart
-<br />
-Version 3.1 (16 November 2016)
-==============================
-- Fix bug with keyboard enter button
-<br />
-Version 3 (15 November 2016)
-============================
-- Can add simple items to a list (no persistence)
-<br />
