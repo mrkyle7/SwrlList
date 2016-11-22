@@ -20,5 +20,5 @@
     <string name="typeMe">typeMe</string>
     <string name="add">add</string>
     <string name="addItemText">Enter title</string>
-    <string name="delete_item">Delete Item</string>
+    <string name="item_done">Mark item as done</string>
 </resources>

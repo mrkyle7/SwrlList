@@ -30,17 +30,17 @@ public class ListActivity extends AppCompatActivity {
     private void setUpViewElements(CollectionManager collectionManager) {
         setContentView(R.layout.activity_list);
         ArrayList<Swrl> swrls = (ArrayList<Swrl>) collectionManager.getSwrls();
-        SwrlRowAdapter swrlRows = new SwrlRowAdapter(this, R.layout.list_row, swrls, collectionManager);
+        ActiveListAdapter swrlRows = new ActiveListAdapter(this, R.layout.list_row, swrls, collectionManager);
         setUpList(swrlRows);
         setUpInputs(swrlRows, collectionManager);
     }
 
-    private void setUpList(SwrlRowAdapter swrlRows) {
+    private void setUpList(ActiveListAdapter swrlRows) {
         ListView list = (ListView) findViewById(R.id.itemListView);
         list.setAdapter(swrlRows);
     }
 
-    private void setUpInputs(final SwrlRowAdapter swrlRows, final CollectionManager collectionManager) {
+    private void setUpInputs(final ActiveListAdapter swrlRows, final CollectionManager collectionManager) {
         final ImageButton addItem = (ImageButton) findViewById(R.id.addItemButton);
         final EditText input = (EditText) findViewById(R.id.addItemEditText);
 
@@ -65,7 +65,7 @@ public class ListActivity extends AppCompatActivity {
         });
     }
 
-    private void addItemToListAndPersistIfNewAndNotEmptyInput(SwrlRowAdapter swrlRows, CollectionManager collectionManager) {
+    private void addItemToListAndPersistIfNewAndNotEmptyInput(ActiveListAdapter swrlRows, CollectionManager collectionManager) {
         EditText input = (EditText) findViewById(R.id.addItemEditText);
         String title = String.valueOf(input.getText());
         Swrl swrl = new Swrl(title);
@@ -79,7 +79,7 @@ public class ListActivity extends AppCompatActivity {
         return !title.isEmpty();
     }
 
-    private boolean swrlIsNew(SwrlRowAdapter swrlRows, Swrl swrl) {
+    private boolean swrlIsNew(ActiveListAdapter swrlRows, Swrl swrl) {
         return swrlRows.getPosition(swrl) == -1;
     }
 

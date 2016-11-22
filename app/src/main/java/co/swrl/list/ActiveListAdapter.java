@@ -13,11 +13,11 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 
-class SwrlRowAdapter extends ArrayAdapter<Swrl> {
+class ActiveListAdapter extends ArrayAdapter<Swrl> {
     private final ArrayList<Swrl> swrls;
     private final CollectionManager collectionManager;
 
-    SwrlRowAdapter(Context context, int resource, ArrayList<Swrl> swrls, CollectionManager collectionManager) {
+    ActiveListAdapter(Context context, int resource, ArrayList<Swrl> swrls, CollectionManager collectionManager) {
         super(context, resource, swrls);
         this.swrls = swrls;
         this.collectionManager = collectionManager;
@@ -36,19 +36,19 @@ class SwrlRowAdapter extends ArrayAdapter<Swrl> {
         Swrl swrl = swrls.get(position);
         if (swrl != null){
             setTitle(row, swrl);
-            setDeleteButton(row, swrl);
+            setDoneButton(row, swrl);
         }
 
         return row;
     }
 
-    private void setDeleteButton(View row, final Swrl swrl) {
-        ImageButton button = (ImageButton) row.findViewById(R.id.list_item_delete);
+    private void setDoneButton(View row, final Swrl swrl) {
+        ImageButton button = (ImageButton) row.findViewById(R.id.list_item_done);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 swrls.remove(swrl);
-                collectionManager.markAsDeleted(swrl);
+                collectionManager.markAsDone(swrl);
                 notifyDataSetChanged();
             }
         });

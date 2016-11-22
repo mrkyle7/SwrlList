@@ -74,11 +74,11 @@ class SQLiteCollectionManager implements CollectionManager {
     }
 
     @Override
-    public void markAsDeleted(Swrl swrl) {
+    public void markAsDone(Swrl swrl) {
         SQLiteDatabase dbWriter = db.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(Swrls.COLUMN_NAME_STATUS, Swrls.STATUS_DELETED);
+        values.put(Swrls.COLUMN_NAME_STATUS, Swrls.STATUS_DONE);
 
         String title = swrl.getTitle();
         String whereClause = Swrls.COLUMN_NAME_TITLE + " = ?";
@@ -94,7 +94,12 @@ class SQLiteCollectionManager implements CollectionManager {
     }
 
     @Override
-    public void recoverDeletedSwrl(Swrl swrl) {
+    public void recoverDoneSwrl(Swrl swrl) {
+
+    }
+
+    @Override
+    public void permanentlyDelete(Swrl swrl) {
 
     }
 

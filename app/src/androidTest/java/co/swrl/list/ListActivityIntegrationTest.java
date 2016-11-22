@@ -184,7 +184,7 @@ public class ListActivityIntegrationTest {
         addSwrlsToList(new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED});
 
         onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX)))
-                .onChildView(withId(R.id.list_item_delete))
+                .onChildView(withId(R.id.list_item_done))
                 .perform(click());
 
         onView(withId(R.id.itemListView)).check(matches(not(exists(equalTo(THE_MATRIX)))));

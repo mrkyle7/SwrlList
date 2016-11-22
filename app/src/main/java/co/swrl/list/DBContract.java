@@ -12,6 +12,6 @@ final class DBContract {
         static final String COLUMN_NAME_CREATED = "created";
 
         static final int STATUS_ACTIVE = 0;
-        static final int STATUS_DELETED = 1;
+        static final int STATUS_DONE = 1;
     }
 }
