@@ -1,4 +1,4 @@
-package co.swrl.swrllist;
+package co.swrl.list;
 
 import android.app.Activity;
 import android.content.Context;

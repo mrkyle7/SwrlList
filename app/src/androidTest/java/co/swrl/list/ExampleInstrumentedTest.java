@@ -1,4 +1,4 @@
-package co.swrl.swrllist;
+package co.swrl.list;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

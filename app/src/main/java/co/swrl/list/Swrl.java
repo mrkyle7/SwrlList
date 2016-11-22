@@ -1,4 +1,4 @@
-package co.swrl.swrllist;
+package co.swrl.list;
 
 class Swrl {
     private String title;

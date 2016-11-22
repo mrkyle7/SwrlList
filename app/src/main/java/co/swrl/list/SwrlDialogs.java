@@ -1,4 +1,4 @@
-package co.swrl.swrllist;
+package co.swrl.list;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -8,16 +8,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
-import static android.content.ContentValues.TAG;
-import static android.content.DialogInterface.BUTTON_NEGATIVE;
 import static android.content.DialogInterface.BUTTON_NEUTRAL;
 import static android.content.DialogInterface.BUTTON_POSITIVE;
 

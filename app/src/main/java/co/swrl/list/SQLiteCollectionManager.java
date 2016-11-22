@@ -1,4 +1,4 @@
-package co.swrl.swrllist;
+package co.swrl.list;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-import static co.swrl.swrllist.DBContract.*;
+import static co.swrl.list.DBContract.*;
 
 
 class SQLiteCollectionManager implements CollectionManager {
