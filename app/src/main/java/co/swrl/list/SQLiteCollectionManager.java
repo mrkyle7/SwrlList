@@ -6,13 +6,14 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import static co.swrl.list.DBContract.*;
 
 
-class SQLiteCollectionManager implements CollectionManager {
+class SQLiteCollectionManager implements CollectionManager, Serializable {
     private final DBHelper db;
 
     SQLiteCollectionManager(Context context) {
@@ -20,7 +21,7 @@ class SQLiteCollectionManager implements CollectionManager {
     }
 
     @Override
-    public List<Swrl> getSwrls() {
+    public List<Swrl> getActive() {
         SQLiteDatabase dbReader = db.getReadableDatabase();
         String[] projection = {
                 Swrls._ID,
@@ -55,12 +56,12 @@ class SQLiteCollectionManager implements CollectionManager {
     }
 
     @Override
-    public List<Swrl> getDeletedSwrls() {
+    public List<Swrl> getDone() {
         return null;
     }
 
     @Override
-    public void saveSwrl(Swrl swrl) {
+    public void save(Swrl swrl) {
         SQLiteDatabase dbWriter = db.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -94,7 +95,7 @@ class SQLiteCollectionManager implements CollectionManager {
     }
 
     @Override
-    public void recoverDoneSwrl(Swrl swrl) {
+    public void markAsActive(Swrl swrl) {
 
     }
 

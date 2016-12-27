@@ -29,8 +29,16 @@ class ActiveListAdapter extends ArrayAdapter<Swrl> {
         this.swrls = swrls;
         this.collectionManager = collectionManager;
     }
+    ActiveListAdapter(Context context, int resource, CollectionManager collectionManager) {
+        this(context, resource, (ArrayList<Swrl>) collectionManager.getActive(), collectionManager);
+    }
 
 
+    @Override
+    public void insert(Swrl swrl, int index) {
+        super.insert(swrl, index);
+        collectionManager.save(swrl);
+    }
 
     @SuppressLint("InflateParams")
     @NonNull

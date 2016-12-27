@@ -1,14 +1,10 @@
 package co.swrl.list;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -33,10 +29,9 @@ public class ListActivity extends AppCompatActivity {
 
     private void setUpViewElements(CollectionManager collectionManager) {
         setContentView(R.layout.activity_list);
-        ArrayList<Swrl> swrls = (ArrayList<Swrl>) collectionManager.getSwrls();
-        ActiveListAdapter swrlRows = new ActiveListAdapter(this, R.layout.list_row, swrls, collectionManager);
+        ActiveListAdapter swrlRows = new ActiveListAdapter(this, R.layout.list_row, collectionManager);
         setUpList(swrlRows);
-        setUpInputs(swrlRows, collectionManager);
+        setUpInputs(swrlRows);
     }
 
     private void setUpList(final ActiveListAdapter swrlRows) {
@@ -44,14 +39,14 @@ public class ListActivity extends AppCompatActivity {
         list.setAdapter(swrlRows);
     }
 
-    private void setUpInputs(final ActiveListAdapter swrlRows, final CollectionManager collectionManager) {
+    private void setUpInputs(final ActiveListAdapter swrlRows) {
         final ImageButton addItem = (ImageButton) findViewById(R.id.addItemButton);
         final EditText input = (EditText) findViewById(R.id.addItemEditText);
 
         addItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addItemToListAndPersistIfNewAndNotEmptyInput(swrlRows, collectionManager);
+                addItemToListAndPersistIfNewAndNotEmptyInput(swrlRows);
                 clearAndFocus(input);
             }
         });
@@ -59,7 +54,7 @@ public class ListActivity extends AppCompatActivity {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (enterKeyPressedOrActionDone(actionId, event)) {
-                    addItemToListAndPersistIfNewAndNotEmptyInput(swrlRows, collectionManager);
+                    addItemToListAndPersistIfNewAndNotEmptyInput(swrlRows);
                     clearAndFocus(input);
                     return true;
                 } else {
@@ -69,13 +64,12 @@ public class ListActivity extends AppCompatActivity {
         });
     }
 
-    private void addItemToListAndPersistIfNewAndNotEmptyInput(ActiveListAdapter swrlRows, CollectionManager collectionManager) {
+    private void addItemToListAndPersistIfNewAndNotEmptyInput(ActiveListAdapter swrlRows) {
         EditText input = (EditText) findViewById(R.id.addItemEditText);
         String title = String.valueOf(input.getText());
         Swrl swrl = new Swrl(title);
         if (titleIsNotBlank(title) && swrlIsNew(swrlRows, swrl)) {
             swrlRows.insert(swrl, 0);
-            collectionManager.saveSwrl(swrl);
         }
     }
 
