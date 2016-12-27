@@ -37,3 +37,16 @@ See http://docs.aws.amazon.com/devicefarm/latest/developerguide/aws-device-farm-
 Then run:
  
      ./gradlew devicefarmUpload
+
+## Publishing to the Play Store
+
+ 1. Set the key and store password in keystore.properties (NEVER COMMIT THIS)
+ 2. Bump the versionCode in build.gradle
+ 3. Bump the versionName in build.gradle
+ 4. Update the whatsnew file in the play directory for the store listing
+ 5. Update any screenshots etc
+ 6. Update the strings.xml for the whatsnew in app dialog
+ 7. Ensure all tests pass
+ 8. Run:
+
+     ./gradlew publishRelease
