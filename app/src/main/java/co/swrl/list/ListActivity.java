@@ -1,10 +1,14 @@
 package co.swrl.list;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -35,7 +39,7 @@ public class ListActivity extends AppCompatActivity {
         setUpInputs(swrlRows, collectionManager);
     }
 
-    private void setUpList(ActiveListAdapter swrlRows) {
+    private void setUpList(final ActiveListAdapter swrlRows) {
         ListView list = (ListView) findViewById(R.id.itemListView);
         list.setAdapter(swrlRows);
     }

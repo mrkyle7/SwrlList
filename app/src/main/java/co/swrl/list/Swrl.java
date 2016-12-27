@@ -1,6 +1,8 @@
 package co.swrl.list;
 
-class Swrl {
+import java.io.Serializable;
+
+class Swrl implements Serializable {
     private String title;
 
     Swrl(String title) {
@@ -25,5 +27,10 @@ class Swrl {
     @Override
     public int hashCode() {
         return title.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return title;
     }
 }

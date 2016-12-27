@@ -1,7 +1,10 @@
 package co.swrl.list;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +14,10 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+
+import static android.support.v4.app.ActivityCompat.startActivity;
+import static co.swrl.list.ViewActivity.EXTRAS_INDEX;
+import static co.swrl.list.ViewActivity.EXTRAS_SWRLS;
 
 
 class ActiveListAdapter extends ArrayAdapter<Swrl> {
@@ -23,23 +30,43 @@ class ActiveListAdapter extends ArrayAdapter<Swrl> {
         this.collectionManager = collectionManager;
     }
 
+
+
     @SuppressLint("InflateParams")
     @NonNull
     @Override
     public View getView(int position, View convertView, @NonNull ViewGroup parent) {
-        View row = convertView;
-        if (row == null){
-            LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            row = inflater.inflate(R.layout.list_row, null);
-        }
+        View row = createRowLayoutIfNull(convertView);
 
         Swrl swrl = swrls.get(position);
         if (swrl != null){
-            setTitle(row, swrl);
+            setTitle(row, swrl, position);
             setDoneButton(row, swrl);
         }
 
         return row;
+    }
+
+    private View createRowLayoutIfNull(View row) {
+        if (row == null){
+            LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            row = inflater.inflate(R.layout.list_row, null);
+        }
+        return row;
+    }
+
+    private void setTitle(View row, final Swrl swrl, final int index) {
+        TextView title = (TextView) row.findViewById(R.id.list_title);
+        title.setText(swrl.getTitle());
+        title.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent viewActivity = new Intent(getContext(), ViewActivity.class);
+                viewActivity.putExtra(EXTRAS_SWRLS, swrls);
+                viewActivity.putExtra(EXTRAS_INDEX, index);
+                startActivity((Activity) getContext(), viewActivity, null);
+            }
+        });
     }
 
     private void setDoneButton(View row, final Swrl swrl) {
@@ -49,14 +76,14 @@ class ActiveListAdapter extends ArrayAdapter<Swrl> {
             public void onClick(View v) {
                 swrls.remove(swrl);
                 collectionManager.markAsDone(swrl);
-                notifyDataSetChanged();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        notifyDataSetChanged();
+                    }
+                }, 250);
             }
         });
 
-    }
-
-    private void setTitle(View row, Swrl swrl) {
-        TextView title = (TextView) row.findViewById(R.id.list_title);
-        title.setText(swrl.getTitle());
     }
 }

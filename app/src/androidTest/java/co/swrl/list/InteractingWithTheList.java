@@ -4,6 +4,7 @@ import co.swrl.list.Helpers;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.action.EspressoKey;
@@ -30,6 +31,8 @@ import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.action.ViewActions.pressImeActionButton;
 import static android.support.test.espresso.action.ViewActions.pressKey;
 import static android.support.test.espresso.action.ViewActions.typeText;
+import static co.swrl.list.Helpers.THE_MATRIX;
+import static co.swrl.list.Helpers.THE_MATRIX_RELOADED;
 import static co.swrl.list.Helpers.addSwrlsToList;
 import static co.swrl.list.Helpers.clearAllSettings;
 import static co.swrl.list.Helpers.launchAndAvoidWhatsNewDialog;
@@ -55,11 +58,9 @@ import static org.hamcrest.Matchers.not;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-public class ListOperationTest {
+public class InteractingWithTheList {
     private Activity activity = null;
     private static final EspressoKey ENTER_KEY = new EspressoKey.Builder().withKeyCode(KeyEvent.KEYCODE_ENTER).build();
-    private static final Swrl THE_MATRIX = new Swrl("The Matrix");
-    private static final Swrl THE_MATRIX_RELOADED = new Swrl("The Matrix Reloaded");
 
     @Rule
     public ActivityTestRule listActivityActivityTestRule = new ActivityTestRule<>(ListActivity.class, false, false);
@@ -77,7 +78,7 @@ public class ListOperationTest {
 
     @Test
     public void whatsNewDialogIsOnlyShownOnFirstLaunchOfActivity() throws Exception {
-        activity = activity = launchAndWakeUpActivity(listActivityActivityTestRule);
+        activity = launchAndWakeUpActivity(listActivityActivityTestRule);
 
         onView(withId(R.id.whatsNew)).inRoot(isDialog()).check(matches(isDisplayed()));
         onView(withId(R.id.whatsNewMessage)).check(matches(withText(containsString("Version"))));
@@ -188,6 +189,8 @@ public class ListOperationTest {
         onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX)))
                 .onChildView(withId(R.id.list_item_done))
                 .perform(click());
+
+        SystemClock.sleep(250);
 
         onView(withId(R.id.itemListView)).check(matches(not(exists(equalTo(THE_MATRIX)))));
         onView(withId(R.id.itemListView)).check(matches(numberOfChildren(is(1))));
