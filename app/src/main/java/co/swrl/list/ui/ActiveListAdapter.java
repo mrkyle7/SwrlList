@@ -5,10 +5,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
+import android.support.annotation.AnimRes;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -79,19 +82,31 @@ class ActiveListAdapter extends ArrayAdapter<Swrl> {
         });
     }
 
-    private void setDoneButton(View row, final Swrl swrl) {
+    private void setDoneButton(final View row, final Swrl swrl) {
         ImageButton button = (ImageButton) row.findViewById(R.id.list_item_done);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                swrls.remove(swrl);
-                collectionManager.markAsDone(swrl);
-                new Handler().postDelayed(new Runnable() {
+                final Animation delete = AnimationUtils.loadAnimation(getContext(), R.anim.abc_fade_out);
+                delete.setAnimationListener(new Animation.AnimationListener() {
                     @Override
-                    public void run() {
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        swrls.remove(swrl);
+                        collectionManager.markAsDone(swrl);
                         notifyDataSetChanged();
                     }
-                }, 250);
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
+                row.startAnimation(delete);
             }
         });
 

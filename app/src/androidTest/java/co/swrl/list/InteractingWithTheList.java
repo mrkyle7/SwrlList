@@ -182,8 +182,6 @@ public class InteractingWithTheList {
                 .onChildView(withId(R.id.list_item_done))
                 .perform(click());
 
-        SystemClock.sleep(250);
-
         onView(withId(R.id.itemListView)).check(matches(not(exists(equalTo(THE_MATRIX)))));
         onView(withId(R.id.itemListView)).check(matches(numberOfChildren(is(1))));
         onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX_RELOADED))).check(matches(isDisplayed()));
