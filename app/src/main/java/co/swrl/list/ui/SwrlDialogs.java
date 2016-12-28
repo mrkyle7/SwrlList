@@ -18,14 +18,14 @@ import co.swrl.list.R;
 import static android.content.DialogInterface.BUTTON_NEUTRAL;
 import static android.content.DialogInterface.BUTTON_POSITIVE;
 
-class SwrlDialogs {
+public class SwrlDialogs {
     private final Activity activity;
 
     SwrlDialogs(Activity activity) {
         this.activity = activity;
     }
 
-    void buildAndShowWhatsNewDialog() {
+    public void buildAndShowWhatsNewDialog() {
         AlertDialog whatsNewDialog = buildWhatsNewDialog();
         whatsNewDialog.show();
         setButtonIDs(whatsNewDialog);

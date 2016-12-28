@@ -11,6 +11,7 @@ import android.view.WindowManager;
 
 import co.swrl.list.collection.SQLiteCollectionManager;
 import co.swrl.list.item.Swrl;
+import co.swrl.list.item.Type;
 
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
@@ -27,9 +28,9 @@ import static org.hamcrest.Matchers.is;
 class Helpers {
     private Helpers() {}
 
-    static final Swrl THE_MATRIX = new Swrl("The Matrix");
-    static final Swrl THE_MATRIX_RELOADED = new Swrl("The Matrix Reloaded");
-    static final Swrl THE_MATRIX_REVOLUTIONS = new Swrl("The Matrix Revolutions");
+    static final Swrl THE_MATRIX = new Swrl("The Matrix", Type.UNKNOWN);
+    static final Swrl THE_MATRIX_RELOADED = new Swrl("The Matrix Reloaded", Type.UNKNOWN);
+    static final Swrl THE_MATRIX_REVOLUTIONS = new Swrl("The Matrix Revolutions", Type.UNKNOWN);
 
     static void clearAllSettings() {
         Context applicationContext = InstrumentationRegistry.getTargetContext();
