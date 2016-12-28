@@ -26,6 +26,7 @@ class Helpers {
 
     static final Swrl THE_MATRIX = new Swrl("The Matrix");
     static final Swrl THE_MATRIX_RELOADED = new Swrl("The Matrix Reloaded");
+    static final Swrl THE_MATRIX_REVOLUTIONS = new Swrl("The Matrix Revolutions");
 
     static void clearAllSettings() {
         Context applicationContext = InstrumentationRegistry.getTargetContext();
@@ -85,8 +86,8 @@ class Helpers {
         }
     }
 
-    static void purgeDatabase(Context activity) {
-        SQLiteCollectionManager db = new SQLiteCollectionManager(activity);
+    static void purgeDatabase() {
+        SQLiteCollectionManager db = new SQLiteCollectionManager(InstrumentationRegistry.getTargetContext());
         db.permanentlyDeleteAll();
     }
 }

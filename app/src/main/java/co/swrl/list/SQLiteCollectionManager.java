@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -22,6 +23,16 @@ class SQLiteCollectionManager implements CollectionManager, Serializable {
 
     @Override
     public List<Swrl> getActive() {
+        return getSwrlsByStatus(Swrls.STATUS_ACTIVE);
+    }
+
+    @Override
+    public List<Swrl> getDone() {
+        return getSwrlsByStatus(Swrls.STATUS_DONE);
+    }
+
+    @NonNull
+    private List<Swrl> getSwrlsByStatus(int status) {
         SQLiteDatabase dbReader = db.getReadableDatabase();
         String[] projection = {
                 Swrls._ID,
@@ -29,7 +40,7 @@ class SQLiteCollectionManager implements CollectionManager, Serializable {
         };
 
         String selection = Swrls.COLUMN_NAME_STATUS + " = ?";
-        String[] selectionArgs = {String.valueOf(Swrls.STATUS_ACTIVE)};
+        String[] selectionArgs = {String.valueOf(status)};
 
         String sortOrder = Swrls.COLUMN_NAME_CREATED + " DESC";
 
@@ -56,11 +67,6 @@ class SQLiteCollectionManager implements CollectionManager, Serializable {
     }
 
     @Override
-    public List<Swrl> getDone() {
-        return null;
-    }
-
-    @Override
     public void save(Swrl swrl) {
         SQLiteDatabase dbWriter = db.getWritableDatabase();
 
@@ -76,10 +82,19 @@ class SQLiteCollectionManager implements CollectionManager, Serializable {
 
     @Override
     public void markAsDone(Swrl swrl) {
+        markAs(swrl, Swrls.STATUS_DONE);
+    }
+
+    @Override
+    public void markAsActive(Swrl swrl) {
+        markAs(swrl, Swrls.STATUS_ACTIVE);
+    }
+
+    private void markAs(Swrl swrl, int status) {
         SQLiteDatabase dbWriter = db.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(Swrls.COLUMN_NAME_STATUS, Swrls.STATUS_DONE);
+        values.put(Swrls.COLUMN_NAME_STATUS, status);
 
         String title = swrl.getTitle();
         String whereClause = Swrls.COLUMN_NAME_TITLE + " = ?";
@@ -95,13 +110,17 @@ class SQLiteCollectionManager implements CollectionManager, Serializable {
     }
 
     @Override
-    public void markAsActive(Swrl swrl) {
-
-    }
-
-    @Override
     public void permanentlyDelete(Swrl swrl) {
+        SQLiteDatabase dbWriter = db.getWritableDatabase();
+        String whereClause = Swrls.COLUMN_NAME_TITLE + " = ?";
+        String[] whereArgs = {swrl.getTitle()};
 
+        dbWriter.delete(
+                Swrls.TABLE_NAME,
+                whereClause,
+                whereArgs
+        );
+        dbWriter.close();
     }
 
     @Override

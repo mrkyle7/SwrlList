@@ -24,7 +24,7 @@ class ActiveListAdapter extends ArrayAdapter<Swrl> {
     private final ArrayList<Swrl> swrls;
     private final CollectionManager collectionManager;
 
-    ActiveListAdapter(Context context, int resource, ArrayList<Swrl> swrls, CollectionManager collectionManager) {
+    private ActiveListAdapter(Context context, int resource, ArrayList<Swrl> swrls, CollectionManager collectionManager) {
         super(context, resource, swrls);
         this.swrls = swrls;
         this.collectionManager = collectionManager;

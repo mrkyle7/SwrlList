@@ -1,12 +1,7 @@
 package co.swrl.list;
 
-import co.swrl.list.Helpers;
 import android.app.Activity;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.SystemClock;
-import android.preference.PreferenceManager;
-import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.action.EspressoKey;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
@@ -14,7 +9,6 @@ import android.support.test.runner.AndroidJUnit4;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.Adapter;
 import android.widget.AdapterView;
 
@@ -65,15 +59,10 @@ public class InteractingWithTheList {
     @Rule
     public ActivityTestRule listActivityActivityTestRule = new ActivityTestRule<>(ListActivity.class, false, false);
 
-    @Before
-    public void setUp() {
+    @Before @After
+    public void setupAndTearDown() {
         clearAllSettings();
-    }
-
-    @After
-    public void tearDown() {
-        clearAllSettings();
-        purgeDatabase(activity);
+        purgeDatabase();
     }
 
     @Test
