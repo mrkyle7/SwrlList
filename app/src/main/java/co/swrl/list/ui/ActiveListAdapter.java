@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Handler;
 import android.support.annotation.AnimRes;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,7 +55,7 @@ class ActiveListAdapter extends ArrayAdapter<Swrl> {
         Swrl swrl = swrls.get(position);
         if (swrl != null){
             setTitle(row, swrl, position);
-            setDoneButton(row, swrl);
+            setDoneButton(row, swrl, position);
         }
 
         return row;
@@ -82,7 +83,7 @@ class ActiveListAdapter extends ArrayAdapter<Swrl> {
         });
     }
 
-    private void setDoneButton(final View row, final Swrl swrl) {
+    private void setDoneButton(final View row, final Swrl swrl, final int position) {
         ImageButton button = (ImageButton) row.findViewById(R.id.list_item_done);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,7 +92,14 @@ class ActiveListAdapter extends ArrayAdapter<Swrl> {
                 delete.setAnimationListener(new Animation.AnimationListener() {
                     @Override
                     public void onAnimationStart(Animation animation) {
-
+                        String undoTitle = "\"" + swrl.getTitle() + "\" " + "marked as done";
+                        Snackbar.make(row, undoTitle, Snackbar.LENGTH_LONG).setAction("Undo", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                v.clearAnimation();
+                                insert(swrl, position);
+                            }
+                        }).show();
                     }
 
                     @Override

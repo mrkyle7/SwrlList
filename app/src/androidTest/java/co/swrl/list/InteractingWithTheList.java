@@ -30,6 +30,7 @@ import static android.support.test.espresso.action.ViewActions.pressKey;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static co.swrl.list.Helpers.THE_MATRIX;
 import static co.swrl.list.Helpers.THE_MATRIX_RELOADED;
+import static co.swrl.list.Helpers.THE_MATRIX_REVOLUTIONS;
 import static co.swrl.list.Helpers.addSwrlsToList;
 import static co.swrl.list.Helpers.clearAllSettings;
 import static co.swrl.list.Helpers.launchAndAvoidWhatsNewDialog;
@@ -203,6 +204,25 @@ public class InteractingWithTheList {
         onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX))).check(matches(isDisplayed()));
         onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX_RELOADED))).check(matches(isDisplayed()));
         onView(withId(R.id.itemListView)).check(matches(numberOfChildren(is(2))));
+    }
+
+    @Test
+    public void canUndoMarkingItemsAsDone() throws Exception {
+        activity = launchAndAvoidWhatsNewDialog(listActivityActivityTestRule);
+
+        addSwrlsToList(new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED, THE_MATRIX_REVOLUTIONS});
+
+        onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX_RELOADED)))
+                .onChildView(withId(R.id.list_item_done))
+                .perform(click());
+
+        onView(withId(R.id.snackbar_text)).check(matches(withText("\"The Matrix Reloaded\" marked as done")));
+        onView(withId(R.id.snackbar_action)).perform(click());
+
+        onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX))).check(matches(isDisplayed()));
+        onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX_RELOADED))).check(matches(isDisplayed()));
+        onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX_REVOLUTIONS))).check(matches(isDisplayed()));
+        onView(withId(R.id.itemListView)).check(matches(numberOfChildren(is(3))));
     }
 
 
