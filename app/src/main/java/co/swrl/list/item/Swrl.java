@@ -1,15 +1,15 @@
-package co.swrl.list;
+package co.swrl.list.item;
 
 import java.io.Serializable;
 
-class Swrl implements Serializable {
+public class Swrl implements Serializable {
     private String title;
 
-    Swrl(String title) {
+    public Swrl(String title) {
         this.title = title;
     }
 
-    String getTitle() {
+    public String getTitle() {
         return title;
     }
 

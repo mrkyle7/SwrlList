@@ -2,6 +2,9 @@ package co.swrl.list;
 
 import org.junit.Test;
 
+import co.swrl.list.ui.ListActivity;
+import co.swrl.list.ui.SwrlDialogs;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;

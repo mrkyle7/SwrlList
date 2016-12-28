@@ -1,4 +1,4 @@
-package co.swrl.list;
+package co.swrl.list.ui;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -15,9 +15,11 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import co.swrl.list.R;
+import co.swrl.list.collection.CollectionManager;
+import co.swrl.list.item.Swrl;
+
 import static android.support.v4.app.ActivityCompat.startActivity;
-import static co.swrl.list.ViewActivity.EXTRAS_INDEX;
-import static co.swrl.list.ViewActivity.EXTRAS_SWRLS;
 
 
 class ActiveListAdapter extends ArrayAdapter<Swrl> {
@@ -70,8 +72,8 @@ class ActiveListAdapter extends ArrayAdapter<Swrl> {
             @Override
             public void onClick(View v) {
                 Intent viewActivity = new Intent(getContext(), ViewActivity.class);
-                viewActivity.putExtra(EXTRAS_SWRLS, swrls);
-                viewActivity.putExtra(EXTRAS_INDEX, index);
+                viewActivity.putExtra(ViewActivity.EXTRAS_SWRLS, swrls);
+                viewActivity.putExtra(ViewActivity.EXTRAS_INDEX, index);
                 startActivity((Activity) getContext(), viewActivity, null);
             }
         });

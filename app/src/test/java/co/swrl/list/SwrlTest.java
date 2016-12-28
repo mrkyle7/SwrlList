@@ -2,6 +2,8 @@ package co.swrl.list;
 
 import org.junit.Test;
 
+import co.swrl.list.item.Swrl;
+
 import static org.junit.Assert.*;
 
 public class SwrlTest {

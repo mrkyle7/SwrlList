@@ -1,4 +1,4 @@
-package co.swrl.list;
+package co.swrl.list.collection;
 
 import android.provider.BaseColumns;
 

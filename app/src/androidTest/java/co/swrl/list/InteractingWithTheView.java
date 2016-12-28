@@ -16,6 +16,9 @@ import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 
+import co.swrl.list.item.Swrl;
+import co.swrl.list.ui.ViewActivity;
+
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.pressKey;

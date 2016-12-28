@@ -1,4 +1,4 @@
-package co.swrl.list;
+package co.swrl.list.collection;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -11,13 +11,15 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import static co.swrl.list.DBContract.*;
+import co.swrl.list.item.Swrl;
+
+import static co.swrl.list.collection.DBContract.Swrls;
 
 
-class SQLiteCollectionManager implements CollectionManager, Serializable {
+public class SQLiteCollectionManager implements CollectionManager, Serializable {
     private final DBHelper db;
 
-    SQLiteCollectionManager(Context context) {
+    public SQLiteCollectionManager(Context context) {
         db = new DBHelper(context);
     }
 

@@ -9,6 +9,9 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 import android.view.WindowManager;
 
+import co.swrl.list.collection.SQLiteCollectionManager;
+import co.swrl.list.item.Swrl;
+
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;

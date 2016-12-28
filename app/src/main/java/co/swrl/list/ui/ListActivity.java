@@ -1,4 +1,4 @@
-package co.swrl.list;
+package co.swrl.list.ui;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -10,7 +10,11 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import co.swrl.list.R;
+import co.swrl.list.SwrlPreferences;
+import co.swrl.list.collection.CollectionManager;
+import co.swrl.list.collection.SQLiteCollectionManager;
+import co.swrl.list.item.Swrl;
 
 public class ListActivity extends AppCompatActivity {
     @Override

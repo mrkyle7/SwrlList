@@ -7,21 +7,21 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
 
-class SwrlPreferences {
+public class SwrlPreferences {
     private final Activity activity;
 
-    SwrlPreferences(Activity activity) {
+    public SwrlPreferences(Activity activity) {
         this.activity = activity;
     }
 
 
-    boolean isPackageNewVersion() {
+    public boolean isPackageNewVersion() {
         int currentVersionNumber = getCurrentVersionNumber();
         int savedVersion = getSavedVersion();
         return savedVersion < currentVersionNumber;
     }
 
-    void savePackageVersionAsCurrentVersion() {
+    public void savePackageVersionAsCurrentVersion() {
         savePackageVersion(getCurrentVersionNumber());
     }
 
