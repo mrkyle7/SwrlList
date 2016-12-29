@@ -51,14 +51,18 @@ class ActiveListAdapter extends ArrayAdapter<Swrl> {
     @Override
     public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         View row = createRowLayoutIfNull(convertView);
-
         Swrl swrl = swrls.get(position);
         if (swrl != null){
+            setBackground(row, swrl);
             setTitle(row, swrl, position);
             setDoneButton(row, swrl, position);
         }
 
         return row;
+    }
+
+    private void setBackground(View row, Swrl swrl) {
+        row.setBackgroundResource(swrl.getType().getRowBorderResource());
     }
 
     private View createRowLayoutIfNull(View row) {

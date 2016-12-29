@@ -6,9 +6,13 @@ public class Swrl implements Serializable {
     private final String title;
     private final Type type;
 
-    public Swrl(String title, Type type){
+    public Swrl(String title, Type type) {
         this.title = title;
-        this.type = type;
+        if (type == null) {
+            this.type = Type.UNKNOWN;
+        } else {
+            this.type = type;
+        }
     }
 
     public Swrl(String title) {
@@ -25,7 +29,7 @@ public class Swrl implements Serializable {
 
     @Override
     public String toString() {
-        return title;
+        return title + " (" + type.toString() + ")";
     }
 
     @Override

@@ -3,11 +3,13 @@ package co.swrl.list.ui;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import co.swrl.list.R;
@@ -15,6 +17,7 @@ import co.swrl.list.SwrlPreferences;
 import co.swrl.list.collection.CollectionManager;
 import co.swrl.list.collection.SQLiteCollectionManager;
 import co.swrl.list.item.Swrl;
+import co.swrl.list.item.Type;
 
 public class ListActivity extends AppCompatActivity {
     @Override
@@ -50,15 +53,27 @@ public class ListActivity extends AppCompatActivity {
         addItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addItemToListAndPersistIfNewAndNotEmptyInput(swrlRows);
-                clearAndFocus(input);
+                PopupMenu typeSelector = new PopupMenu(getApplicationContext(), findViewById(R.id.addItemButton));
+                typeSelector.inflate(R.menu.type_selector);
+                for (Type type: Type.values()){
+                    typeSelector.getMenu().add(type.toString());
+                }
+                typeSelector.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        addItemToListAndPersistIfNewAndNotEmptyInput(swrlRows, Type.valueOf(item.toString()));
+                        clearAndFocus(input);
+                        return true;
+                    }
+                });
+                typeSelector.show();
             }
         });
         input.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (enterKeyPressedOrActionDone(actionId, event)) {
-                    addItemToListAndPersistIfNewAndNotEmptyInput(swrlRows);
+                    addItemToListAndPersistIfNewAndNotEmptyInput(swrlRows, null);
                     clearAndFocus(input);
                     return true;
                 } else {
@@ -68,10 +83,10 @@ public class ListActivity extends AppCompatActivity {
         });
     }
 
-    private void addItemToListAndPersistIfNewAndNotEmptyInput(ActiveListAdapter swrlRows) {
+    private void addItemToListAndPersistIfNewAndNotEmptyInput(ActiveListAdapter swrlRows, Type type) {
         EditText input = (EditText) findViewById(R.id.addItemEditText);
         String title = String.valueOf(input.getText());
-        Swrl swrl = new Swrl(title);
+        Swrl swrl = new Swrl(title, type);
         if (titleIsNotBlank(title) && swrlIsNew(swrlRows, swrl)) {
             swrlRows.insert(swrl, 0);
         }

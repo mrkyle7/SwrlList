@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import co.swrl.list.item.Swrl;
+import co.swrl.list.item.Type;
 import co.swrl.list.ui.ListActivity;
 
 import static android.support.test.espresso.Espresso.onData;
@@ -125,13 +126,35 @@ public class InteractingWithTheList {
         //With Add Button
         onView(withId(R.id.addItemEditText)).perform(typeText("Third Item"));
         onView(withId(R.id.addItemButton)).perform(click());
+        onView(withText(Type.UNKNOWN.toString())).perform(click());
 
         onData(is(instanceOf(Swrl.class)))
                 .inAdapterView(withId(R.id.itemListView)).atPosition(0)
                 .onChildView(withId(R.id.list_title))
                 .check(matches(withText(containsString("Third Item"))));
+        onData(is(instanceOf(Swrl.class)))
+                .inAdapterView(withId(R.id.itemListView)).atPosition(1)
+                .onChildView(withId(R.id.list_title))
+                .check(matches(withText(containsString("Second Item"))));
+        onData(is(instanceOf(Swrl.class)))
+                .inAdapterView(withId(R.id.itemListView)).atPosition(2)
+                .onChildView(withId(R.id.list_title))
+                .check(matches(withText(containsString("First Item"))));
         onView(withId(R.id.addItemEditText)).check(matches(hasFocus()));
         onView(withId(R.id.addItemEditText)).check(matches(withText(isEmptyString())));
+    }
+
+    @Test
+    public void canAddAnItemWithAType() throws Exception{
+        activity = launchAndAvoidWhatsNewDialog(listActivityActivityTestRule);
+
+        Swrl ITEM = new Swrl("My Item", Type.FILM);
+
+        onView(withId(R.id.addItemEditText)).perform(typeText("My Item"));
+        onView(withId(R.id.addItemButton)).perform(click());
+        onView(withText(Type.FILM.toString())).perform(click());
+
+        onData(allOf(is(instanceOf(Swrl.class)), equalTo(ITEM))).check(matches(isDisplayed()));
     }
 
     @Test
@@ -140,9 +163,9 @@ public class InteractingWithTheList {
 
         addSwrlsToList(new Swrl[]{THE_MATRIX});
 
-        onView(withId(R.id.addItemEditText))
-                .perform(typeText("The Matrix"))
-                .perform(pressImeActionButton());
+        onView(withId(R.id.addItemEditText)).perform(typeText("The Matrix"));
+        onView(withId(R.id.addItemButton)).perform(click());
+        onView(withText(Type.FILM.toString())).perform(click());
 
         onView(withId(R.id.itemListView)).check(matches(numberOfChildren(is(1))));
     }
@@ -156,6 +179,7 @@ public class InteractingWithTheList {
         onView(withId(R.id.addItemEditText)).check(matches(withText(isEmptyString())));
 
         onView(withId(R.id.addItemButton)).perform(click());
+        onView(withText(Type.UNKNOWN.toString())).perform(click());
         onView(withId(R.id.addItemEditText)).perform(pressImeActionButton());
 
         onView(withId(R.id.itemListView)).check(matches(not(exists(equalTo(emptySwrl)))));

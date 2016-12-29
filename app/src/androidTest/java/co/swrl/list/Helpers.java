@@ -20,6 +20,7 @@ import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
@@ -28,9 +29,9 @@ import static org.hamcrest.Matchers.is;
 class Helpers {
     private Helpers() {}
 
-    static final Swrl THE_MATRIX = new Swrl("The Matrix", Type.UNKNOWN);
-    static final Swrl THE_MATRIX_RELOADED = new Swrl("The Matrix Reloaded", Type.UNKNOWN);
-    static final Swrl THE_MATRIX_REVOLUTIONS = new Swrl("The Matrix Revolutions", Type.UNKNOWN);
+    static final Swrl THE_MATRIX = new Swrl("The Matrix", Type.FILM);
+    static final Swrl THE_MATRIX_RELOADED = new Swrl("The Matrix Reloaded", Type.FILM);
+    static final Swrl THE_MATRIX_REVOLUTIONS = new Swrl("The Matrix Revolutions", Type.FILM);
 
     static void clearAllSettings() {
         Context applicationContext = InstrumentationRegistry.getTargetContext();
@@ -86,6 +87,7 @@ class Helpers {
         for (Swrl swrl : swrls) {
             onView(withId(R.id.addItemEditText)).perform(typeText(swrl.getTitle()));
             onView(withId(R.id.addItemButton)).perform(click());
+            onView(withText(swrl.getType().toString())).perform(click());
             onData(allOf(is(instanceOf(Swrl.class)), equalTo(swrl))).check(matches(isDisplayed()));
         }
     }

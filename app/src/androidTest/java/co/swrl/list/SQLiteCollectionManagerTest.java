@@ -13,6 +13,7 @@ import java.util.List;
 
 import co.swrl.list.collection.SQLiteCollectionManager;
 import co.swrl.list.item.Swrl;
+import co.swrl.list.item.Type;
 
 import static co.swrl.list.Helpers.THE_MATRIX;
 import static co.swrl.list.Helpers.THE_MATRIX_RELOADED;
@@ -62,6 +63,18 @@ public class SQLiteCollectionManagerTest extends AndroidTestCase {
     }
 
     @Test
+    public void canSaveSwrlsWithSameTitlesButDifferentTypes() throws Exception {
+        Swrl film = new Swrl("The Hunger Games", Type.FILM);
+        Swrl book = new Swrl("The Hunger Games", Type.BOOK);
+        db.save(film);
+        db.save(book);
+
+        List<Swrl> saved = db.getActive();
+
+        assertThat(saved, containsInAnyOrder(film, book));
+    }
+
+    @Test
     public void canMarkSwrlsAsDoneAndGetThem() throws Exception {
         db.save(THE_MATRIX);
         db.save(THE_MATRIX_RELOADED);
@@ -87,6 +100,19 @@ public class SQLiteCollectionManagerTest extends AndroidTestCase {
 
         List<Swrl> active = db.getActive();
         assertThat(active, containsInAnyOrder(THE_MATRIX, THE_MATRIX_RELOADED));
+    }
+
+    @Test
+    public void savingASwrlMarkedAsDoneReplacesItAsActive() throws Exception{
+        db.save(THE_MATRIX);
+        db.markAsDone(THE_MATRIX);
+
+        assertThat(db.getDone(), contains(THE_MATRIX));
+
+        db.save(THE_MATRIX);
+
+        assertThat(db.getActive(), contains(THE_MATRIX));
+        assertThat(db.getDone(), is(emptyCollectionOf(Swrl.class)));
     }
 
     @Test

@@ -24,4 +24,12 @@ public class SwrlTest {
         assertFalse(swrl3.equals(swrl4));
     }
 
+    @Test
+    public void nullTypeIsUNKNOWN() throws Exception{
+        Swrl nullSwrl = new Swrl("Swrl", null);
+        Swrl unknownSwrl = new Swrl("Swrl", Type.UNKNOWN);
+
+        assertEquals(nullSwrl, unknownSwrl);
+    }
+
 }

@@ -9,4 +9,5 @@
     <item name="itemListView" type="id" />
     <item name="listItem" type="id" />
     <item name="list_item_done" type="id" />
+    <item name="addItemTypeSelector" type="id" />
 </resources>
