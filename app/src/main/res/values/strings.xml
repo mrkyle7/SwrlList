@@ -6,12 +6,12 @@
     <string name="whatsNewLatest">
         <![CDATA[
         <h4>Version 6.1 (29 December 2016)</h4>
-        \u2022 Swrls can now be added as a Type
+        \u2022 Swrls can now be added as a Type<br/>
         \u2022 Can undo marking swrls as done
         <h4>Version 6 (27 December 2016)</h4>
         \u2022 First iteration of the Full Screen view of a Swrl listing
         <h4>Version 5 (20 November 2016)</h4>
-        \u2022 Can delete items
+        \u2022 Can delete items<br/>
         \u2022 Formatting changes and icons
         <h4>Version 4 (20 November 2016)</h4>
         \u2022 List items are persisted after restart

@@ -236,6 +236,21 @@ public class InteractingWithTheList {
 
         addSwrlsToList(new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED, THE_MATRIX_REVOLUTIONS});
 
+        onData(is(instanceOf(Swrl.class)))
+                .inAdapterView(withId(R.id.itemListView)).atPosition(0)
+                .onChildView(withId(R.id.list_title))
+                .check(matches(withText(containsString("The Matrix Revolutions"))));
+
+        onData(is(instanceOf(Swrl.class)))
+                .inAdapterView(withId(R.id.itemListView)).atPosition(1)
+                .onChildView(withId(R.id.list_title))
+                .check(matches(withText(containsString("The Matrix Reloaded"))));
+
+        onData(is(instanceOf(Swrl.class)))
+                .inAdapterView(withId(R.id.itemListView)).atPosition(2)
+                .onChildView(withId(R.id.list_title))
+                .check(matches(withText(containsString("The Matrix"))));
+
         onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX_RELOADED)))
                 .onChildView(withId(R.id.list_item_done))
                 .perform(click());
@@ -243,9 +258,40 @@ public class InteractingWithTheList {
         onView(withId(R.id.snackbar_text)).check(matches(withText("\"The Matrix Reloaded\" marked as done")));
         onView(withId(R.id.snackbar_action)).perform(click());
 
-        onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX))).check(matches(isDisplayed()));
-        onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX_RELOADED))).check(matches(isDisplayed()));
-        onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX_REVOLUTIONS))).check(matches(isDisplayed()));
+        onData(is(instanceOf(Swrl.class)))
+                .inAdapterView(withId(R.id.itemListView)).atPosition(0)
+                .onChildView(withId(R.id.list_title))
+                .check(matches(withText(containsString("The Matrix Revolutions"))));
+
+        onData(is(instanceOf(Swrl.class)))
+                .inAdapterView(withId(R.id.itemListView)).atPosition(1)
+                .onChildView(withId(R.id.list_title))
+                .check(matches(withText(containsString("The Matrix Reloaded"))));
+
+        onData(is(instanceOf(Swrl.class)))
+                .inAdapterView(withId(R.id.itemListView)).atPosition(2)
+                .onChildView(withId(R.id.list_title))
+                .check(matches(withText(containsString("The Matrix"))));
+
+        onView(withId(R.id.itemListView)).check(matches(numberOfChildren(is(3))));
+
+        activity = restartActivity(activity, listActivityActivityTestRule);
+
+        onData(is(instanceOf(Swrl.class)))
+                .inAdapterView(withId(R.id.itemListView)).atPosition(0)
+                .onChildView(withId(R.id.list_title))
+                .check(matches(withText(containsString("The Matrix Revolutions"))));
+
+        onData(is(instanceOf(Swrl.class)))
+                .inAdapterView(withId(R.id.itemListView)).atPosition(1)
+                .onChildView(withId(R.id.list_title))
+                .check(matches(withText(containsString("The Matrix Reloaded"))));
+
+        onData(is(instanceOf(Swrl.class)))
+                .inAdapterView(withId(R.id.itemListView)).atPosition(2)
+                .onChildView(withId(R.id.list_title))
+                .check(matches(withText(containsString("The Matrix"))));
+
         onView(withId(R.id.itemListView)).check(matches(numberOfChildren(is(3))));
     }
 

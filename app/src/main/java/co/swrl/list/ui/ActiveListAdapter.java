@@ -92,35 +92,56 @@ class ActiveListAdapter extends ArrayAdapter<Swrl> {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Animation delete = AnimationUtils.loadAnimation(getContext(), R.anim.abc_fade_out);
-                delete.setAnimationListener(new Animation.AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {
-                        String undoTitle = "\"" + swrl.getTitle() + "\" " + "marked as done";
-                        Snackbar.make(row, undoTitle, Snackbar.LENGTH_LONG).setAction("Undo", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                v.clearAnimation();
-                                insert(swrl, position);
-                            }
-                        }).show();
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        swrls.remove(swrl);
-                        collectionManager.markAsDone(swrl);
-                        notifyDataSetChanged();
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {
-
-                    }
-                });
-                row.startAnimation(delete);
+                final Animation done = getDoneAnimation(swrl, row, position);
+                row.startAnimation(done);
             }
         });
 
+    }
+
+    @NonNull
+    private Animation getDoneAnimation(final Swrl swrl, final View row, final int position) {
+        final Animation delete = AnimationUtils.loadAnimation(getContext(), R.anim.abc_fade_out);
+        delete.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                showUndoSnackbar(swrl, row, position);
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                markSwrlAsDone(swrl);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        return delete;
+    }
+
+    private void markSwrlAsDone(Swrl swrl) {
+        swrls.remove(swrl);
+        collectionManager.markAsDone(swrl);
+        notifyDataSetChanged();
+    }
+
+    private void showUndoSnackbar(final Swrl swrl, View row, final int position) {
+        String undoTitle = "\"" + swrl.getTitle() + "\" " + "marked as done";
+        Snackbar.make(row, undoTitle, Snackbar.LENGTH_LONG)
+                .setAction("Undo", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                v.clearAnimation();
+                reAddSwrl(position, swrl);
+            }
+        }).show();
+    }
+
+    private void reAddSwrl(int position, Swrl swrl) {
+        swrls.add(position, swrl);
+        collectionManager.markAsActive(swrl);
+        notifyDataSetChanged();
     }
 }
