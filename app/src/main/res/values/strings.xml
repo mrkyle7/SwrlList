@@ -5,6 +5,8 @@
     <string name="pkey_version_number">version_number</string>
     <string name="whatsNewLatest">
         <![CDATA[
+        <h4>Version 6.2 (31 December 2016)</h4>
+        \u2022 Fix Bug when undoing Swrls marked as Done
         <h4>Version 6.1 (29 December 2016)</h4>
         \u2022 Swrls can now be added as a Type<br/>
         \u2022 Can undo marking swrls as done

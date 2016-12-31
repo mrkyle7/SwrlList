@@ -1,3 +1,7 @@
+Version 6.2 (31 December 2016)
+==============================
+- Fix Bug when undoing Swrls marked as Done
+<br />
 Version 6.1 (29 December 2016)
 ==============================
 - Swrls can now be added as a Type
@@ -6,9 +10,3 @@ Version 6.1 (29 December 2016)
 Version 6 (27 December 2016)
 ==============================
 - First iteration of the Full Screen view of a Swrl listing
-<br />
-Version 5 (20 November 2016)
-==============================
-- Can delete items
-- Formatting changes and icons
-<br />
