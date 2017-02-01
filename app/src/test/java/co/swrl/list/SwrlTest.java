@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import co.swrl.list.item.Swrl;
 import co.swrl.list.item.Type;
+import co.swrl.list.item.details.UnknownDetails;
 
 import static org.junit.Assert.*;
 
@@ -18,18 +19,13 @@ public class SwrlTest {
         assertTrue(swrl1.equals(swrl1));
         assertTrue(swrl1.equals(swrl2));
         assertTrue(swrl2.equals(swrl1));
-        assertTrue(swrl1.equals(swrl3));
+        assertTrue(swrl1.equals(swrl3)); //because default is type UNKNOWN
         assertTrue(swrl3.equals(swrl1));
         assertFalse(swrl1.equals(swrl4));
         assertFalse(swrl3.equals(swrl4));
-    }
 
-    @Test
-    public void nullTypeIsUNKNOWN() throws Exception{
-        Swrl nullSwrl = new Swrl("Swrl", null);
-        Swrl unknownSwrl = new Swrl("Swrl", Type.UNKNOWN);
-
-        assertEquals(nullSwrl, unknownSwrl);
+        swrl2.setDetails(new UnknownDetails());
+        assertTrue(swrl1.equals(swrl2));
     }
 
 }

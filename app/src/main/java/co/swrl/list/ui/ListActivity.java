@@ -73,7 +73,7 @@ public class ListActivity extends AppCompatActivity {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (enterKeyPressedOrActionDone(actionId, event)) {
-                    addItemToListAndPersistIfNewAndNotEmptyInput(swrlRows, null);
+                    addItemToListAndPersistIfNewAndNotEmptyInput(swrlRows, Type.UNKNOWN);
                     clearAndFocus(input);
                     return true;
                 } else {
@@ -86,6 +86,7 @@ public class ListActivity extends AppCompatActivity {
     private void addItemToListAndPersistIfNewAndNotEmptyInput(ActiveListAdapter swrlRows, Type type) {
         EditText input = (EditText) findViewById(R.id.addItemEditText);
         String title = String.valueOf(input.getText());
+        type = type == null ? Type.UNKNOWN : type;
         Swrl swrl = new Swrl(title, type);
         if (titleIsNotBlank(title) && swrlIsNew(swrlRows, swrl)) {
             swrlRows.insert(swrl, 0);

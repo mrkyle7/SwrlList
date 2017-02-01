@@ -13,6 +13,7 @@ final class DBContract {
         static final String COLUMN_NAME_STATUS = "status";
         static final String COLUMN_NAME_CREATED = "created";
         static final String COLUMN_NAME_TYPE = "type";
+        static final String COLUMN_NAME_DETAILS = "details";
 
         static final int STATUS_ACTIVE = 0;
         static final int STATUS_DONE = 1;

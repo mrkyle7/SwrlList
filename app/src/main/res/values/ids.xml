@@ -10,4 +10,5 @@
     <item name="listItem" type="id" />
     <item name="list_item_done" type="id" />
     <item name="addItemTypeSelector" type="id" />
+    <item name="search_results" type="id" />
 </resources>

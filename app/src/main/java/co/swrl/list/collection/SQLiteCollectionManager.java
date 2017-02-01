@@ -6,11 +6,17 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.util.Log;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import co.swrl.list.item.details.Details;
 import co.swrl.list.item.Swrl;
 import co.swrl.list.item.Type;
 
@@ -18,6 +24,7 @@ import static co.swrl.list.collection.DBContract.Swrls;
 
 
 public class SQLiteCollectionManager implements CollectionManager, Serializable {
+    public static final String DB_LOG = "DB";
     private final DBHelper db;
 
     public SQLiteCollectionManager(Context context) {
@@ -40,7 +47,8 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
         String[] projection = {
                 Swrls._ID,
                 Swrls.COLUMN_NAME_TITLE,
-                Swrls.COLUMN_NAME_TYPE
+                Swrls.COLUMN_NAME_TYPE,
+                Swrls.COLUMN_NAME_DETAILS
         };
 
         String selection = Swrls.COLUMN_NAME_STATUS + " = ?";
@@ -48,7 +56,7 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
 
         String sortOrder = Swrls.COLUMN_NAME_CREATED + " DESC";
 
-        Cursor c = dbReader.query(
+        Cursor row = dbReader.query(
                 Swrls.TABLE_NAME,
                 projection,
                 selection,
@@ -60,15 +68,51 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
 
         ArrayList<Swrl> swrls = new ArrayList<>();
 
-        while (c.moveToNext()) {
-            String title = c.getString(c.getColumnIndexOrThrow(Swrls.COLUMN_NAME_TITLE));
-            String type = c.getString(c.getColumnIndexOrThrow(Swrls.COLUMN_NAME_TYPE));
-            swrls.add(new Swrl(title, Type.valueOf(type)));
-        }
+        while (row.moveToNext()) {
+            String title = row.getString(row.getColumnIndexOrThrow(Swrls.COLUMN_NAME_TITLE));
+            Type type = getTypeFromRow(row);
+            JSONObject storedDetailsJSON = getDetailsFromRow(row);
 
-        c.close();
+            Swrl swrl = new Swrl(title, type);
+
+            Details details = type.getDetailsBuilder().fromJSON(storedDetailsJSON);
+            swrl.setDetails(details);
+
+            swrls.add(swrl);
+        }
+        row.close();
         dbReader.close();
         return swrls;
+    }
+
+    private JSONObject getDetailsFromRow(Cursor row) {
+        JSONObject storedDetailsJSON;
+        try {
+            String storedDetails = row.getString(row.getColumnIndexOrThrow(Swrls.COLUMN_NAME_DETAILS));
+            storedDetailsJSON = new JSONObject(storedDetails);
+        } catch (JSONException e) {
+            Log.e(DB_LOG, "Details stored in DB is not valid JSON");
+            e.printStackTrace();
+            storedDetailsJSON = new JSONObject();
+        } catch (Exception e) {
+            Log.e(DB_LOG, "Unexpected error reading details JSON");
+            e.printStackTrace();
+            storedDetailsJSON = new JSONObject();
+        }
+        return storedDetailsJSON;
+    }
+
+    private Type getTypeFromRow(Cursor row) {
+        Type type;
+        String storedType = row.getString(row.getColumnIndexOrThrow(Swrls.COLUMN_NAME_TYPE));
+        try {
+            type = Type.valueOf(storedType);
+        } catch (IllegalArgumentException e) {
+            Log.e(DB_LOG, storedType + " is not a valid type");
+            e.printStackTrace();
+            type = Type.UNKNOWN;
+        }
+        return type;
     }
 
     @Override
@@ -145,10 +189,34 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
         dbWriter.close();
     }
 
+    @Override
+    public void saveDetails(Swrl swrl, Details details) {
+        SQLiteDatabase dbWriter = db.getWritableDatabase();
+
+        String detailsJSONString = details.toJSON().toString();
+
+        ContentValues values = new ContentValues();
+        values.put(Swrls.COLUMN_NAME_DETAILS, detailsJSONString);
+
+        String title = swrl.getTitle();
+        String type = swrl.getType().toString();
+        String whereClause = Swrls.COLUMN_NAME_TITLE + " = ? AND " +
+                Swrls.COLUMN_NAME_TYPE + " = ?";
+        String[] whereArgs = {title, type};
+
+        dbWriter.update(
+                Swrls.TABLE_NAME,
+                values,
+                whereClause,
+                whereArgs
+        );
+        dbWriter.close();
+    }
+
     private class DBHelper extends SQLiteOpenHelper {
 
         private static final String DATABASE_NAME = "swrlList.db";
-        private static final int DATABASE_VERSION = 2;
+        private static final int DATABASE_VERSION = 3;
 
         private static final String TEXT_TYPE = " TEXT";
         private static final String INTEGER_TYPE = " INTEGER";
@@ -160,7 +228,8 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
                         Swrls.COLUMN_NAME_TITLE + TEXT_TYPE + COMMA_SEP +
                         Swrls.COLUMN_NAME_TYPE + TEXT_TYPE + COMMA_SEP +
                         Swrls.COLUMN_NAME_STATUS + INTEGER_TYPE + COMMA_SEP +
-                        Swrls.COLUMN_NAME_CREATED + INTEGER_TYPE +
+                        Swrls.COLUMN_NAME_CREATED + INTEGER_TYPE + COMMA_SEP +
+                        Swrls.COLUMN_NAME_DETAILS + TEXT_TYPE +
                         " )";
 
         private static final String SQL_CREATE_UNIQUE_INDEX_TITLE_TYPE =
@@ -172,6 +241,10 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
                 "ALTER TABLE " + Swrls.TABLE_NAME +
                         " ADD COLUMN " + Swrls.COLUMN_NAME_TYPE + TEXT_TYPE +
                         " DEFAULT 'UNKNOWN'";
+
+        private static final String SQL_ADD_DETAILS_COLUMN =
+                "ALTER TABLE " + Swrls.TABLE_NAME +
+                        " ADD COLUMN " + Swrls.COLUMN_NAME_DETAILS + TEXT_TYPE;
 
         DBHelper(Context context) {
             super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -188,6 +261,9 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
             if (oldVersion < 2) {
                 db.execSQL(SQL_ADD_TYPE_COLUMN);
                 db.execSQL(SQL_CREATE_UNIQUE_INDEX_TITLE_TYPE);
+            }
+            if (oldVersion < 3) {
+                db.execSQL(SQL_ADD_DETAILS_COLUMN);
             }
         }
     }

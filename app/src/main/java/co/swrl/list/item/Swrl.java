@@ -1,18 +1,20 @@
 package co.swrl.list.item;
 
+import android.support.annotation.NonNull;
+
 import java.io.Serializable;
+
+import co.swrl.list.item.details.Details;
 
 public class Swrl implements Serializable {
     private final String title;
     private final Type type;
+    private Details details;
 
-    public Swrl(String title, Type type) {
+    public Swrl(@NonNull String title, @NonNull Type type) {
+        assertNonNull(title, type);
         this.title = title;
-        if (type == null) {
-            this.type = Type.UNKNOWN;
-        } else {
-            this.type = type;
-        }
+        this.type = type;
     }
 
     public Swrl(String title) {
@@ -25,6 +27,14 @@ public class Swrl implements Serializable {
 
     public Type getType() {
         return type;
+    }
+
+    public Details getDetails() {
+        return details;
+    }
+
+    public void setDetails(Details details) {
+        this.details = details;
     }
 
     @Override
@@ -47,5 +57,14 @@ public class Swrl implements Serializable {
         int result = title.hashCode();
         result = 31 * result + type.hashCode();
         return result;
+    }
+
+    private void assertNonNull(String title, Type type) {
+        if (title == null){
+            throw new NullPointerException("title");
+        }
+        if (type == null){
+            throw new NullPointerException("type");
+        }
     }
 }

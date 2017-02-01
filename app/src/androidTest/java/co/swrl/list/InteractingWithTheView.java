@@ -10,6 +10,7 @@ import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,7 +20,9 @@ import java.util.ArrayList;
 import co.swrl.list.item.Swrl;
 import co.swrl.list.ui.ViewActivity;
 
+import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.pressKey;
 import static android.support.test.espresso.action.ViewActions.swipeLeft;
@@ -54,18 +57,7 @@ public class InteractingWithTheView {
 
     @Test
     public void swrlDetailsAreDisplayedAndOtherSwrlsCanBeNavigatedToBySwiping() throws Exception {
-        Context targetContext = InstrumentationRegistry.getInstrumentation()
-                .getTargetContext();
-        Intent matrixFirst = new Intent(targetContext, ViewActivity.class);
-
-        ArrayList<Swrl> swrls = new ArrayList<>();
-        swrls.add(THE_MATRIX);
-        swrls.add(THE_MATRIX_RELOADED);
-
-        matrixFirst.putExtra("swrls", swrls);
-        matrixFirst.putExtra("index", 0);
-
-        activity = launchAndWakeUpActivity(viewActivityActivityTestRule, matrixFirst);
+        launchViewWithTheMatrixFirst();
 
         onView(allOf(withText("The Matrix"), withParent(withId(R.id.toolbar)))).check(matches(isCompletelyDisplayed()));
 
@@ -76,6 +68,30 @@ public class InteractingWithTheView {
         onView(withId(R.id.container)).perform(swipeRight());
 
         onView(allOf(withText("The Matrix"), withParent(withId(R.id.toolbar)))).check(matches(isCompletelyDisplayed()));
+    }
+
+    @Test @Ignore
+    public void canGetDetailsOfASwrl() throws Exception {
+        launchViewWithTheMatrixFirst();
+
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+
+        onView(withText("Get Details")).perform(click());
+
+        onView(withId(R.id.search_results)).check(matches(isCompletelyDisplayed()));
+    }
+
+    private void launchViewWithTheMatrixFirst() {
+        Context targetContext = getInstrumentation().getTargetContext();
+        Intent matrixFirst = new Intent(targetContext, ViewActivity.class);
+        ArrayList<Swrl> swrls = new ArrayList<>();
+        swrls.add(THE_MATRIX);
+        swrls.add(THE_MATRIX_RELOADED);
+
+        matrixFirst.putExtra("swrls", swrls);
+        matrixFirst.putExtra("index", 0);
+
+        activity = launchAndWakeUpActivity(viewActivityActivityTestRule, matrixFirst);
     }
 }
 

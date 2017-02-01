@@ -12,10 +12,14 @@ import org.junit.runner.RunWith;
 import java.util.List;
 
 import co.swrl.list.collection.SQLiteCollectionManager;
+import co.swrl.list.item.details.Details;
+import co.swrl.list.item.details.FilmDetails;
 import co.swrl.list.item.Swrl;
 import co.swrl.list.item.Type;
 
 import static co.swrl.list.Helpers.THE_MATRIX;
+import static co.swrl.list.Helpers.THE_MATRIX_DETAILS;
+import static co.swrl.list.Helpers.THE_MATRIX_POSTER_URL;
 import static co.swrl.list.Helpers.THE_MATRIX_RELOADED;
 import static co.swrl.list.Helpers.THE_MATRIX_REVOLUTIONS;
 import static org.hamcrest.Matchers.contains;
@@ -50,6 +54,12 @@ public class SQLiteCollectionManagerTest extends AndroidTestCase {
         List<Swrl> saved = db.getActive();
 
         assertThat(saved, containsInAnyOrder(THE_MATRIX, THE_MATRIX_RELOADED));
+    }
+
+    @Test
+    public void ifNoActiveSwrlsThenReturnEmptyList() throws Exception{
+        List<Swrl> saved = db.getActive();
+        assertThat(saved, is(emptyCollectionOf(Swrl.class)));
     }
 
     @Test
@@ -149,4 +159,57 @@ public class SQLiteCollectionManagerTest extends AndroidTestCase {
         assertThat(db.getDone(), is(emptyCollectionOf(Swrl.class)));
     }
 
+    @Test
+    public void canAddDetailsToASwrlAndRetrieveThem() throws Exception {
+        db.save(THE_MATRIX);
+        db.saveDetails(THE_MATRIX, THE_MATRIX_DETAILS);
+
+        assertThat(db.getActive(), contains(THE_MATRIX));
+
+        Details detailsFromDB = db.getActive().get(0).getDetails();
+
+        assertEquals(THE_MATRIX_DETAILS, detailsFromDB);
+    }
+
+    @Test
+    public void canUpdateASwrlsDetails() throws Exception {
+        db.save(THE_MATRIX);
+        db.saveDetails(THE_MATRIX, THE_MATRIX_DETAILS);
+
+        FilmDetails updatedDetails = new FilmDetails("The Matrix (2001)", "Updated", "666", THE_MATRIX_POSTER_URL);
+        db.saveDetails(THE_MATRIX, updatedDetails);
+
+        assertThat(db.getActive(), contains(THE_MATRIX));
+
+        Details detailsFromDB = db.getActive().get(0).getDetails();
+
+        assertEquals(updatedDetails, detailsFromDB);
+    }
+
+    @Test
+    public void modifyingTheSwrlInOtherWaysDoesNotAffectTheDetails() throws Exception {
+        db.save(THE_MATRIX);
+        db.saveDetails(THE_MATRIX, THE_MATRIX_DETAILS);
+
+        db.markAsDone(THE_MATRIX);
+        db.markAsActive(THE_MATRIX);
+
+        assertThat(db.getActive(), contains(THE_MATRIX));
+        Details detailsFromDB = db.getActive().get(0).getDetails();
+
+        assertEquals(THE_MATRIX_DETAILS, detailsFromDB);
+    }
+
+    @Test
+    public void savingTheSameSwrlAgainRemovesDetails() throws Exception {
+        db.save(THE_MATRIX);
+        db.saveDetails(THE_MATRIX, THE_MATRIX_DETAILS);
+
+        db.save(THE_MATRIX);
+
+        assertThat(db.getActive(), contains(THE_MATRIX));
+        Details detailsFromDB = db.getActive().get(0).getDetails();
+
+        assertNull(detailsFromDB);
+    }
 }

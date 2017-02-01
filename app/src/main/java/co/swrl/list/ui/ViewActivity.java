@@ -1,5 +1,9 @@
 package co.swrl.list.ui;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -12,14 +16,18 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 import co.swrl.list.R;
@@ -52,6 +60,39 @@ public class ViewActivity extends AppCompatActivity {
     private void setupView() {
         setUpToolbar();
         setupPager();
+    }
+
+    private static class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        ImageView bmImage;
+
+        public DownloadImageTask(ImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urlDisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                Log.d("DOWNLOAD", "Downloading: " + urlDisplay);
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inSampleSize = 2;
+                InputStream in = new java.net.URL(urlDisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in, null, options);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            try {
+                bmImage.setImageBitmap(result);
+            } catch (Exception e) {
+                Log.d("DOWNLOAD", result.toString());
+                e.printStackTrace();
+            }
+        }
     }
 
     private void setUpToolbar() {
@@ -172,6 +213,7 @@ public class ViewActivity extends AppCompatActivity {
             TextView textView = (TextView) rootView.findViewById(R.id.section_label);
             Swrl swrl = (Swrl) getArguments().getSerializable(ARG_SWRL);
             textView.setText(swrl != null ? swrl.getTitle() : "No Swrls?");
+            ImageView poster = (ImageView) rootView.findViewById(R.id.imageView);
             return rootView;
         }
     }
