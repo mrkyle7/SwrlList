@@ -53,34 +53,37 @@ public class ListActivity extends AppCompatActivity {
         addItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PopupMenu typeSelector = new PopupMenu(getApplicationContext(), findViewById(R.id.addItemButton));
-                typeSelector.inflate(R.menu.type_selector);
-                for (Type type: Type.values()){
-                    typeSelector.getMenu().add(type.toString());
-                }
-                typeSelector.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        addItemToListAndPersistIfNewAndNotEmptyInput(swrlRows, Type.valueOf(item.toString()));
-                        clearAndFocus(input);
-                        return true;
-                    }
-                });
-                typeSelector.show();
+                showTypeSelector(swrlRows, input);
             }
         });
         input.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (enterKeyPressedOrActionDone(actionId, event)) {
-                    addItemToListAndPersistIfNewAndNotEmptyInput(swrlRows, Type.UNKNOWN);
-                    clearAndFocus(input);
+                    showTypeSelector(swrlRows, input);
                     return true;
                 } else {
                     return false;
                 }
             }
         });
+    }
+
+    private void showTypeSelector(final ActiveListAdapter swrlRows, final EditText input) {
+        PopupMenu typeSelector = new PopupMenu(getApplicationContext(), findViewById(R.id.addItemButton));
+        typeSelector.inflate(R.menu.type_selector);
+        for (Type type: Type.values()){
+            typeSelector.getMenu().add(type.toString());
+        }
+        typeSelector.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                addItemToListAndPersistIfNewAndNotEmptyInput(swrlRows, Type.valueOf(item.toString()));
+                clearAndFocus(input);
+                return true;
+            }
+        });
+        typeSelector.show();
     }
 
     private void addItemToListAndPersistIfNewAndNotEmptyInput(ActiveListAdapter swrlRows, Type type) {

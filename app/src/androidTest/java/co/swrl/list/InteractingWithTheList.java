@@ -103,6 +103,7 @@ public class InteractingWithTheList {
         onView(withId(R.id.addItemEditText))
                 .perform(typeText("First Item"))
                 .perform(pressImeActionButton());
+        onView(withText(Type.FILM.toString())).perform(click());
 
         onData(is(instanceOf(Swrl.class)))
                 .inAdapterView(withId(R.id.itemListView)).atPosition(0)
@@ -115,6 +116,7 @@ public class InteractingWithTheList {
         onView(withId(R.id.addItemEditText))
                 .perform(typeText("Second Item"))
                 .perform(pressKey(ENTER_KEY));
+        onView(withText(Type.FILM.toString())).perform(click());
 
         onData(is(instanceOf(Swrl.class)))
                 .inAdapterView(withId(R.id.itemListView)).atPosition(0)
@@ -126,7 +128,7 @@ public class InteractingWithTheList {
         //With Add Button
         onView(withId(R.id.addItemEditText)).perform(typeText("Third Item"));
         onView(withId(R.id.addItemButton)).perform(click());
-        onView(withText(Type.UNKNOWN.toString())).perform(click());
+        onView(withText(Type.FILM.toString())).perform(click());
 
         onData(is(instanceOf(Swrl.class)))
                 .inAdapterView(withId(R.id.itemListView)).atPosition(0)
@@ -181,6 +183,7 @@ public class InteractingWithTheList {
         onView(withId(R.id.addItemButton)).perform(click());
         onView(withText(Type.UNKNOWN.toString())).perform(click());
         onView(withId(R.id.addItemEditText)).perform(pressImeActionButton());
+        onView(withText(Type.FILM.toString())).perform(click());
 
         onView(withId(R.id.itemListView)).check(matches(not(exists(equalTo(emptySwrl)))));
     }
