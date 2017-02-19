@@ -181,7 +181,7 @@ public class InteractingWithTheList {
         onView(withId(R.id.addItemEditText)).check(matches(withText(isEmptyString())));
 
         onView(withId(R.id.addItemButton)).perform(click());
-        onView(withText(Type.UNKNOWN.toString())).perform(click());
+        onView(withText(Type.FILM.toString())).perform(click());
         onView(withId(R.id.addItemEditText)).perform(pressImeActionButton());
         onView(withText(Type.FILM.toString())).perform(click());
 
