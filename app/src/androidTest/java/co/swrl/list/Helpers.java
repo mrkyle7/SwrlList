@@ -9,11 +9,10 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 import android.view.WindowManager;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import com.google.gson.Gson;
 
 import co.swrl.list.collection.SQLiteCollectionManager;
-import co.swrl.list.item.details.FilmDetails;
+import co.swrl.list.item.Details;
 import co.swrl.list.item.Swrl;
 import co.swrl.list.item.Type;
 
@@ -35,19 +34,11 @@ class Helpers {
     }
 
     static final Swrl THE_MATRIX = new Swrl("The Matrix", Type.FILM);
-
     static final Swrl THE_MATRIX_RELOADED = new Swrl("The Matrix Reloaded", Type.FILM);
     static final Swrl THE_MATRIX_REVOLUTIONS = new Swrl("The Matrix Revolutions", Type.FILM);
-    static final URL THE_MATRIX_POSTER_URL = makeUrl("http://www.posters.com/the_matrix.jpg");
-    static final FilmDetails THE_MATRIX_DETAILS = new FilmDetails("The Matrix (1991)", "Overview", "603", THE_MATRIX_POSTER_URL);
-
-    private static URL makeUrl(String urlString) {
-        try {
-            return new URL(urlString);
-        } catch (MalformedURLException e) {
-            return null;
-        }
-    }
+    static final String THE_MATRIX_POSTER_URL = "http://www.posters.com/the_matrix.jpg";
+    static final Details THE_MATRIX_DETAILS = new Gson().fromJson("{\"title\":\"The Matrix (1991)\",\"overview\":\"overview\",\"tmdb-id\":\"403\"}", Details.class);
+    static final Details THE_MATRIX_REVOLUTIONS_DETAILS = new Gson().fromJson("{\"title\":\"The Matrix Revolutions (1992)\",\"overview\":\"overview\"}", Details.class);
 
     static void clearAllSettings() {
         Context applicationContext = InstrumentationRegistry.getTargetContext();

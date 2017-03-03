@@ -2,7 +2,7 @@ package co.swrl.list.collection;
 
 import java.util.List;
 
-import co.swrl.list.item.details.Details;
+import co.swrl.list.item.Details;
 import co.swrl.list.item.Swrl;
 
 public interface CollectionManager {

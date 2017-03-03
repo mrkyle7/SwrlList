@@ -12,21 +12,20 @@ import org.junit.runner.RunWith;
 import java.util.List;
 
 import co.swrl.list.collection.SQLiteCollectionManager;
-import co.swrl.list.item.details.Details;
-import co.swrl.list.item.details.FilmDetails;
+import co.swrl.list.item.Details;
 import co.swrl.list.item.Swrl;
 import co.swrl.list.item.Type;
 
 import static co.swrl.list.Helpers.THE_MATRIX;
 import static co.swrl.list.Helpers.THE_MATRIX_DETAILS;
-import static co.swrl.list.Helpers.THE_MATRIX_POSTER_URL;
 import static co.swrl.list.Helpers.THE_MATRIX_RELOADED;
 import static co.swrl.list.Helpers.THE_MATRIX_REVOLUTIONS;
+import static co.swrl.list.Helpers.THE_MATRIX_REVOLUTIONS_DETAILS;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.emptyCollectionOf;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 @RunWith(AndroidJUnit4.class)
 public class SQLiteCollectionManagerTest extends AndroidTestCase {
@@ -176,14 +175,13 @@ public class SQLiteCollectionManagerTest extends AndroidTestCase {
         db.save(THE_MATRIX);
         db.saveDetails(THE_MATRIX, THE_MATRIX_DETAILS);
 
-        FilmDetails updatedDetails = new FilmDetails("The Matrix (2001)", "Updated", "666", THE_MATRIX_POSTER_URL);
-        db.saveDetails(THE_MATRIX, updatedDetails);
+        db.saveDetails(THE_MATRIX, THE_MATRIX_REVOLUTIONS_DETAILS);
 
         assertThat(db.getActive(), contains(THE_MATRIX));
 
         Details detailsFromDB = db.getActive().get(0).getDetails();
 
-        assertEquals(updatedDetails, detailsFromDB);
+        assertEquals(THE_MATRIX_REVOLUTIONS_DETAILS, detailsFromDB);
     }
 
     @Test

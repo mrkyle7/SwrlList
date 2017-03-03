@@ -4,17 +4,14 @@ import android.support.annotation.NonNull;
 
 import java.io.Serializable;
 
-import co.swrl.list.item.details.Details;
-
 public class Swrl implements Serializable {
     private final String title;
     private final Type type;
     private Details details;
 
     public Swrl(@NonNull String title, @NonNull Type type) {
-        assertNonNull(title, type);
-        this.title = title;
-        this.type = type;
+        this.title = (String) assertNonNull(title, "title");
+        this.type = (Type) assertNonNull(type, "type");
     }
 
     public Swrl(String title) {
@@ -59,12 +56,11 @@ public class Swrl implements Serializable {
         return result;
     }
 
-    private void assertNonNull(String title, Type type) {
-        if (title == null){
-            throw new NullPointerException("title");
-        }
-        if (type == null){
-            throw new NullPointerException("type");
+    private Object assertNonNull(Object value, String parameter) {
+        if (value == null){
+            throw new IllegalArgumentException(parameter + " is null");
+        } else {
+            return value;
         }
     }
 }

@@ -6,17 +6,15 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.gson.Gson;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import co.swrl.list.item.details.Details;
+import co.swrl.list.item.Details;
 import co.swrl.list.item.Swrl;
 import co.swrl.list.item.Type;
 
@@ -71,11 +69,11 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
         while (row.moveToNext()) {
             String title = row.getString(row.getColumnIndexOrThrow(Swrls.COLUMN_NAME_TITLE));
             Type type = getTypeFromRow(row);
-            JSONObject storedDetailsJSON = getDetailsFromRow(row);
+            String storedDetailsJSON = getDetailsFromRow(row);
 
             Swrl swrl = new Swrl(title, type);
 
-            Details details = type.getDetailsBuilder().fromJSON(storedDetailsJSON);
+            Details details = new Gson().fromJson(storedDetailsJSON, Details.class);
             swrl.setDetails(details);
 
             swrls.add(swrl);
@@ -85,21 +83,8 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
         return swrls;
     }
 
-    private JSONObject getDetailsFromRow(Cursor row) {
-        JSONObject storedDetailsJSON;
-        try {
-            String storedDetails = row.getString(row.getColumnIndexOrThrow(Swrls.COLUMN_NAME_DETAILS));
-            storedDetailsJSON = new JSONObject(storedDetails);
-        } catch (JSONException e) {
-            Log.e(DB_LOG, "Details stored in DB is not valid JSON");
-            e.printStackTrace();
-            storedDetailsJSON = new JSONObject();
-        } catch (Exception e) {
-            Log.e(DB_LOG, "Unexpected error reading details JSON");
-            e.printStackTrace();
-            storedDetailsJSON = new JSONObject();
-        }
-        return storedDetailsJSON;
+    private String getDetailsFromRow(Cursor row) {
+        return row.getString(row.getColumnIndexOrThrow(Swrls.COLUMN_NAME_DETAILS));
     }
 
     private Type getTypeFromRow(Cursor row) {
@@ -193,7 +178,7 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
     public void saveDetails(Swrl swrl, Details details) {
         SQLiteDatabase dbWriter = db.getWritableDatabase();
 
-        String detailsJSONString = details.toJSON().toString();
+        String detailsJSONString = new Gson().toJson(details);
 
         ContentValues values = new ContentValues();
         values.put(Swrls.COLUMN_NAME_DETAILS, detailsJSONString);
