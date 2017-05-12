@@ -5,6 +5,8 @@
     <string name="pkey_version_number">version_number</string>
     <string name="whatsNewLatest">
         <![CDATA[
+        <h4>Version 7.0 (12 May 2017)</h4>
+        \u2022 Changed the way you add Swrls to a new activity
         <h4>Version 6.3 (19 February 2017)</h4>
         \u2022 Can choose a type when pressing enter
         <h4>Version 6.2 (31 December 2016)</h4>
@@ -14,13 +16,6 @@
         \u2022 Can undo marking swrls as done
         <h4>Version 6 (27 December 2016)</h4>
         \u2022 First iteration of the Full Screen view of a Swrl listing
-        <h4>Version 5 (20 November 2016)</h4>
-        \u2022 Can delete items<br/>
-        \u2022 Formatting changes and icons
-        <h4>Version 4 (20 November 2016)</h4>
-        \u2022 List items are persisted after restart
-        <h4>Version 3.1 (16 November 2016)</h4>
-        \u2022 Fix bug with keyboard enter button
         ]]>
     </string>
     <string name="whatsNewMoreButtonText">Show full history</string>

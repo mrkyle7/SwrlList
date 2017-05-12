@@ -22,34 +22,30 @@ public class AddSwrlActivity extends AppCompatActivity {
 
     public static final String EXTRAS_TYPE = "type";
     private Type type;
+    private TextView swrlSearchTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         final CollectionManager db = new SQLiteCollectionManager(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_swrl);
-        final TextView swrlSearchTextView = (TextView) findViewById(R.id.addSwrlText);
+        setSearchTextView();
+        setType();
+        setTitle();
+        setUpAddButton(db);
+        setUpCancelButton();
+        setUpTitleSearch();
+    }
+
+    private void setSearchTextView() {
+        swrlSearchTextView = (TextView) findViewById(R.id.addSwrlText);
+    }
+
+    private void setType() {
         type = (Type) getIntent().getSerializableExtra(EXTRAS_TYPE);
-        getSupportActionBar().setTitle("Add a " + type.getFriendlyName());
-        Button addButton = (Button) findViewById(R.id.add_swrl_button);
-        addButton.setEnabled(false);
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String title = String.valueOf(swrlSearchTextView.getText());
-                type = type == null ? Type.UNKNOWN : type;
-                Swrl swrl = new Swrl(title, type);
-                db.save(swrl);
-                finish();
-            }
-        });
-        Button cancelButton = (Button) findViewById(R.id.cancel_add);
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+    }
+
+    private void setUpTitleSearch() {
         swrlSearchTextView.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -85,6 +81,36 @@ public class AddSwrlActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void setUpCancelButton() {
+        Button cancelButton = (Button) findViewById(R.id.cancel_add);
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+    }
+
+    private void setUpAddButton(final CollectionManager db) {
+        Button addButton = (Button) findViewById(R.id.add_swrl_button);
+        addButton.setEnabled(false);
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String title = String.valueOf(swrlSearchTextView.getText());
+                type = type == null ? Type.UNKNOWN : type;
+                Swrl swrl = new Swrl(title, type);
+                db.save(swrl);
+                finish();
+            }
+        });
+    }
+
+    private void setTitle() {
+        getSupportActionBar().setTitle("Add a " + type.getFriendlyName());
+    }
+
     private boolean enterKeyPressedOrActionDone(int actionId, KeyEvent event) {
         return (actionId == EditorInfo.IME_ACTION_SEARCH) || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN);
     }

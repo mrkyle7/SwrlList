@@ -28,6 +28,21 @@
             android:inputType="textPersonName"
             android:nextFocusDown="@id/addItemEditText" />
 
+        <ListView
+            android:id="@+id/searchResults"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/addSwrlText"/>
+
+        <TextView
+            android:id="@+id/noSearchResults"
+            android:text="No Search Results."
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center" />
+
+
     </RelativeLayout>
 
     <LinearLayout android:id="@+id/footer" android:layout_width="fill_parent"
