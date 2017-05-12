@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="co.swrl.list">
+
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -25,6 +26,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="co.swrl.list.ui.ListActivity" />
         </activity>
+        <activity android:name=".ui.AddSwrlActivity"
+            android:windowSoftInputMode="adjustResize"></activity>
     </application>
 
 </manifest>

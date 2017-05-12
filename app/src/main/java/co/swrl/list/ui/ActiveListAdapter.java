@@ -4,8 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Handler;
-import android.support.annotation.AnimRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
@@ -39,6 +37,10 @@ class ActiveListAdapter extends ArrayAdapter<Swrl> {
         this(context, resource, (ArrayList<Swrl>) collectionManager.getActive(), collectionManager);
     }
 
+    public void refreshList(){
+        clear();
+        addAll(collectionManager.getActive());
+    }
 
     @Override
     public void insert(Swrl swrl, int index) {

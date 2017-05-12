@@ -36,7 +36,6 @@ class Helpers {
     static final Swrl THE_MATRIX = new Swrl("The Matrix", Type.FILM);
     static final Swrl THE_MATRIX_RELOADED = new Swrl("The Matrix Reloaded", Type.FILM);
     static final Swrl THE_MATRIX_REVOLUTIONS = new Swrl("The Matrix Revolutions", Type.FILM);
-    static final String THE_MATRIX_POSTER_URL = "http://www.posters.com/the_matrix.jpg";
     static final Details THE_MATRIX_DETAILS = new Gson().fromJson("{\"title\":\"The Matrix (1991)\",\"overview\":\"overview\",\"tmdb-id\":\"403\"}", Details.class);
     static final Details THE_MATRIX_REVOLUTIONS_DETAILS = new Gson().fromJson("{\"title\":\"The Matrix Revolutions (1992)\",\"overview\":\"overview\"}", Details.class);
 
@@ -46,8 +45,14 @@ class Helpers {
         settings.edit().clear().apply();
     }
 
-    static Activity launchAndAvoidWhatsNewDialog(ActivityTestRule testRule) {
+    static Activity launchAndAvoidWhatsNewDialog(ActivityTestRule testRule, Swrl[] swrls) {
         setSavedVersionToHugeNumber();
+        if (swrls != null){
+            SQLiteCollectionManager db = new SQLiteCollectionManager(InstrumentationRegistry.getTargetContext());
+            for (Swrl swrl: swrls){
+                db.save(swrl);
+            }
+        }
         return launchAndWakeUpActivity(testRule);
     }
 

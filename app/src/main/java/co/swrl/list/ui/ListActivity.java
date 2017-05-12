@@ -1,31 +1,52 @@
 package co.swrl.list.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.KeyEvent;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.PopupMenu;
-import android.widget.TextView;
+
+import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import co.swrl.list.R;
 import co.swrl.list.SwrlPreferences;
 import co.swrl.list.collection.CollectionManager;
 import co.swrl.list.collection.SQLiteCollectionManager;
-import co.swrl.list.item.Swrl;
 import co.swrl.list.item.Type;
 
 public class ListActivity extends AppCompatActivity {
+
+    private ActiveListAdapter activeListAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         showWhatsNewDialogIfNewVersion(new SwrlPreferences(this), new SwrlDialogs(this));
         setUpViewElements(new SQLiteCollectionManager(this));
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        activeListAdapter.refreshList();
+        FloatingActionsMenu addSwrlMenu = (FloatingActionsMenu) findViewById(R.id.addItemFAB);
+        addSwrlMenu.collapseImmediately();
+    }
+
+    @Override
+    public void onBackPressed() {
+        FloatingActionsMenu addSwrlMenu = (FloatingActionsMenu) findViewById(R.id.addItemFAB);
+        if (addSwrlMenu.isExpanded()) {
+            addSwrlMenu.collapse();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
 
     public static void showWhatsNewDialogIfNewVersion(SwrlPreferences preferences, SwrlDialogs dialogs) {
         if (preferences.isPackageNewVersion()) {
@@ -36,80 +57,37 @@ public class ListActivity extends AppCompatActivity {
 
     private void setUpViewElements(CollectionManager collectionManager) {
         setContentView(R.layout.activity_list);
-        ActiveListAdapter swrlRows = new ActiveListAdapter(this, R.layout.list_row, collectionManager);
-        setUpList(swrlRows);
-        setUpInputs(swrlRows);
+        getSupportActionBar().setTitle("Swrl List");
+        activeListAdapter = new ActiveListAdapter(this, R.layout.list_row, collectionManager);
+        setUpList();
+        setUpAddSwrlButtons();
     }
 
-    private void setUpList(final ActiveListAdapter swrlRows) {
+    private void setUpList() {
         ListView list = (ListView) findViewById(R.id.itemListView);
-        list.setAdapter(swrlRows);
+        list.setAdapter(activeListAdapter);
+        list.setEmptyView(findViewById(R.id.noSwrlsText));
     }
 
-    private void setUpInputs(final ActiveListAdapter swrlRows) {
-        final ImageButton addItem = (ImageButton) findViewById(R.id.addItemButton);
-        final EditText input = (EditText) findViewById(R.id.addItemEditText);
+    private void setUpAddSwrlButtons() {
+        HashMap<Integer, Type> addButtons = new HashMap<>();
+        addButtons.put(R.id.add_unknown, Type.UNKNOWN);
+        addButtons.put(R.id.add_film, Type.FILM);
+        addButtons.put(R.id.add_album, Type.ALBUM);
+        addButtons.put(R.id.add_board_game, Type.BOARD_GAME);
+        addButtons.put(R.id.add_tv, Type.TV);
+        addButtons.put(R.id.add_book, Type.BOOK);
 
-        addItem.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showTypeSelector(swrlRows, input);
-            }
-        });
-        input.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (enterKeyPressedOrActionDone(actionId, event)) {
-                    showTypeSelector(swrlRows, input);
-                    return true;
-                } else {
-                    return false;
+        for (final Map.Entry<Integer, Type> button : addButtons.entrySet()) {
+            FloatingActionButton actionButton = (FloatingActionButton) findViewById(button.getKey());
+            actionButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent addSwrlActivity = new Intent(getApplicationContext(), AddSwrlActivity.class);
+                    addSwrlActivity.putExtra(AddSwrlActivity.EXTRAS_TYPE, button.getValue());
+                    startActivity(addSwrlActivity, null);
                 }
-            }
-        });
-    }
-
-    private void showTypeSelector(final ActiveListAdapter swrlRows, final EditText input) {
-        PopupMenu typeSelector = new PopupMenu(getApplicationContext(), findViewById(R.id.addItemButton));
-        typeSelector.inflate(R.menu.type_selector);
-        for (Type type: Type.values()){
-            typeSelector.getMenu().add(type.toString());
+            });
         }
-        typeSelector.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                addItemToListAndPersistIfNewAndNotEmptyInput(swrlRows, Type.valueOf(item.toString()));
-                clearAndFocus(input);
-                return true;
-            }
-        });
-        typeSelector.show();
-    }
-
-    private void addItemToListAndPersistIfNewAndNotEmptyInput(ActiveListAdapter swrlRows, Type type) {
-        EditText input = (EditText) findViewById(R.id.addItemEditText);
-        String title = String.valueOf(input.getText());
-        type = type == null ? Type.UNKNOWN : type;
-        Swrl swrl = new Swrl(title, type);
-        if (titleIsNotBlank(title) && swrlIsNew(swrlRows, swrl)) {
-            swrlRows.insert(swrl, 0);
-        }
-    }
-
-    private boolean titleIsNotBlank(String title) {
-        return !title.isEmpty();
-    }
-
-    private boolean swrlIsNew(ActiveListAdapter swrlRows, Swrl swrl) {
-        return swrlRows.getPosition(swrl) == -1;
-    }
-
-    private void clearAndFocus(EditText input) {
-        input.requestFocus();
-        input.setText("");
-    }
-
-    private boolean enterKeyPressedOrActionDone(int actionId, KeyEvent event) {
-        return (actionId == EditorInfo.IME_ACTION_DONE) || ((event.getKeyCode() == KeyEvent.KEYCODE_ENTER) && (event.getAction() == KeyEvent.ACTION_DOWN));
     }
 }

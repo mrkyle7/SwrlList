@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_list"
     android:layout_width="match_parent"
@@ -14,38 +16,95 @@
         android:id="@+id/itemListView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/input_header" />
+        android:layout_alignParentStart="true"/>
 
-    <RelativeLayout
-        android:id="@+id/input_header"
+    <TextView
+        android:id="@+id/noSwrlsText"
+        android:text="No Swrls yet!\n\nAdd some by clicking the button below."
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        />
+
+    <com.getbase.floatingactionbutton.FloatingActionsMenu
+        android:id="@+id/addItemFAB"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        fab:fab_addButtonColorNormal="@android:color/holo_red_light"
+        fab:fab_addButtonColorPressed="@android:color/holo_red_dark"
+        fab:fab_addButtonPlusIconColor="@android:color/white"
+        fab:fab_labelStyle="@style/menu_labels_style"
+        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="10dp">
 
-        <EditText
-            android:id="@+id/addItemEditText"
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/add_album"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_toStartOf="@id/addItemButton"
-            android:hint="@string/addItemText"
-            android:imeOptions="actionDone"
-            android:inputType="textPersonName"
-            android:nextFocusDown="@id/addItemEditText" />
-
-        <ImageButton
-            android:id="@+id/addItemButton"
+            fab:fab_colorNormal="#FF2E63"
+            fab:fab_title="Add Album"
+            fab:fab_icon="@drawable/ic_headset_black_24dp"
+            fab:fab_colorPressed="#FF2E63"
+            fab:fab_size="mini"
+            />
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/add_book"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:background="@null"
-            android:contentDescription="@string/add"
-            android:labelFor="@id/addItemEditText"
-            android:src="@android:drawable/ic_menu_add" />
-    </RelativeLayout>
+            fab:fab_colorNormal="#F6A900"
+            fab:fab_title="Add Book"
+            fab:fab_icon="@drawable/ic_import_contacts_black_24dp"
+            fab:fab_colorPressed="#F6A900"
+            fab:fab_size="mini"
+            />
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/add_board_game"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_colorNormal="#FFEA00"
+            fab:fab_title="Add Board Game"
+            fab:fab_icon="@drawable/ic_boardgame_icon"
+            fab:fab_colorPressed="#FFEA00"
+            fab:fab_size="mini"
+            />
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/add_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_colorNormal="#4169e1"
+            fab:fab_title="Add TV"
+            fab:fab_icon="@drawable/ic_tv_icon"
+            fab:fab_colorPressed="#4169e1"
+            fab:fab_size="mini"
+            />
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/add_film"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_colorNormal="#3EB283"
+            fab:fab_title="Add Film"
+            fab:fab_colorPressed="#3EB283"
+            fab:fab_size="mini"
+            fab:fab_icon="@drawable/ic_local_movies_black_24dp"
+            fab:backgroundTint="@android:color/white"
+            />
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/add_unknown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_colorNormal="@android:color/white"
+            fab:fab_title="Add Other"
+            fab:fab_colorPressed="@android:color/white"
+            fab:fab_size="mini"
+            fab:fab_icon="@drawable/ic_star_black_24dp"
+            fab:backgroundTint="@android:color/white"
+            />
+
+
+    </com.getbase.floatingactionbutton.FloatingActionsMenu>
+
 
 </RelativeLayout>
