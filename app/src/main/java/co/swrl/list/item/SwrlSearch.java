@@ -12,15 +12,41 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class FilmSearch implements Search {
+public class SwrlSearch implements Search {
     private final HttpUrl BASE_URL;
+    private final Type type;
 
-    public FilmSearch() {
-        this(HttpUrl.parse("http://www.swrl.co/api/v1/search/film"));
+    public static SwrlSearch getFilmSearch() {
+        return new SwrlSearch(HttpUrl.parse("https://www.swrl.co/api/v1/search/film"), Type.FILM);
     }
 
-    public FilmSearch(HttpUrl baseURL) {
+    public static SwrlSearch getTVSearch() {
+        return new SwrlSearch(HttpUrl.parse("https://www.swrl.co/api/v1/search/tv"), Type.TV);
+    }
+
+    public static SwrlSearch getBookSearch() {
+        return new SwrlSearch(HttpUrl.parse("https://www.swrl.co/api/v1/search/book"), Type.BOOK);
+    }
+
+    public static SwrlSearch getPodcastSearch() {
+        return new SwrlSearch(HttpUrl.parse("https://www.swrl.co/api/v1/search/podcast"), Type.PODCAST);
+    }
+
+    public static SwrlSearch getAppSearch() {
+        return new SwrlSearch(HttpUrl.parse("https://www.swrl.co/api/v1/search/app"), Type.APP);
+    }
+
+    public static SwrlSearch getAlbumSearch() {
+        return new SwrlSearch(HttpUrl.parse("https://www.swrl.co/api/v1/search/album"), Type.ALBUM);
+    }
+
+    public static SwrlSearch getVideoGameSearch() {
+        return new SwrlSearch(HttpUrl.parse("https://www.swrl.co/api/v1/search/videogame"), Type.VIDEO_GAME);
+    }
+
+    public SwrlSearch(HttpUrl baseURL, Type type) {
         BASE_URL = baseURL;
+        this.type = type;
     }
 
     @Override
@@ -30,6 +56,7 @@ public class FilmSearch implements Search {
 
     private class SearchResponse {
         private List<Details> results;
+
         SearchResponse() {
         }
     }
@@ -56,9 +83,9 @@ public class FilmSearch implements Search {
         }
 
         List<Details> filmDetails = new ArrayList<>();
-        if (searchResponse != null){
-            for (Details details: searchResponse.results) {
-                filmDetails.add(details.setType(Type.FILM));
+        if (searchResponse != null) {
+            for (Details details : searchResponse.results) {
+                filmDetails.add(details.setType(type));
             }
         }
         return filmDetails;

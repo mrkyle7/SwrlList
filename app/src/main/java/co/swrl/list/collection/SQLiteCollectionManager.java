@@ -112,6 +112,10 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
         values.put(Swrls.COLUMN_NAME_CREATED, System.currentTimeMillis());
 
         dbWriter.replace(Swrls.TABLE_NAME, null, values);
+        Details details = swrl.getDetails();
+        if (details != null){
+            saveDetails(swrl, details);
+        }
         dbWriter.close();
     }
 

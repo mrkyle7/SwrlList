@@ -20,19 +20,22 @@ import co.swrl.list.item.Type;
 
 public class ListActivity extends AppCompatActivity {
 
-    private ActiveListAdapter activeListAdapter;
+    private SwrlListAdapter swrlListAdapter;
+    private SQLiteCollectionManager collectionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         showWhatsNewDialogIfNewVersion(new SwrlPreferences(this), new SwrlDialogs(this));
-        setUpViewElements(new SQLiteCollectionManager(this));
+        collectionManager = new SQLiteCollectionManager(this);
+        setUpViewElements(collectionManager);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        activeListAdapter.refreshList();
+        swrlListAdapter.clear();
+        swrlListAdapter.addAll(collectionManager.getActive());
         FloatingActionsMenu addSwrlMenu = (FloatingActionsMenu) findViewById(R.id.addItemFAB);
         addSwrlMenu.collapseImmediately();
     }
@@ -58,14 +61,14 @@ public class ListActivity extends AppCompatActivity {
     private void setUpViewElements(CollectionManager collectionManager) {
         setContentView(R.layout.activity_list);
         getSupportActionBar().setTitle("Swrl List");
-        activeListAdapter = new ActiveListAdapter(this, R.layout.list_row, collectionManager);
+        swrlListAdapter = SwrlListAdapter.getActiveListAdapter(this, collectionManager);
         setUpList();
         setUpAddSwrlButtons();
     }
 
     private void setUpList() {
         ListView list = (ListView) findViewById(R.id.itemListView);
-        list.setAdapter(activeListAdapter);
+        list.setAdapter(swrlListAdapter);
         list.setEmptyView(findViewById(R.id.noSwrlsText));
     }
 

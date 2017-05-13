@@ -109,7 +109,7 @@ public class InteractingWithTheList {
                 .check(matches(withText(containsString("The Matrix"))));
 
         onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX_RELOADED)))
-                .onChildView(withId(R.id.list_item_done))
+                .onChildView(withId(R.id.list_item_button))
                 .perform(click());
 
         onView(withId(R.id.snackbar_text)).check(matches(withText("\"The Matrix Reloaded\" marked as done")));

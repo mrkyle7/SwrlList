@@ -8,7 +8,7 @@ import org.junit.Test;
 import java.util.List;
 
 import co.swrl.list.item.Details;
-import co.swrl.list.item.FilmSearch;
+import co.swrl.list.item.SwrlSearch;
 import co.swrl.list.item.Type;
 import okhttp3.HttpUrl;
 import okhttp3.mockwebserver.MockResponse;
@@ -17,7 +17,7 @@ import okhttp3.mockwebserver.RecordedRequest;
 
 import static org.junit.Assert.assertEquals;
 
-public class FilmSearchTest {
+public class SwrlSearchTest {
 
     private MockWebServer mockWebServer;
 
@@ -37,7 +37,7 @@ public class FilmSearchTest {
         mockWebServer.start();
         HttpUrl mockUrl = mockWebServer.url("/");
 
-        FilmSearch search = new FilmSearch(mockUrl);
+        SwrlSearch search = new SwrlSearch(mockUrl, Type.UNKNOWN);
 
         List<Details> results = search.byTitle("Garden State");
 

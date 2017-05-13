@@ -5,8 +5,10 @@
     <string name="pkey_version_number">version_number</string>
     <string name="whatsNewLatest">
         <![CDATA[
+        <h4>Version 7.1 (13 May 2017)</h4>
+        \u2022 Search works and now it has images!
         <h4>Version 7.0 (12 May 2017)</h4>
-        \u2022 Changed the way you add Swrls to a new activity
+        \u2022 Changed the way you add Swrls to a new screen
         <h4>Version 6.3 (19 February 2017)</h4>
         \u2022 Can choose a type when pressing enter
         <h4>Version 6.2 (31 December 2016)</h4>
@@ -29,4 +31,6 @@
     <string name="title_activity_view">ViewActivity</string>
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
+    <string name="item_add">Add Swrl</string>
+    <string name="thumbnail">Thumbnail</string>
 </resources>

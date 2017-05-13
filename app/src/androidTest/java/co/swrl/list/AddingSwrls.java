@@ -159,7 +159,7 @@ public class AddingSwrls {
                 new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED});
 
         onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX)))
-                .onChildView(withId(R.id.list_item_done))
+                .onChildView(withId(R.id.list_item_button))
                 .perform(click());
 
         onView(withId(R.id.itemListView)).check(matches(not(exists(equalTo(THE_MATRIX)))));

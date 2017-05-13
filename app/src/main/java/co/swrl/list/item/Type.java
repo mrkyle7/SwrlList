@@ -3,37 +3,39 @@ package co.swrl.list.item;
 import co.swrl.list.R;
 
 public enum Type {
-    FILM("Film", R.drawable.row_border_film,
-            new FilmSearch()),
-    TV("TV Show", R.drawable.row_border_tv,
-            new UnknownSearch()),
-    BOOK("Book", R.drawable.row_border_book,
-            new UnknownSearch()),
-    ALBUM("Music Album", R.drawable.row_border_album,
-            new UnknownSearch()),
-    VIDEO_GAME("Video Game", R.drawable.row_border_video_game,
-            new UnknownSearch()),
-    BOARD_GAME("Board Game", R.drawable.row_border_board_game,
-            new UnknownSearch()),
-    APP("Phone App", R.drawable.row_border_app,
-            new UnknownSearch()),
-    PODCAST("Podcast", R.drawable.row_border_podcast,
-            new UnknownSearch()),
-    UNKNOWN("Swrl", R.drawable.row_border,
-            new UnknownSearch());
+    FILM("Film", R.color.film,
+            SwrlSearch.getFilmSearch(), R.drawable.ic_local_movies_black_24dp),
+    TV("TV Show", R.color.tv,
+            SwrlSearch.getTVSearch(), R.drawable.ic_tv_icon),
+    BOOK("Book", R.color.book,
+            SwrlSearch.getBookSearch(), R.drawable.ic_import_contacts_black_24dp),
+    ALBUM("Music Album", R.color.album,
+            SwrlSearch.getAlbumSearch(), R.drawable.ic_headset_black_24dp),
+    VIDEO_GAME("Video Game", R.color.video_game,
+            SwrlSearch.getVideoGameSearch(), R.drawable.ic_star_black_24dp),
+    BOARD_GAME("Board Game", R.color.board_game,
+            new UnknownSearch(), R.drawable.ic_boardgame_icon),
+    APP("Phone App", R.color.app,
+            SwrlSearch.getAppSearch(), R.drawable.ic_star_black_24dp),
+    PODCAST("Podcast", R.color.podcast,
+            SwrlSearch.getPodcastSearch(), R.drawable.ic_star_black_24dp),
+    UNKNOWN("Swrl", R.color.unknown,
+            new UnknownSearch(), R.drawable.ic_star_black_24dp);
 
     private String friendlyName;
-    private int rowBorderResource;
+    private int color;
     private final Search search;
+    private int icon;
 
-    Type(String friendlyName, int rowBorderResource, Search search) {
+    Type(String friendlyName, int color, Search search, int icon) {
         this.friendlyName = friendlyName;
-        this.rowBorderResource = rowBorderResource;
+        this.color = color;
         this.search = search;
+        this.icon = icon;
     }
 
-    public int getRowBorderResource() {
-        return rowBorderResource;
+    public int getColor() {
+        return color;
     }
 
     public Search getSearch() {
@@ -42,5 +44,9 @@ public enum Type {
 
     public String getFriendlyName() {
         return friendlyName;
+    }
+
+    public int getIcon() {
+        return icon;
     }
 }

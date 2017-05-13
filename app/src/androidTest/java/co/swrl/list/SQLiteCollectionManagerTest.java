@@ -210,4 +210,16 @@ public class SQLiteCollectionManagerTest extends AndroidTestCase {
 
         assertNull(detailsFromDB);
     }
+    @Test
+    public void savingASwrlWithDetails() throws Exception {
+        Swrl swrlWithDetails = new Swrl("The Matrix", Type.FILM);
+        swrlWithDetails.setDetails(THE_MATRIX_DETAILS);
+        db.save(swrlWithDetails);
+
+        assertThat(db.getActive(), contains(swrlWithDetails));
+
+        Details detailsFromDB = db.getActive().get(0).getDetails();
+        Details detailsFromOriginalSwrl = swrlWithDetails.getDetails();
+        assertEquals(detailsFromOriginalSwrl, detailsFromDB);
+    }
 }

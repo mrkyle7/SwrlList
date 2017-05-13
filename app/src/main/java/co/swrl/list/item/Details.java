@@ -4,12 +4,12 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
-public class Details implements Serializable{
+public class Details implements Serializable {
     private final String title;
     private final String overview;
-    @SerializedName(value = "id", alternate = {"tmdb-id", "asin-id"})
+    @SerializedName(value = "id", alternate = {"tmdb-id", "asin-id", "itunes-id"})
     private final String id;
-    @SerializedName(value = "posterURL", alternate = {"large-image-url"})
+    @SerializedName(value = "posterURL", alternate = {"large-image-url", "thumbnail-url"})
     private final String posterURL;
     private final Type type;
 
