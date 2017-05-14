@@ -24,8 +24,8 @@ android {
         applicationId "co.swrl.list"
         minSdkVersion 19
         targetSdkVersion 22
-        versionCode 15
-        versionName "7.4"
+        versionCode 16
+        versionName "7.5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
