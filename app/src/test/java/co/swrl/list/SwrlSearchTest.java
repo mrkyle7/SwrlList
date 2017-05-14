@@ -37,7 +37,7 @@ public class SwrlSearchTest {
         mockWebServer.start();
         HttpUrl mockUrl = mockWebServer.url("/");
 
-        SwrlSearch search = new SwrlSearch(mockUrl, Type.UNKNOWN);
+        SwrlSearch search = new SwrlSearch(mockUrl, Type.FILM);
 
         List<Details> results = search.byTitle("Garden State");
 
