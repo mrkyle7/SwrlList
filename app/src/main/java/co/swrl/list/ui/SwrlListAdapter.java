@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,10 +16,13 @@ import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
+import java.util.Objects;
 
 import co.swrl.list.R;
 import co.swrl.list.collection.CollectionManager;
@@ -25,8 +30,6 @@ import co.swrl.list.item.Details;
 import co.swrl.list.item.Swrl;
 
 import static android.support.v4.app.ActivityCompat.startActivity;
-import static android.view.View.INVISIBLE;
-import static android.view.View.VISIBLE;
 import static co.swrl.list.R.drawable.ic_add_black_24dp;
 import static co.swrl.list.R.drawable.ic_done_black_24dp;
 
@@ -87,25 +90,46 @@ class SwrlListAdapter extends ArrayAdapter<Swrl> {
     }
 
     private void setImage(View row, Swrl swrl) {
-        ImageView thumbnail = (ImageView) row.findViewById(R.id.list_image);
-        ProgressBar spinner = (ProgressBar) row.findViewById(R.id.list_image_spinner);
-        ImageView icon = (ImageView) row.findViewById(R.id.list_image_icon);
+        final ImageView thumbnail = (ImageView) row.findViewById(R.id.list_image);
         int iconResource = swrl.getType().getIcon();
-        spinner.setVisibility(VISIBLE);
-        thumbnail.setVisibility(INVISIBLE);
-        icon.setVisibility(INVISIBLE);
         View imageBackground = row.findViewById(R.id.row_left_border);
         int color = getContext().getResources().getColor(swrl.getType().getColor());
         imageBackground.setBackgroundColor(color);
         Details details = swrl.getDetails();
-        if (details == null || details.getPosterURL() == null) {
-            icon.setImageResource(iconResource);
-            spinner.setVisibility(INVISIBLE);
-            icon.setVisibility(VISIBLE);
+
+        if (details != null && details.getPosterURL() != null && !Objects.equals(details.getPosterURL(), "")){
+            Log.d("IMAGE", details.getPosterURL());
+            Picasso.with(getContext())
+                    .load(details.getPosterURL())
+                    .placeholder(R.drawable.progress_spinner)
+                    .error(iconResource)
+                    .into(thumbnail, new Callback() {
+                        @Override
+                        public void onSuccess() {
+
+                        }
+
+                        @Override
+                        public void onError() {
+                            resizeThumbnailForIcon(thumbnail);
+                        }
+                    });
+
         } else {
-            new DownloadImageTask(thumbnail, spinner, icon, iconResource).execute(details.getPosterURL());
+            thumbnail.setImageResource(iconResource);
+            resizeThumbnailForIcon(thumbnail);
         }
     }
+
+    private void resizeThumbnailForIcon(ImageView thumbnail) {
+        thumbnail.getLayoutParams().height = getDPI(40);
+        thumbnail.getLayoutParams().width = getDPI(40);
+    }
+
+    private int getDPI(int i) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, i, getContext().getResources().getDisplayMetrics());
+    }
+
 
     private View createRowLayoutIfNull(View row) {
         if (row == null) {
