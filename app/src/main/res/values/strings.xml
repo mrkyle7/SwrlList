@@ -5,6 +5,8 @@
     <string name="pkey_version_number">version_number</string>
     <string name="whatsNewLatest">
         <![CDATA[
+        <h4>Version 7.6 (14 May 2017)</h4>
+        \u2022 Fix for image resizing
         <h4>Version 7.5 (14 May 2017)</h4>
         \u2022 Images are cached for faster processing
         <h4>Version 7.4 (14 May 2017)</h4>

@@ -97,8 +97,7 @@ class SwrlListAdapter extends ArrayAdapter<Swrl> {
         imageBackground.setBackgroundColor(color);
         Details details = swrl.getDetails();
 
-        if (details != null && details.getPosterURL() != null && !Objects.equals(details.getPosterURL(), "")){
-            Log.d("IMAGE", details.getPosterURL());
+        if (details != null && details.getPosterURL() != null && !Objects.equals(details.getPosterURL(), "")) {
             Picasso.with(getContext())
                     .load(details.getPosterURL())
                     .placeholder(R.drawable.progress_spinner)
@@ -106,7 +105,7 @@ class SwrlListAdapter extends ArrayAdapter<Swrl> {
                     .into(thumbnail, new Callback() {
                         @Override
                         public void onSuccess() {
-
+                            resizeThumbnailForImage(thumbnail);
                         }
 
                         @Override
@@ -124,6 +123,11 @@ class SwrlListAdapter extends ArrayAdapter<Swrl> {
     private void resizeThumbnailForIcon(ImageView thumbnail) {
         thumbnail.getLayoutParams().height = getDPI(40);
         thumbnail.getLayoutParams().width = getDPI(40);
+    }
+
+    private void resizeThumbnailForImage(ImageView thumbnail) {
+        thumbnail.getLayoutParams().height = getDPI(50);
+        thumbnail.getLayoutParams().width = getDPI(50);
     }
 
     private int getDPI(int i) {
