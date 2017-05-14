@@ -14,7 +14,7 @@ public enum Type {
     VIDEO_GAME("Video Game", R.color.video_game,
             SwrlSearch.getVideoGameSearch(), R.drawable.ic_video_game_icon),
     BOARD_GAME("Board Game", R.color.board_game,
-            new UnknownSearch(), R.drawable.ic_boardgame_icon),
+            SwrlSearch.getBoardGameSearch(), R.drawable.ic_boardgame_icon),
     APP("Phone App", R.color.app,
             SwrlSearch.getAppSearch(), R.drawable.ic_app_icon),
     PODCAST("Podcast", R.color.podcast,

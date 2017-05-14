@@ -3,26 +3,29 @@ package co.swrl.list.item;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class Details implements Serializable {
     private final String title;
     private final String overview;
-    @SerializedName(value = "id", alternate = {"tmdb-id", "asin-id", "itunes-id"})
+    @SerializedName(value = "id", alternate = {"tmdb-id", "asin-id", "itunes-id", "bgg-id"})
     private final String id;
     @SerializedName(value = "posterURL", alternate = {"large-image-url", "thumbnail-url"})
     private final String posterURL;
+    private final ArrayList<String> categories;
     private final Type type;
 
-    private Details(String title, String overview, String id, String posterURL, Type type) {
+    private Details(String title, String overview, String id, String posterURL, ArrayList<String> categories, Type type) {
         this.title = title;
         this.overview = overview;
         this.id = id;
         this.posterURL = posterURL;
+        this.categories = categories;
         this.type = type;
     }
 
     public Details setType(Type type) {
-        return new Details(title, overview, id, posterURL, type);
+        return new Details(title, overview, id, posterURL, categories, type);
     }
 
     public String getTitle() {
@@ -39,6 +42,10 @@ public class Details implements Serializable {
 
     public String getId() {
         return id;
+    }
+
+    public ArrayList<String> getCategories() {
+        return categories;
     }
 
     public Type getType() {

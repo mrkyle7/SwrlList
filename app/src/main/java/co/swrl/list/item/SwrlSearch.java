@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
@@ -44,6 +45,10 @@ public class SwrlSearch implements Search {
         return new SwrlSearch(HttpUrl.parse("https://www.swrl.co/api/v1/search/videogame"), Type.VIDEO_GAME);
     }
 
+    public static SwrlSearch getBoardGameSearch() {
+        return new SwrlSearch(HttpUrl.parse("https://www.swrl.co/api/v1/search/boardgame"), Type.BOARD_GAME);
+    }
+
     public SwrlSearch(HttpUrl baseURL, Type type) {
         BASE_URL = baseURL;
         this.type = type;
@@ -64,7 +69,10 @@ public class SwrlSearch implements Search {
     @Override
     public List<Details> byTitle(String title) {
         HttpUrl searchUrl = BASE_URL.newBuilder().setQueryParameter("query", title).build();
-        OkHttpClient client = new OkHttpClient();
+        OkHttpClient client =
+                new OkHttpClient.Builder()
+                        .readTimeout(30, TimeUnit.SECONDS)
+                        .build();
         Request request = new Request.Builder().url(searchUrl).build();
 
         Gson gson = new Gson();
@@ -83,7 +91,7 @@ public class SwrlSearch implements Search {
         }
 
         List<Details> filmDetails = new ArrayList<>();
-        if (searchResponse != null) {
+        if (searchResponse != null && searchResponse.results != null) {
             for (Details details : searchResponse.results) {
                 filmDetails.add(details.setType(type));
             }
