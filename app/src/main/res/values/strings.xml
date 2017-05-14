@@ -5,6 +5,8 @@
     <string name="pkey_version_number">version_number</string>
     <string name="whatsNewLatest">
         <![CDATA[
+        <h4>Version 7.7 (14 May 2017)</h4>
+        \u2022 First attempt at the View Screen. Click on a Row to see it.
         <h4>Version 7.6 (14 May 2017)</h4>
         \u2022 Fix for image resizing
         <h4>Version 7.5 (14 May 2017)</h4>

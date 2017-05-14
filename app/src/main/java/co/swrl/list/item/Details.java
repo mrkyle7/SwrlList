@@ -12,6 +12,7 @@ public class Details implements Serializable {
     private final String id;
     @SerializedName(value = "posterURL", alternate = {"large-image-url", "thumbnail-url"})
     private final String posterURL;
+    @SerializedName(value = "categories", alternate = {"genres"})
     private final ArrayList<String> categories;
     private final Type type;
 

@@ -1,3 +1,7 @@
+Version 7.7 (14 May 2017)
+==============================
+- First attempt at the View Screen. Click on a Row to see it.
+<br />
 Version 7.6 (14 May 2017)
 ==============================
 - Fix for image resizing
@@ -9,11 +13,3 @@ Version 7.5 (14 May 2017)
 Version 7.4 (14 May 2017)
 ==============================
 - Can now search for board games
-<br />
-Version 7.3 (14 May 2017)
-==============================
-- Added ellipses on title and added missing icons
-<br />
-Version 7.2 (14 May 2017)
-==============================
-- Cleaned up the images on the rows

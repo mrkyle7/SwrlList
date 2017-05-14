@@ -3,34 +3,33 @@ package co.swrl.list.ui;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.os.Environment;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.view.ViewPager;
-import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.io.File;
+import com.squareup.picasso.Picasso;
+
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import co.swrl.list.R;
+import co.swrl.list.item.Details;
 import co.swrl.list.item.Swrl;
 
 public class ViewActivity extends AppCompatActivity {
@@ -210,10 +209,33 @@ public class ViewActivity extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_view, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
+            TextView textView = (TextView) rootView.findViewById(R.id.title);
             Swrl swrl = (Swrl) getArguments().getSerializable(ARG_SWRL);
             textView.setText(swrl != null ? swrl.getTitle() : "No Swrls?");
             ImageView poster = (ImageView) rootView.findViewById(R.id.imageView);
+            if (swrl != null) {
+                Details details = swrl.getDetails();
+                if (details == null) {
+                    TextView noDetails = (TextView) rootView.findViewById(R.id.noDetails);
+                    noDetails.setText("No Details found.");
+                } else {
+                    int iconResource = swrl.getType().getIcon();
+                    if (details.getPosterURL() != null && !Objects.equals(details.getPosterURL(), "")) {
+                        Picasso.with(getActivity().getBaseContext())
+                                .load(details.getPosterURL())
+                                .placeholder(R.drawable.progress_spinner)
+                                .error(iconResource)
+                                .into(poster);
+                    } else {
+                        poster.setImageResource(iconResource);
+                    }
+                    TextView categories = (TextView) rootView.findViewById(R.id.categories);
+                    if (details.getCategories() != null) {
+                        String categoriesString = "Categories: " + TextUtils.join(", ", details.getCategories());
+                        categories.setText(categoriesString);
+                    }
+                }
+            }
             return rootView;
         }
     }
