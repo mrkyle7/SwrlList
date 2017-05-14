@@ -13,12 +13,16 @@ import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
 public class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-    private ImageView bmImage;
-    private ProgressBar bmSpinner;
+    private final ImageView bmImage;
+    private final ProgressBar bmSpinner;
+    private final ImageView bmIcon;
+    private final int bmIconResource;
 
-    public DownloadImageTask(ImageView bmImage, ProgressBar bmSpinner) {
+    public DownloadImageTask(ImageView bmImage, ProgressBar bmSpinner, ImageView bmIcon, int bmIconResource) {
         this.bmImage = bmImage;
         this.bmSpinner = bmSpinner;
+        this.bmIcon = bmIcon;
+        this.bmIconResource = bmIconResource;
     }
 
     protected Bitmap doInBackground(String... urls) {
@@ -35,8 +39,13 @@ public class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
     }
 
     protected void onPostExecute(Bitmap result) {
-        bmImage.setImageBitmap(result);
         bmSpinner.setVisibility(INVISIBLE);
-        bmImage.setVisibility(VISIBLE);
+        if (result == null){
+            bmIcon.setImageResource(bmIconResource);
+            bmIcon.setVisibility(VISIBLE);
+        } else {
+            bmImage.setImageBitmap(result);
+            bmImage.setVisibility(VISIBLE);
+        }
     }
 }

@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -90,17 +89,21 @@ class SwrlListAdapter extends ArrayAdapter<Swrl> {
     private void setImage(View row, Swrl swrl) {
         ImageView thumbnail = (ImageView) row.findViewById(R.id.list_image);
         ProgressBar spinner = (ProgressBar) row.findViewById(R.id.list_image_spinner);
+        ImageView icon = (ImageView) row.findViewById(R.id.list_image_icon);
+        int iconResource = swrl.getType().getIcon();
         spinner.setVisibility(VISIBLE);
         thumbnail.setVisibility(INVISIBLE);
-        View imageBackground = row.findViewById(R.id.image_layout);
-        imageBackground.setBackgroundColor(getContext().getResources().getColor(swrl.getType().getColor()));
+        icon.setVisibility(INVISIBLE);
+        View imageBackground = row.findViewById(R.id.row_left_border);
+        int color = getContext().getResources().getColor(swrl.getType().getColor());
+        imageBackground.setBackgroundColor(color);
         Details details = swrl.getDetails();
         if (details == null || details.getPosterURL() == null) {
-            thumbnail.setImageResource(swrl.getType().getIcon());
+            icon.setImageResource(iconResource);
             spinner.setVisibility(INVISIBLE);
-            thumbnail.setVisibility(VISIBLE);
+            icon.setVisibility(VISIBLE);
         } else {
-            new DownloadImageTask(thumbnail, spinner).execute(details.getPosterURL());
+            new DownloadImageTask(thumbnail, spinner, icon, iconResource).execute(details.getPosterURL());
         }
     }
 
