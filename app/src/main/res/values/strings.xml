@@ -4,7 +4,9 @@
     <string name="whatsNewTitle">What\'s new?</string>
     <string name="pkey_version_number">version_number</string>
     <string name="whatsNewLatest">
-        <![CDATA[[
+        <![CDATA[
+        <h4>Version 7.3 (14 May 2017)</h4>
+        \u2022 Added ellipses on title and added missing icons
         <h4>Version 7.2 (14 May 2017)</h4>
         \u2022 Cleaned up the images on the rows
         <h4>Version 7.1 (13 May 2017)</h4>

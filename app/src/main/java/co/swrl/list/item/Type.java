@@ -12,13 +12,13 @@ public enum Type {
     ALBUM("Music Album", R.color.album,
             SwrlSearch.getAlbumSearch(), R.drawable.ic_headset_black_24dp),
     VIDEO_GAME("Video Game", R.color.video_game,
-            SwrlSearch.getVideoGameSearch(), R.drawable.ic_star_black_24dp),
+            SwrlSearch.getVideoGameSearch(), R.drawable.ic_video_game_icon),
     BOARD_GAME("Board Game", R.color.board_game,
             new UnknownSearch(), R.drawable.ic_boardgame_icon),
     APP("Phone App", R.color.app,
-            SwrlSearch.getAppSearch(), R.drawable.ic_star_black_24dp),
+            SwrlSearch.getAppSearch(), R.drawable.ic_app_icon),
     PODCAST("Podcast", R.color.podcast,
-            SwrlSearch.getPodcastSearch(), R.drawable.ic_star_black_24dp),
+            SwrlSearch.getPodcastSearch(), R.drawable.ic_podcast_icon),
     UNKNOWN("Swrl", R.color.unknown,
             new UnknownSearch(), R.drawable.ic_star_black_24dp);
 
