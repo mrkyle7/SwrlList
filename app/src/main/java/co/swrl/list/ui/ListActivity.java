@@ -18,10 +18,14 @@ import co.swrl.list.collection.CollectionManager;
 import co.swrl.list.collection.SQLiteCollectionManager;
 import co.swrl.list.item.Type;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
 public class ListActivity extends AppCompatActivity {
 
     private SwrlListAdapter swrlListAdapter;
     private SQLiteCollectionManager collectionManager;
+    private boolean showingMainButtons = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,16 +77,43 @@ public class ListActivity extends AppCompatActivity {
     }
 
     private void setUpAddSwrlButtons() {
-        HashMap<Integer, Type> addButtons = new HashMap<>();
-        addButtons.put(R.id.add_unknown, Type.UNKNOWN);
-        addButtons.put(R.id.add_film, Type.FILM);
-        addButtons.put(R.id.add_album, Type.ALBUM);
-        addButtons.put(R.id.add_board_game, Type.BOARD_GAME);
-        addButtons.put(R.id.add_tv, Type.TV);
-        addButtons.put(R.id.add_book, Type.BOOK);
+        final HashMap<Integer, Type> mainButtons = new HashMap<>();
+        mainButtons.put(R.id.add_film, Type.FILM);
+        mainButtons.put(R.id.add_album, Type.ALBUM);
+        mainButtons.put(R.id.add_board_game, Type.BOARD_GAME);
+        mainButtons.put(R.id.add_tv, Type.TV);
+        mainButtons.put(R.id.add_book, Type.BOOK);
 
-        for (final Map.Entry<Integer, Type> button : addButtons.entrySet()) {
+        final HashMap<Integer, Type> otherButtons = new HashMap<>();
+        otherButtons.put(R.id.add_podcast, Type.PODCAST);
+        otherButtons.put(R.id.add_phone_app, Type.APP);
+        otherButtons.put(R.id.add_video_game, Type.VIDEO_GAME);
+
+        enableButtons(mainButtons);
+        disableButtons(otherButtons);
+
+        FloatingActionButton moreButton = (FloatingActionButton) findViewById(R.id.add_unknown);
+        moreButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (showingMainButtons){
+                    disableButtons(mainButtons);
+                    enableButtons(otherButtons);
+                    showingMainButtons = false;
+                } else {
+                    disableButtons(otherButtons);
+                    enableButtons(mainButtons);
+                    showingMainButtons = true;
+                }
+            }
+        });
+
+    }
+
+    private void enableButtons(HashMap<Integer, Type> mainButtons) {
+        for (final Map.Entry<Integer, Type> button : mainButtons.entrySet()) {
             FloatingActionButton actionButton = (FloatingActionButton) findViewById(button.getKey());
+            actionButton.setVisibility(VISIBLE);
             actionButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -91,6 +122,12 @@ public class ListActivity extends AppCompatActivity {
                     startActivity(addSwrlActivity, null);
                 }
             });
+        }
+    }
+    private void disableButtons(HashMap<Integer, Type> buttons) {
+        for (final Map.Entry<Integer, Type> button : buttons.entrySet()) {
+            FloatingActionButton actionButton = (FloatingActionButton) findViewById(button.getKey());
+            actionButton.setVisibility(GONE);
         }
     }
 }

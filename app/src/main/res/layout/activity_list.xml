@@ -10,13 +10,16 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="co.swrl.list.ui.ListActivity">
+    tools:context="co.swrl.list.ui.ListActivity"
+    android:padding="0dp">
 
     <ListView
         android:id="@+id/itemListView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentStart="true"/>
+        android:layout_alignParentStart="true"
+        android:padding="0dp"
+        android:layout_margin="0dp" />
 
     <TextView
         android:id="@+id/noSwrlsText"
@@ -40,23 +43,68 @@
         android:layout_marginEnd="10dp">
 
         <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/add_unknown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_colorNormal="@android:color/white"
+            fab:fab_title="Show Others"
+            fab:fab_colorPressed="@android:color/white"
+            fab:fab_size="mini"
+            fab:fab_icon="@drawable/ic_apps_black_24dp"
+            fab:backgroundTint="@android:color/white"
+            />
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/add_podcast"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_colorNormal="@color/podcast"
+            fab:fab_title="Podcast"
+            fab:fab_icon="@drawable/ic_podcast_icon"
+            fab:fab_colorPressed="@color/podcast"
+            fab:fab_size="mini"
+            />
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/add_video_game"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_colorNormal="@color/video_game"
+            fab:fab_title="Video Game"
+            fab:fab_icon="@drawable/ic_video_game_icon"
+            fab:fab_colorPressed="@color/video_game"
+            fab:fab_size="mini"
+            />
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/add_phone_app"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_colorNormal="@color/app"
+            fab:fab_title="Phone App"
+            fab:fab_icon="@drawable/ic_app_icon"
+            fab:fab_colorPressed="@color/app"
+            fab:fab_size="mini"
+            />
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/add_album"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            fab:fab_colorNormal="#FF2E63"
-            fab:fab_title="Add Album"
+            fab:fab_colorNormal="@color/album"
+            fab:fab_title="Album"
             fab:fab_icon="@drawable/ic_headset_black_24dp"
-            fab:fab_colorPressed="#FF2E63"
+            fab:fab_colorPressed="@color/album"
             fab:fab_size="mini"
             />
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/add_book"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            fab:fab_colorNormal="#F6A900"
+            fab:fab_colorNormal="@color/book"
             fab:fab_title="Book"
             fab:fab_icon="@drawable/ic_import_contacts_black_24dp"
-            fab:fab_colorPressed="#F6A900"
+            fab:fab_colorPressed="@color/book"
             fab:fab_size="mini"
             />
 
@@ -64,45 +112,32 @@
             android:id="@+id/add_board_game"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            fab:fab_colorNormal="#FFEA00"
+            fab:fab_colorNormal="@color/board_game"
             fab:fab_title="Board Game"
             fab:fab_icon="@drawable/ic_boardgame_icon"
-            fab:fab_colorPressed="#FFEA00"
+            fab:fab_colorPressed="@color/board_game"
             fab:fab_size="mini"
             />
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/add_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            fab:fab_colorNormal="#4169e1"
+            fab:fab_colorNormal="@color/tv"
             fab:fab_title="TV Show"
             fab:fab_icon="@drawable/ic_tv_icon"
-            fab:fab_colorPressed="#4169e1"
+            fab:fab_colorPressed="@color/tv"
             fab:fab_size="mini"
             />
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/add_film"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            fab:fab_colorNormal="#3EB283"
+            fab:fab_colorNormal="@color/film"
             fab:fab_title="Film"
-            fab:fab_colorPressed="#3EB283"
+            fab:fab_colorPressed="@color/film"
             fab:fab_size="mini"
             fab:fab_icon="@drawable/ic_local_movies_black_24dp"
-            fab:backgroundTint="@android:color/white"
             />
-        <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/add_unknown"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            fab:fab_colorNormal="@android:color/white"
-            fab:fab_title="Other"
-            fab:fab_colorPressed="@android:color/white"
-            fab:fab_size="mini"
-            fab:fab_icon="@drawable/ic_star_black_24dp"
-            fab:backgroundTint="@android:color/white"
-            />
-
 
     </com.getbase.floatingactionbutton.FloatingActionsMenu>
 

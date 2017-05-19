@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -74,11 +73,13 @@ class SwrlListAdapter extends ArrayAdapter<Swrl> {
         View row = createRowLayoutIfNull(convertView);
         Swrl swrl = getItem(position);
         if (swrl != null) {
-            setTitle(row, swrl, position);
+            setTitle(row, swrl);
+            setSubTitle(row, swrl);
             setImage(row, swrl);
             switch (listType) {
                 case ACTIVE_SWRLS:
                     setDoneButton(row, swrl, position);
+                    setClickableRow(row, position);
                     break;
                 case SEARCH_RESULTS:
                     setAddButton(row, swrl);
@@ -87,6 +88,28 @@ class SwrlListAdapter extends ArrayAdapter<Swrl> {
         }
 
         return row;
+    }
+
+    private void setTitle(View row, final Swrl swrl) {
+        TextView title = (TextView) row.findViewById(R.id.list_title);
+        title.setText(swrl.getTitle());
+    }
+
+    private void setSubTitle(View row, Swrl swrl) {
+        TextView subtitle = (TextView) row.findViewById(R.id.list_subtitle);
+        subtitle.setText(swrl.getType().getFriendlyName());
+    }
+
+    private void setClickableRow(View row, final int position) {
+        row.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent viewActivity = new Intent(getContext(), ViewActivity.class);
+                viewActivity.putExtra(ViewActivity.EXTRAS_SWRLS, getAllItems());
+                viewActivity.putExtra(ViewActivity.EXTRAS_INDEX, position);
+                startActivity((Activity) getContext(), viewActivity, null);
+            }
+        });
     }
 
     private void setImage(View row, Swrl swrl) {
@@ -130,10 +153,10 @@ class SwrlListAdapter extends ArrayAdapter<Swrl> {
         thumbnail.getLayoutParams().width = getDPI(50);
     }
 
+
     private int getDPI(int i) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, i, getContext().getResources().getDisplayMetrics());
     }
-
 
     private View createRowLayoutIfNull(View row) {
         if (row == null) {
@@ -141,22 +164,6 @@ class SwrlListAdapter extends ArrayAdapter<Swrl> {
             row = inflater.inflate(R.layout.list_row, null);
         }
         return row;
-    }
-
-    private void setTitle(View row, final Swrl swrl, final int index) {
-        TextView title = (TextView) row.findViewById(R.id.list_title);
-        title.setText(swrl.getTitle());
-        if (listType == ListType.ACTIVE_SWRLS) {
-            title.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent viewActivity = new Intent(getContext(), ViewActivity.class);
-                    viewActivity.putExtra(ViewActivity.EXTRAS_SWRLS, getAllItems());
-                    viewActivity.putExtra(ViewActivity.EXTRAS_INDEX, index);
-                    startActivity((Activity) getContext(), viewActivity, null);
-                }
-            });
-        }
     }
 
     private ArrayList<Swrl> getAllItems() {
