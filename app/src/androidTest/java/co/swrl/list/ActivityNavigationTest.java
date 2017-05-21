@@ -35,7 +35,9 @@ import static android.support.test.espresso.matcher.ViewMatchers.isAssignableFro
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static co.swrl.list.Helpers.THE_MATRIX;
+import static co.swrl.list.Helpers.THE_MATRIX_DETAILS;
 import static co.swrl.list.Helpers.THE_MATRIX_RELOADED;
+import static co.swrl.list.Helpers.THE_MATRIX_RELOADED_DETAILS;
 import static co.swrl.list.Helpers.clearAllSettings;
 import static co.swrl.list.Helpers.launchAndAvoidWhatsNewDialog;
 import static co.swrl.list.Helpers.purgeDatabase;
@@ -63,6 +65,8 @@ public class ActivityNavigationTest {
 
     @Test
     public void canNavigateBetweenListAndView() throws Exception {
+        THE_MATRIX.setDetails(THE_MATRIX_DETAILS);
+        THE_MATRIX_RELOADED.setDetails(THE_MATRIX_RELOADED_DETAILS);
         activity = launchAndAvoidWhatsNewDialog(listActivityIntents, new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED});
 
         onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX)))
@@ -96,6 +100,8 @@ public class ActivityNavigationTest {
 
     @Test @Ignore //TODO: fix test
     public void canNavigateBetweenListAndAddSwrlScreen() throws Exception {
+        THE_MATRIX.setDetails(THE_MATRIX_DETAILS);
+        THE_MATRIX_RELOADED.setDetails(THE_MATRIX_RELOADED_DETAILS);
         activity = launchAndAvoidWhatsNewDialog(listActivityIntents, new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED});
 
         onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX))).check(matches(isDisplayed()));

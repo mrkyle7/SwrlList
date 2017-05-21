@@ -37,12 +37,16 @@ import static co.swrl.list.ui.ViewActivity.ViewType.VIEW;
 
 
 class SwrlListAdapter extends ArrayAdapter<Swrl> {
+    private ArrayList<?> originalSwrls;
+    private int position;
     private final CollectionManager collectionManager;
     private final ListType listType;
+    private final Swrl originalSwrl;
 
     private enum ListType {
         ACTIVE_SWRLS,
-        SEARCH_RESULTS;
+        SEARCH_RESULTS,
+        VIEW_SEARCH_RESULTS;
     }
 
     public static SwrlListAdapter getActiveListAdapter(Context context, CollectionManager collectionManager) {
@@ -51,7 +55,10 @@ class SwrlListAdapter extends ArrayAdapter<Swrl> {
                 R.id.list_row,
                 (ArrayList<Swrl>) collectionManager.getActive(),
                 collectionManager,
-                ListType.ACTIVE_SWRLS);
+                ListType.ACTIVE_SWRLS,
+                null,
+                null,
+                0);
     }
 
     public static SwrlListAdapter getResultsListAdapter(Context context, CollectionManager collectionManager) {
@@ -60,13 +67,31 @@ class SwrlListAdapter extends ArrayAdapter<Swrl> {
                 R.id.list_row,
                 new ArrayList<Swrl>(),
                 collectionManager,
-                ListType.SEARCH_RESULTS);
+                ListType.SEARCH_RESULTS,
+                null,
+                null,
+                0);
     }
 
-    private SwrlListAdapter(Context context, int resource, ArrayList<Swrl> swrls, CollectionManager collectionManager, ListType listType) {
+    public static SwrlListAdapter getViewResultsListAdapter(Context context, CollectionManager collectionManager, Swrl originalSwrl, ArrayList<?> originalSwrls, int position) {
+        return new SwrlListAdapter(
+                context,
+                R.id.list_row,
+                new ArrayList<Swrl>(),
+                collectionManager,
+                ListType.VIEW_SEARCH_RESULTS,
+                originalSwrl,
+                originalSwrls,
+                position);
+    }
+
+    private SwrlListAdapter(Context context, int resource, ArrayList<Swrl> swrls, CollectionManager collectionManager, ListType listType, Swrl originalSwrl, ArrayList<?> originalSwrls, int position) {
         super(context, resource, swrls);
         this.collectionManager = collectionManager;
         this.listType = listType;
+        this.originalSwrl = originalSwrl;
+        this.originalSwrls = originalSwrls;
+        this.position = position;
     }
 
     @SuppressLint("InflateParams")
@@ -87,6 +112,9 @@ class SwrlListAdapter extends ArrayAdapter<Swrl> {
                 case SEARCH_RESULTS:
                     setAddButton(row, swrl);
                     setClickableRow(row, position, ADD);
+                    break;
+                case VIEW_SEARCH_RESULTS:
+                    setReplaceButton(row, swrl, originalSwrl);
                     break;
             }
         }
@@ -189,6 +217,31 @@ class SwrlListAdapter extends ArrayAdapter<Swrl> {
                 collectionManager.save(swrl);
                 Activity addActivity = (Activity) getContext();
                 addActivity.finish();
+            }
+        });
+    }
+
+    private void setReplaceButton(final View row, final Swrl swrl, final Swrl originalSwrl) {
+        ImageButton button = (ImageButton) row.findViewById(R.id.list_item_button);
+        button.setImageResource(ic_add_black_24dp);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                collectionManager.saveDetails(originalSwrl, swrl.getDetails());
+                collectionManager.updateTitle(originalSwrl, swrl.getTitle());
+                ArrayList<Swrl> newSwrls = new ArrayList<>();
+                for (Object originalSwrl: originalSwrls) {
+                    newSwrls.add((Swrl) originalSwrl);
+                }
+                newSwrls.remove(originalSwrl);
+                newSwrls.add(position, swrl);
+                Activity activity = (Activity) getContext();
+                activity.finish();
+                Intent viewActivity = new Intent(activity, ViewActivity.class);
+                viewActivity.putExtra(ViewActivity.EXTRAS_SWRLS, newSwrls);
+                viewActivity.putExtra(ViewActivity.EXTRAS_INDEX, position);
+                viewActivity.putExtra(ViewActivity.EXTRAS_TYPE, VIEW);
+                startActivity((Activity) getContext(), viewActivity, null);
             }
         });
     }

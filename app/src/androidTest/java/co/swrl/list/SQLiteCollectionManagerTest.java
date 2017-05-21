@@ -19,6 +19,7 @@ import co.swrl.list.item.Type;
 import static co.swrl.list.Helpers.THE_MATRIX;
 import static co.swrl.list.Helpers.THE_MATRIX_DETAILS;
 import static co.swrl.list.Helpers.THE_MATRIX_RELOADED;
+import static co.swrl.list.Helpers.THE_MATRIX_RELOADED_DETAILS;
 import static co.swrl.list.Helpers.THE_MATRIX_REVOLUTIONS;
 import static co.swrl.list.Helpers.THE_MATRIX_REVOLUTIONS_DETAILS;
 import static org.hamcrest.Matchers.contains;
@@ -161,13 +162,13 @@ public class SQLiteCollectionManagerTest extends AndroidTestCase {
     @Test
     public void canAddDetailsToASwrlAndRetrieveThem() throws Exception {
         db.save(THE_MATRIX);
-        db.saveDetails(THE_MATRIX, THE_MATRIX_DETAILS);
+        db.saveDetails(THE_MATRIX, THE_MATRIX_RELOADED_DETAILS);
 
         assertThat(db.getActive(), contains(THE_MATRIX));
 
         Details detailsFromDB = db.getActive().get(0).getDetails();
 
-        assertEquals(THE_MATRIX_DETAILS, detailsFromDB);
+        assertEquals(THE_MATRIX_RELOADED_DETAILS, detailsFromDB);
     }
 
     @Test
@@ -200,12 +201,13 @@ public class SQLiteCollectionManagerTest extends AndroidTestCase {
 
     @Test
     public void savingTheSameSwrlAgainRemovesDetails() throws Exception {
-        db.save(THE_MATRIX);
-        db.saveDetails(THE_MATRIX, THE_MATRIX_DETAILS);
+        Swrl SWRL = new Swrl("Swrl", Type.FILM);
+        db.save(SWRL);
+        db.saveDetails(SWRL, THE_MATRIX_DETAILS);
 
-        db.save(THE_MATRIX);
+        db.save(SWRL);
 
-        assertThat(db.getActive(), contains(THE_MATRIX));
+        assertThat(db.getActive(), contains(SWRL));
         Details detailsFromDB = db.getActive().get(0).getDetails();
 
         assertNull(detailsFromDB);

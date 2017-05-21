@@ -14,4 +14,5 @@ public interface CollectionManager {
     void permanentlyDelete(Swrl swrl);
     void permanentlyDeleteAll();
     void saveDetails(Swrl swrl, Details details);
+    void updateTitle(Swrl swrl, String title);
 }

@@ -1,5 +1,7 @@
 package co.swrl.list.ui;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,10 +13,15 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
@@ -29,12 +36,16 @@ import co.swrl.list.collection.SQLiteCollectionManager;
 import co.swrl.list.item.Details;
 import co.swrl.list.item.Swrl;
 
+import static android.view.View.GONE;
+
 public class ViewActivity extends AppCompatActivity {
 
     private ArrayList<?> swrls;
     private int firstSwrlIndex;
     private ViewType viewType;
     private CollectionManager db;
+
+
     public static final String EXTRAS_SWRLS = "swrls";
     public static final String EXTRAS_INDEX = "index";
     public static final String EXTRAS_TYPE = "type";
@@ -145,7 +156,7 @@ public class ViewActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            return PlaceholderFragment.newInstance((Swrl) swrls.get(position));
+            return PlaceholderFragment.newInstance((Swrl) swrls.get(position), swrls, position);
         }
 
         @Override
@@ -181,6 +192,8 @@ public class ViewActivity extends AppCompatActivity {
          * fragment.
          */
         private static final String ARG_SWRL = "swrl";
+        private static final String ARG_SWRLS = "swrls";
+        private static final String ARG_POSITION = "position";
 
         public PlaceholderFragment() {
         }
@@ -189,7 +202,7 @@ public class ViewActivity extends AppCompatActivity {
         public void setUserVisibleHint(boolean isVisibleToUser) {
             super.setUserVisibleHint(isVisibleToUser);
 
-            if(isVisibleToUser){
+            if (isVisibleToUser) {
                 final Swrl swrl = (Swrl) getArguments().getSerializable(ARG_SWRL);
                 AppCompatActivity activity = (AppCompatActivity) getActivity();
                 ActionBar actionBar = activity.getSupportActionBar();
@@ -201,10 +214,12 @@ public class ViewActivity extends AppCompatActivity {
          * Returns a new instance of this fragment for the given section
          * number.
          */
-        public static PlaceholderFragment newInstance(Swrl swrl) {
+        public static PlaceholderFragment newInstance(Swrl swrl, ArrayList<?> swrls, int position) {
             PlaceholderFragment fragment = new PlaceholderFragment();
             Bundle args = new Bundle();
             args.putSerializable(ARG_SWRL, swrl);
+            args.putSerializable(ARG_SWRLS, swrls);
+            args.putSerializable(ARG_POSITION, position);
             fragment.setArguments(args);
             return fragment;
         }
@@ -212,35 +227,76 @@ public class ViewActivity extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                                  Bundle savedInstanceState) {
-            final View rootView = inflater.inflate(R.layout.fragment_view, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.title);
             final Swrl swrl = (Swrl) getArguments().getSerializable(ARG_SWRL);
-            textView.setText(swrl != null ? swrl.getTitle() : "No Swrls?");
-            ImageView poster = (ImageView) rootView.findViewById(R.id.imageView);
-            if (swrl != null) {
-                Details details = swrl.getDetails();
-                if (details == null) {
-                    TextView noDetails = (TextView) rootView.findViewById(R.id.noDetails);
-                    noDetails.setText(R.string.no_details);
+            assert swrl != null;
+            Details details = swrl.getDetails();
+            final View rootView;
+            if (details == null) {
+                rootView = inflater.inflate(R.layout.activity_add_swrl, container, false);
+                CollectionManager db = new SQLiteCollectionManager(getActivity());
+
+                final ProgressDialog searchProgressDisplay = new ProgressDialog(getActivity());
+                searchProgressDisplay.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                searchProgressDisplay.setMessage("No Details, searching...");
+
+                LinearLayout footer = (LinearLayout) rootView.findViewById(R.id.footer);
+                footer.setVisibility(GONE);
+
+                final TextView noSearchResultsText = (TextView) rootView.findViewById(R.id.noSearchResults);
+
+                ArrayList<?> swrls = (ArrayList<?>) getArguments().getSerializable(ARG_SWRLS);
+                int position = getArguments().getInt(ARG_POSITION);
+                final SwrlListAdapter resultsAdapter = SwrlListAdapter.getViewResultsListAdapter(getActivity(), db, swrl, swrls, position);
+                final ListView resultsList = (ListView) rootView.findViewById(R.id.searchResults);
+                resultsList.setAdapter(resultsAdapter);
+                resultsList.setEmptyView(noSearchResultsText);
+                noSearchResultsText.setVisibility(GONE);
+
+                final TextView swrlSearchTextView = (TextView) rootView.findViewById(R.id.addSwrlText);
+                swrlSearchTextView.setText(swrl.getTitle());
+
+                swrlSearchTextView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                    @Override
+                    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                        if (enterKeyPressedOrActionDone(actionId, event)) {
+                            InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                            new GetSearchResults(resultsAdapter, searchProgressDisplay, swrl.getType(), noSearchResultsText).execute(String.valueOf(swrlSearchTextView.getText()));
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+                });
+                new GetSearchResults(resultsAdapter, null, swrl.getType(), noSearchResultsText).execute(String.valueOf(swrlSearchTextView.getText()));
+            } else {
+                rootView = inflater.inflate(R.layout.fragment_view, container, false);
+                TextView textView = (TextView) rootView.findViewById(R.id.title);
+                textView.setText(swrl != null ? swrl.getTitle() : "No Swrls?");
+                ImageView poster = (ImageView) rootView.findViewById(R.id.imageView);
+
+                int iconResource = swrl.getType().getIcon();
+                if (details.getPosterURL() != null && !Objects.equals(details.getPosterURL(), "")) {
+                    Picasso.with(getActivity().getBaseContext())
+                            .load(details.getPosterURL())
+                            .placeholder(R.drawable.progress_spinner)
+                            .error(iconResource)
+                            .into(poster);
                 } else {
-                    int iconResource = swrl.getType().getIcon();
-                    if (details.getPosterURL() != null && !Objects.equals(details.getPosterURL(), "")) {
-                        Picasso.with(getActivity().getBaseContext())
-                                .load(details.getPosterURL())
-                                .placeholder(R.drawable.progress_spinner)
-                                .error(iconResource)
-                                .into(poster);
-                    } else {
-                        poster.setImageResource(iconResource);
-                    }
-                    TextView categories = (TextView) rootView.findViewById(R.id.categories);
-                    if (details.getCategories() != null) {
-                        String categoriesString = "Categories: " + TextUtils.join(", ", details.getCategories());
-                        categories.setText(categoriesString);
-                    }
+                    poster.setImageResource(iconResource);
+                }
+                TextView categories = (TextView) rootView.findViewById(R.id.categories);
+                if (details.getCategories() != null) {
+                    String categoriesString = "Categories: " + TextUtils.join(", ", details.getCategories());
+                    categories.setText(categoriesString);
                 }
             }
+
             return rootView;
+        }
+
+        private boolean enterKeyPressedOrActionDone(int actionId, KeyEvent event) {
+            return (actionId == EditorInfo.IME_ACTION_SEARCH) || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN);
         }
     }
 }

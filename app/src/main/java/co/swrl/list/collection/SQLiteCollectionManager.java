@@ -202,6 +202,28 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
         dbWriter.close();
     }
 
+    @Override
+    public void updateTitle(Swrl swrl, String title) {
+        SQLiteDatabase dbWriter = db.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(Swrls.COLUMN_NAME_TITLE, title);
+
+        String oldTitle = swrl.getTitle();
+        String type = swrl.getType().toString();
+        String whereClause = Swrls.COLUMN_NAME_TITLE + " = ? AND " +
+                Swrls.COLUMN_NAME_TYPE + " = ?";
+        String[] whereArgs = {oldTitle, type};
+
+        dbWriter.update(
+                Swrls.TABLE_NAME,
+                values,
+                whereClause,
+                whereArgs
+        );
+        dbWriter.close();
+    }
+
     private class DBHelper extends SQLiteOpenHelper {
 
         private static final String DATABASE_NAME = "swrlList.db";

@@ -29,10 +29,13 @@ import static android.support.test.espresso.action.ViewActions.swipeLeft;
 import static android.support.test.espresso.action.ViewActions.swipeRight;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
+import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static co.swrl.list.Helpers.THE_MATRIX;
+import static co.swrl.list.Helpers.THE_MATRIX_DETAILS;
 import static co.swrl.list.Helpers.THE_MATRIX_RELOADED;
+import static co.swrl.list.Helpers.THE_MATRIX_RELOADED_DETAILS;
 import static co.swrl.list.Helpers.clearAllSettings;
 import static co.swrl.list.Helpers.launchAndAvoidWhatsNewDialog;
 import static co.swrl.list.Helpers.launchAndWakeUpActivity;
@@ -63,19 +66,21 @@ public class InteractingWithTheView {
     public void swrlDetailsAreDisplayedAndOtherSwrlsCanBeNavigatedToBySwiping() throws Exception {
         launchViewWithTheMatrixFirst();
 
-        onView(allOf(withText("The Matrix"), withId(R.id.title))).check(matches(isCompletelyDisplayed()));
+        onView(allOf(withText("The Matrix"), withId(R.id.title))).check(matches(isDisplayed()));
 
         onView(withId(R.id.container)).perform(swipeLeft());
 
-        onView(allOf(withText("The Matrix Reloaded"), withId(R.id.title))).check(matches(isCompletelyDisplayed()));
+        onView(allOf(withText("The Matrix Reloaded"), withId(R.id.title))).check(matches(isDisplayed()));
 
         onView(withId(R.id.container)).perform(swipeRight());
 
-        onView(allOf(withText("The Matrix"), withId(R.id.title))).check(matches(isCompletelyDisplayed()));
+        onView(allOf(withText("The Matrix"), withId(R.id.title))).check(matches(isDisplayed()));
     }
 
     @Test
     public void canMarkASwrlAsDoneUsingTheButton() throws Exception {
+        THE_MATRIX.setDetails(THE_MATRIX_DETAILS);
+        THE_MATRIX_RELOADED.setDetails(THE_MATRIX_RELOADED_DETAILS);
         activity = launchAndAvoidWhatsNewDialog(listActivityActivityTestRule, new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED});
 
         onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX)))
@@ -108,6 +113,8 @@ public class InteractingWithTheView {
         Context targetContext = getInstrumentation().getTargetContext();
         Intent matrixFirst = new Intent(targetContext, ViewActivity.class);
         ArrayList<Swrl> swrls = new ArrayList<>();
+        THE_MATRIX.setDetails(THE_MATRIX_DETAILS);
+        THE_MATRIX_RELOADED.setDetails(THE_MATRIX_RELOADED_DETAILS);
         swrls.add(THE_MATRIX);
         swrls.add(THE_MATRIX_RELOADED);
 
