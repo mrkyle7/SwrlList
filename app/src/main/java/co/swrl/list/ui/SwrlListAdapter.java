@@ -30,6 +30,7 @@ import co.swrl.list.item.Swrl;
 import co.swrl.list.ui.ViewActivity.ViewType;
 
 import static android.support.v4.app.ActivityCompat.startActivity;
+import static android.view.View.GONE;
 import static co.swrl.list.R.drawable.ic_add_black_24dp;
 import static co.swrl.list.R.drawable.ic_done_black_24dp;
 import static co.swrl.list.ui.ViewActivity.ViewType.ADD;
@@ -114,7 +115,7 @@ class SwrlListAdapter extends ArrayAdapter<Swrl> {
                     setClickableRow(row, position, ADD);
                     break;
                 case VIEW_SEARCH_RESULTS:
-                    setReplaceButton(row, swrl, originalSwrl);
+                    setReplaceOnClick(row, swrl, originalSwrl);
                     break;
             }
         }
@@ -221,10 +222,10 @@ class SwrlListAdapter extends ArrayAdapter<Swrl> {
         });
     }
 
-    private void setReplaceButton(final View row, final Swrl swrl, final Swrl originalSwrl) {
+    private void setReplaceOnClick(final View row, final Swrl swrl, final Swrl originalSwrl) {
         ImageButton button = (ImageButton) row.findViewById(R.id.list_item_button);
-        button.setImageResource(ic_add_black_24dp);
-        button.setOnClickListener(new View.OnClickListener() {
+        button.setVisibility(GONE);
+        row.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 collectionManager.saveDetails(originalSwrl, swrl.getDetails());

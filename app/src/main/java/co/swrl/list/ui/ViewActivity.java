@@ -1,7 +1,9 @@
 package co.swrl.list.ui;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -119,21 +121,37 @@ public class ViewActivity extends AppCompatActivity {
 
     private void setButton(final int position, final SectionsPagerAdapter mSectionsPagerAdapter) {
         FloatingActionButton button = (FloatingActionButton) findViewById(R.id.viewButton);
-        button.setColorNormal(getResources().getColor(R.color.film));
-        button.setColorPressed(getResources().getColor(R.color.film));
         if (viewType != null) {
             switch (viewType) {
                 case VIEW:
                     button.setIcon(R.drawable.ic_done_black_24dp);
+                    button.setColorNormal(getResources().getColor(R.color.add));
+                    button.setColorPressed(getResources().getColor(R.color.add_pressed));
                     button.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            mSectionsPagerAdapter.deletePage(position);
+                            AlertDialog.Builder confirmDialog = new AlertDialog.Builder(v.getContext());
+                            confirmDialog.setTitle("Mark the Swrl as 'done' and remove from list?");
+                            confirmDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    mSectionsPagerAdapter.deletePage(position);
+                                }
+                            });
+                            confirmDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+                            confirmDialog.show();
                         }
                     });
                     break;
                 case ADD:
                     button.setIcon(R.drawable.ic_add_black_24dp);
+                    button.setColorNormal(getResources().getColor(R.color.add));
+                    button.setColorPressed(getResources().getColor(R.color.add_pressed));
                     button.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {

@@ -15,4 +15,7 @@
     <color name="tv">#4169e1</color>
     <color name="video_game">#663399</color>
     <color name="unknown">#FFFFFF</color>
+
+    <color name="add">#4CAF50</color>
+    <color name="add_pressed">#1B5E20</color>
 </resources>

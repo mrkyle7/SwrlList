@@ -90,10 +90,16 @@ public class InteractingWithTheView {
         onView(allOf(withText("The Matrix"), withId(R.id.title))).check(matches(isCompletelyDisplayed()));
 
         onView(withId(R.id.viewButton)).perform(click());
+        onView(withId(android.R.id.button1)).perform(click());
 
         onView(allOf(withText("The Matrix Reloaded"), withId(R.id.title))).check(matches(isCompletelyDisplayed()));
 
         onView(withId(R.id.container)).perform(swipeRight());
+
+        onView(allOf(withText("The Matrix Reloaded"), withId(R.id.title))).check(matches(isCompletelyDisplayed()));
+
+        onView(withId(R.id.viewButton)).perform(click());
+        onView(withId(android.R.id.button2)).perform(click());
 
         onView(allOf(withText("The Matrix Reloaded"), withId(R.id.title))).check(matches(isCompletelyDisplayed()));
     }
