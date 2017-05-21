@@ -3,7 +3,7 @@ package co.swrl.list;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.support.test.InstrumentationRegistry;
+import android.support.annotation.NonNull;
 import android.support.test.espresso.action.EspressoKey;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
@@ -19,7 +19,6 @@ import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,20 +28,21 @@ import co.swrl.list.item.Type;
 import co.swrl.list.ui.AddSwrlActivity;
 import co.swrl.list.ui.ListActivity;
 
+import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.action.ViewActions.pressImeActionButton;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static co.swrl.list.Helpers.THE_MATRIX;
 import static co.swrl.list.Helpers.THE_MATRIX_RELOADED;
-import static co.swrl.list.Helpers.addSwrlsToList;
 import static co.swrl.list.Helpers.clearAllSettings;
 import static co.swrl.list.Helpers.launchAndAvoidWhatsNewDialog;
+import static co.swrl.list.Helpers.launchAndWakeUpActivity;
 import static co.swrl.list.Helpers.purgeDatabase;
 import static co.swrl.list.Helpers.restartActivity;
 import static org.hamcrest.Matchers.allOf;
@@ -63,16 +63,7 @@ public class AddingSwrls {
     public ActivityTestRule listActivityActivityTestRule = new ActivityTestRule<>(ListActivity.class, false, false);
 
     @Rule
-    public ActivityTestRule<AddSwrlActivity> addSwrlActivityActivityTestRule = new ActivityTestRule<AddSwrlActivity>(AddSwrlActivity.class) {
-        @Override
-        protected Intent getActivityIntent() {
-            Context targetContext = InstrumentationRegistry.getInstrumentation()
-                    .getTargetContext();
-            Intent result = new Intent(targetContext, AddSwrlActivity.class);
-            result.putExtra("type", Type.UNKNOWN);
-            return result;
-        }
-    };
+    public ActivityTestRule<AddSwrlActivity> addSwrlActivityActivityTestRule = new ActivityTestRule<>(AddSwrlActivity.class, false, false);
 
     @Before
     @After
@@ -81,17 +72,23 @@ public class AddingSwrls {
         purgeDatabase();
     }
 
-    @Test @Ignore //TODO: fix test
+    @Test
     public void newItemsInTheListAreAddedOnTop() throws Exception {
 
-        activity = launchAndAvoidWhatsNewDialog(addSwrlActivityActivityTestRule, new Swrl[]{THE_MATRIX});
+        launchAddFilmActivity();
 
-        //With IME Action Button
+        onView(withId(R.id.addSwrlText))
+                .perform(typeText("Second Item"));
+        onView(withId(R.id.add_swrl_button)).perform(click());
+
+        launchAddFilmActivity();
+
         onView(withId(R.id.addSwrlText))
                 .perform(typeText("Top Item"));
         onView(withId(R.id.add_swrl_button)).perform(click());
 
         activity = launchAndAvoidWhatsNewDialog(listActivityActivityTestRule, null);
+
         onData(is(instanceOf(Swrl.class)))
                 .inAdapterView(withId(R.id.itemListView)).atPosition(0)
                 .onChildView(withId(R.id.list_title))
@@ -100,49 +97,49 @@ public class AddingSwrls {
         onData(is(instanceOf(Swrl.class)))
                 .inAdapterView(withId(R.id.itemListView)).atPosition(1)
                 .onChildView(withId(R.id.list_title))
-                .check(matches(withText(containsString("The Matrix"))));
+                .check(matches(withText(containsString("Second Item"))));
     }
 
-    @Test @Ignore //TODO: fix test
+    @Test
     public void canAddAnItemWithAType() throws Exception {
-        activity = launchAndAvoidWhatsNewDialog(listActivityActivityTestRule, null);
+        launchAddFilmActivity();
 
         Swrl ITEM = new Swrl("My Item", Type.FILM);
 
-        onView(withId(R.id.addItemEditText)).perform(typeText("My Item"));
-        onView(withId(R.id.addItemButton)).perform(click());
-        onView(withText(Type.FILM.toString())).perform(click());
+        onView(withId(R.id.addSwrlText))
+                .perform(typeText("My Item"));
+        onView(withId(R.id.add_swrl_button)).perform(click());
+
+        activity = launchAndAvoidWhatsNewDialog(listActivityActivityTestRule, null);
 
         onData(allOf(is(instanceOf(Swrl.class)), equalTo(ITEM))).check(matches(isDisplayed()));
     }
 
-    @Test @Ignore //TODO: fix test
+    @Test
     public void cannotAddDuplicateItems() throws Exception {
         activity = launchAndAvoidWhatsNewDialog(listActivityActivityTestRule, new Swrl[]{THE_MATRIX});
 
-        onView(withId(R.id.addItemEditText)).perform(typeText("The Matrix"));
-        onView(withId(R.id.addItemButton)).perform(click());
-        onView(withText(Type.FILM.toString())).perform(click());
+        launchAddFilmActivity();
+
+        onView(withId(R.id.addSwrlText))
+                .perform(typeText("The Matrix"));
+        onView(withId(R.id.add_swrl_button)).perform(click());
 
         onView(withId(R.id.itemListView)).check(matches(numberOfChildren(is(1))));
     }
 
-    @Test @Ignore //TODO: fix test
-    public void emptyTextIsNotAddedToTheList() throws Exception {
-        activity = launchAndAvoidWhatsNewDialog(listActivityActivityTestRule, null);
+    @Test
+    public void cannotAddSwrlWithNoTitle() throws Exception {
+        launchAddFilmActivity();
 
-        Swrl emptySwrl = new Swrl("");
+        onView(withId(R.id.addSwrlText)).check(matches(withText(isEmptyString())));
 
-        onView(withId(R.id.addItemEditText)).check(matches(withText(isEmptyString())));
+        onView(withId(R.id.add_swrl_button)).check(matches(not(isEnabled())));
 
-        onView(withId(R.id.addItemButton)).perform(click());
-        onView(withText(Type.FILM.toString())).perform(click());
-        onView(withId(R.id.addItemEditText)).perform(pressImeActionButton());
-        onView(withText(Type.FILM.toString())).perform(click());
-
-        onView(withId(R.id.itemListView)).check(matches(not(exists(equalTo(emptySwrl)))));
+        onView(withId(R.id.addSwrlText))
+                .perform(typeText("a"));
+        onView(withId(R.id.add_swrl_button)).check(matches(isEnabled()));
     }
-
 
     @Test
     public void itemsOnTheListArePersistedAfterRestart() throws Exception {
@@ -153,7 +150,7 @@ public class AddingSwrls {
         onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX))).check(matches(isDisplayed()));
     }
 
-    @Test @Ignore //TODO: fix test
+    @Test
     public void canDeleteAndReAddItemsOnTheList() throws Exception {
         activity = launchAndAvoidWhatsNewDialog(listActivityActivityTestRule,
                 new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED});
@@ -172,13 +169,11 @@ public class AddingSwrls {
         onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX_RELOADED))).check(matches(isDisplayed()));
         onView(withId(R.id.itemListView)).check(matches(numberOfChildren(is(1))));
 
-        addSwrlsToList(new Swrl[]{THE_MATRIX});
+        launchAddFilmActivity();
 
-        onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX))).check(matches(isDisplayed()));
-        onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX_RELOADED))).check(matches(isDisplayed()));
-        onView(withId(R.id.itemListView)).check(matches(numberOfChildren(is(2))));
-
-        activity = restartActivity(activity, listActivityActivityTestRule);
+        onView(withId(R.id.addSwrlText))
+                .perform(typeText("The Matrix"));
+        onView(withId(R.id.add_swrl_button)).perform(click());
 
         onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX))).check(matches(isDisplayed()));
         onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX_RELOADED))).check(matches(isDisplayed()));
@@ -231,6 +226,16 @@ public class AddingSwrls {
                 numChildrenMatcher.describeTo(description);
             }
         };
+    }
+
+    @NonNull
+    private void launchAddFilmActivity() {
+        Context targetContext = getInstrumentation().getTargetContext();
+        Intent addFilm = new Intent(targetContext, AddSwrlActivity.class);
+
+        addFilm.putExtra(AddSwrlActivity.EXTRAS_TYPE, Type.FILM);
+
+        activity = launchAndWakeUpActivity(addSwrlActivityActivityTestRule, addFilm);
     }
 }
 

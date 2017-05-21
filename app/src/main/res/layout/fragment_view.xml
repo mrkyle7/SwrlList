@@ -43,5 +43,4 @@
         android:textSize="22sp"
         android:layout_below="@+id/title"/>
 
-
 </RelativeLayout>

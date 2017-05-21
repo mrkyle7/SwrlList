@@ -64,7 +64,7 @@ public class ListActivity extends AppCompatActivity {
 
     private void setUpViewElements(CollectionManager collectionManager) {
         setContentView(R.layout.activity_list);
-        getSupportActionBar().setTitle("Swrl List");
+        getSupportActionBar().setTitle(R.string.app_title);
         swrlListAdapter = SwrlListAdapter.getActiveListAdapter(this, collectionManager);
         setUpList();
         setUpAddSwrlButtons();

@@ -1,34 +1,31 @@
 package co.swrl.list.ui;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.squareup.picasso.Picasso;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Objects;
 
 import co.swrl.list.R;
+import co.swrl.list.collection.CollectionManager;
+import co.swrl.list.collection.SQLiteCollectionManager;
 import co.swrl.list.item.Details;
 import co.swrl.list.item.Swrl;
 
@@ -36,8 +33,16 @@ public class ViewActivity extends AppCompatActivity {
 
     private ArrayList<?> swrls;
     private int firstSwrlIndex;
+    private ViewType viewType;
+    private CollectionManager db;
     public static final String EXTRAS_SWRLS = "swrls";
     public static final String EXTRAS_INDEX = "index";
+    public static final String EXTRAS_TYPE = "type";
+
+    public enum ViewType {
+        VIEW(),
+        ADD();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +50,13 @@ public class ViewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_view);
         setSwrls();
         setFirstSwrlIndex();
+        setViewType();
         setupView();
+        db = new SQLiteCollectionManager(getApplicationContext());
+    }
+
+    private void setViewType() {
+        viewType = (ViewType) getIntent().getSerializableExtra(EXTRAS_TYPE);
     }
 
     private void setSwrls() {
@@ -61,61 +72,22 @@ public class ViewActivity extends AppCompatActivity {
         setupPager();
     }
 
-    private static class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-        ImageView bmImage;
-
-        public DownloadImageTask(ImageView bmImage) {
-            this.bmImage = bmImage;
-        }
-
-        protected Bitmap doInBackground(String... urls) {
-            String urlDisplay = urls[0];
-            Bitmap mIcon11 = null;
-            try {
-                Log.d("DOWNLOAD", "Downloading: " + urlDisplay);
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inSampleSize = 2;
-                InputStream in = new java.net.URL(urlDisplay).openStream();
-                mIcon11 = BitmapFactory.decodeStream(in, null, options);
-            } catch (Exception e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-            return mIcon11;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            try {
-                bmImage.setImageBitmap(result);
-            } catch (Exception e) {
-                Log.d("DOWNLOAD", result.toString());
-                e.printStackTrace();
-            }
-        }
-    }
-
     private void setUpToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle(((Swrl) swrls.get(firstSwrlIndex)).getTitle());
     }
 
     private void setupPager() {
-        SectionsPagerAdapter mSectionsPagerAdapter = getSectionsPagerAdapter();
+        SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         setupViewPager(mSectionsPagerAdapter);
     }
 
-    @NonNull
-    private SectionsPagerAdapter getSectionsPagerAdapter() {
-        return new SectionsPagerAdapter(getSupportFragmentManager());
-    }
-
-    private void setupViewPager(SectionsPagerAdapter mSectionsPagerAdapter) {
+    private void setupViewPager(final SectionsPagerAdapter mSectionsPagerAdapter) {
         ViewPager mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-
         mViewPager.setCurrentItem(firstSwrlIndex);
+        setButton(firstSwrlIndex, mSectionsPagerAdapter);
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -123,12 +95,8 @@ public class ViewActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onPageSelected(int position) {
-                ActionBar supportActionBar = getSupportActionBar();
-                if (supportActionBar != null) {
-                    supportActionBar.setTitle(((Swrl) swrls.get(position)).getTitle());
-                }
-
+            public void onPageSelected(final int position) {
+                setButton(position, mSectionsPagerAdapter);
             }
 
             @Override
@@ -138,26 +106,35 @@ public class ViewActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_view, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+    private void setButton(final int position, final SectionsPagerAdapter mSectionsPagerAdapter) {
+        FloatingActionButton button = (FloatingActionButton) findViewById(R.id.viewButton);
+        button.setColorNormal(getResources().getColor(R.color.film));
+        button.setColorPressed(getResources().getColor(R.color.film));
+        if (viewType != null) {
+            switch (viewType) {
+                case VIEW:
+                    button.setIcon(R.drawable.ic_done_black_24dp);
+                    button.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mSectionsPagerAdapter.deletePage(position);
+                        }
+                    });
+                    break;
+                case ADD:
+                    button.setIcon(R.drawable.ic_add_black_24dp);
+                    button.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            db.save((Swrl) swrls.get(position));
+                            Intent homeScreen = new Intent(getApplicationContext(), ListActivity.class);
+                            homeScreen.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(homeScreen);
+                        }
+                    });
+                    break;
+            }
         }
-
-        return super.onOptionsItemSelected(item);
     }
 
     public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
@@ -181,6 +158,21 @@ public class ViewActivity extends AppCompatActivity {
             return ((Swrl) swrls.get(position)).getTitle();
         }
 
+        // This is called when notifyDataSetChanged() is called
+        @Override
+        public int getItemPosition(Object object) {
+            // refresh all fragments when data set changed
+            return PagerAdapter.POSITION_NONE;
+        }
+
+        public void deletePage(int position) {
+            db.markAsDone((Swrl) swrls.get(position));
+            swrls.remove(position);
+            if (swrls.size() == 0) {
+                finish();
+            }
+            notifyDataSetChanged();
+        }
     }
 
     public static class PlaceholderFragment extends Fragment {
@@ -191,6 +183,18 @@ public class ViewActivity extends AppCompatActivity {
         private static final String ARG_SWRL = "swrl";
 
         public PlaceholderFragment() {
+        }
+
+        @Override
+        public void setUserVisibleHint(boolean isVisibleToUser) {
+            super.setUserVisibleHint(isVisibleToUser);
+
+            if(isVisibleToUser){
+                final Swrl swrl = (Swrl) getArguments().getSerializable(ARG_SWRL);
+                AppCompatActivity activity = (AppCompatActivity) getActivity();
+                ActionBar actionBar = activity.getSupportActionBar();
+                actionBar.setTitle(swrl.getTitle());
+            }
         }
 
         /**
@@ -206,18 +210,18 @@ public class ViewActivity extends AppCompatActivity {
         }
 
         @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+        public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_view, container, false);
+            final View rootView = inflater.inflate(R.layout.fragment_view, container, false);
             TextView textView = (TextView) rootView.findViewById(R.id.title);
-            Swrl swrl = (Swrl) getArguments().getSerializable(ARG_SWRL);
+            final Swrl swrl = (Swrl) getArguments().getSerializable(ARG_SWRL);
             textView.setText(swrl != null ? swrl.getTitle() : "No Swrls?");
             ImageView poster = (ImageView) rootView.findViewById(R.id.imageView);
             if (swrl != null) {
                 Details details = swrl.getDetails();
                 if (details == null) {
                     TextView noDetails = (TextView) rootView.findViewById(R.id.noDetails);
-                    noDetails.setText("No Details found.");
+                    noDetails.setText(R.string.no_details);
                 } else {
                     int iconResource = swrl.getType().getIcon();
                     if (details.getPosterURL() != null && !Objects.equals(details.getPosterURL(), "")) {

@@ -45,4 +45,6 @@
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="item_add">Add Swrl</string>
     <string name="thumbnail">Thumbnail</string>
+    <string name="no_details">No Details found.</string>
+    <string name="app_title">Swrl List</string>
 </resources>

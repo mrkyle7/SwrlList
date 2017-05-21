@@ -27,10 +27,13 @@ import co.swrl.list.R;
 import co.swrl.list.collection.CollectionManager;
 import co.swrl.list.item.Details;
 import co.swrl.list.item.Swrl;
+import co.swrl.list.ui.ViewActivity.ViewType;
 
 import static android.support.v4.app.ActivityCompat.startActivity;
 import static co.swrl.list.R.drawable.ic_add_black_24dp;
 import static co.swrl.list.R.drawable.ic_done_black_24dp;
+import static co.swrl.list.ui.ViewActivity.ViewType.ADD;
+import static co.swrl.list.ui.ViewActivity.ViewType.VIEW;
 
 
 class SwrlListAdapter extends ArrayAdapter<Swrl> {
@@ -79,10 +82,11 @@ class SwrlListAdapter extends ArrayAdapter<Swrl> {
             switch (listType) {
                 case ACTIVE_SWRLS:
                     setDoneButton(row, swrl, position);
-                    setClickableRow(row, position);
+                    setClickableRow(row, position, VIEW);
                     break;
                 case SEARCH_RESULTS:
                     setAddButton(row, swrl);
+                    setClickableRow(row, position, ADD);
                     break;
             }
         }
@@ -100,13 +104,14 @@ class SwrlListAdapter extends ArrayAdapter<Swrl> {
         subtitle.setText(swrl.getType().getFriendlyName());
     }
 
-    private void setClickableRow(View row, final int position) {
+    private void setClickableRow(View row, final int position, final ViewType viewType) {
         row.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent viewActivity = new Intent(getContext(), ViewActivity.class);
                 viewActivity.putExtra(ViewActivity.EXTRAS_SWRLS, getAllItems());
                 viewActivity.putExtra(ViewActivity.EXTRAS_INDEX, position);
+                viewActivity.putExtra(ViewActivity.EXTRAS_TYPE, viewType);
                 startActivity((Activity) getContext(), viewActivity, null);
             }
         });
@@ -149,8 +154,8 @@ class SwrlListAdapter extends ArrayAdapter<Swrl> {
     }
 
     private void resizeThumbnailForImage(ImageView thumbnail) {
-        thumbnail.getLayoutParams().height = getDPI(50);
-        thumbnail.getLayoutParams().width = getDPI(50);
+        thumbnail.getLayoutParams().height = getDPI(66);
+        thumbnail.getLayoutParams().width = getDPI(66);
     }
 
 
