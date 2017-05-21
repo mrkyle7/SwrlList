@@ -1,15 +1,18 @@
+Version 7.8 (21 May 2017)
+<br />
+- Can click on a search result to see more details before adding it.
 Version 7.7 (14 May 2017)
-==============================
+<br />
 - First attempt at the View Screen. Click on a Row to see it.
 <br />
 Version 7.6 (14 May 2017)
-==============================
+<br />
 - Fix for image resizing
 <br />
 Version 7.5 (14 May 2017)
-==============================
+<br />
 - Images are cached for faster processing
 <br />
 Version 7.4 (14 May 2017)
-==============================
+<br />
 - Can now search for board games
