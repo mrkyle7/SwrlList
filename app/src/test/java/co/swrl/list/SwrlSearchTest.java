@@ -37,7 +37,7 @@ public class SwrlSearchTest {
         mockWebServer.start();
         HttpUrl mockUrl = mockWebServer.url("/");
 
-        SwrlSearch search = new SwrlSearch(mockUrl, Type.FILM);
+        SwrlSearch search = new SwrlSearch(mockUrl, null, Type.FILM);
 
         List<Details> results = search.byTitle("Garden State");
 
@@ -55,6 +55,25 @@ public class SwrlSearchTest {
 
         RecordedRequest request = mockWebServer.takeRequest();
         assertEquals("/?query=Garden%20State", request.getPath());
+    }
+
+    @Test
+    public void canConvertDetailsResponse() throws Exception{
+        mockWebServer.enqueue(new MockResponse().setBody("{\"tagline\":\"Welcome to the Real World.\",\"large-image-url\":\"https://image.tmdb.org/t/p/original/lZpWprJqbIFpEV5uoHfoK0KCnTW.jpg\",\"director\":\"Lana Wachowski, Lilly Wachowski\",\"genres\":[\"Action\",\"Science Fiction\"],\"tmdb-id\":603,\"thumbnail-url\":\"https://image.tmdb.org/t/p/original/lZpWprJqbIFpEV5uoHfoK0KCnTW.jpg\",\"overview\":\"A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.\",\"title\":\"The Matrix\",\"imdb-id\":\"tt0133093\",\"actors\":\"Keanu Reeves, Laurence Fishburne, Carrie-Anne Moss, Hugo Weaving\",\"runtime\":\"136 min\",\"release-year\":\"1999\",\"url\":\"http://www.warnerbros.com/matrix\",\"ratings\":[{\"Source\":\"Internet Movie Database\",\"Value\":\"8.7/10\"},{\"Source\":\"Rotten Tomatoes\",\"Value\":\"87%\"},{\"Source\":\"Metacritic\",\"Value\":\"73/100\"}]}"));
+        mockWebServer.start();
+        HttpUrl mockBaseUrl = mockWebServer.url("/film/");
+
+        SwrlSearch search = new SwrlSearch(null, mockBaseUrl, Type.FILM);
+        Details result = search.byID("603");
+
+        assertEquals("Welcome to the Real World.", result.getTagline());
+        assertEquals("87%", result.getRatings().get(1).getValue());
+        assertEquals("Lana Wachowski, Lilly Wachowski", result.getCreator());
+        assertEquals("603", result.getId());
+        assertEquals(Type.FILM, result.getType());
+
+        RecordedRequest request = mockWebServer.takeRequest();
+        assertEquals("/film/603", request.getPath());
     }
 
 }

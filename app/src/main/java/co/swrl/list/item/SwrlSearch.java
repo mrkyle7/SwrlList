@@ -14,49 +14,77 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class SwrlSearch implements Search {
-    private final HttpUrl BASE_URL;
+    private final HttpUrl SEARCH_BASE_URL;
+    private final HttpUrl DETAILS_BASE_URL;
     private final Type type;
 
     public static SwrlSearch getFilmSearch() {
-        return new SwrlSearch(HttpUrl.parse("https://www.swrl.co/api/v1/search/film"), Type.FILM);
+        return new SwrlSearch(HttpUrl.parse("https://www.swrl.co/api/v1/search/film"), HttpUrl.parse("https://www.swrl.co/api/v1/details/film"), Type.FILM);
     }
 
     public static SwrlSearch getTVSearch() {
-        return new SwrlSearch(HttpUrl.parse("https://www.swrl.co/api/v1/search/tv"), Type.TV);
+        return new SwrlSearch(HttpUrl.parse("https://www.swrl.co/api/v1/search/tv"), HttpUrl.parse("https://www.swrl.co/api/v1/details/tv"), Type.TV);
     }
 
     public static SwrlSearch getBookSearch() {
-        return new SwrlSearch(HttpUrl.parse("https://www.swrl.co/api/v1/search/book"), Type.BOOK);
+        return new SwrlSearch(HttpUrl.parse("https://www.swrl.co/api/v1/search/book"), HttpUrl.parse("https://www.swrl.co/api/v1/details/book"), Type.BOOK);
     }
 
     public static SwrlSearch getPodcastSearch() {
-        return new SwrlSearch(HttpUrl.parse("https://www.swrl.co/api/v1/search/podcast"), Type.PODCAST);
+        return new SwrlSearch(HttpUrl.parse("https://www.swrl.co/api/v1/search/podcast"), HttpUrl.parse("https://www.swrl.co/api/v1/details/podcast"), Type.PODCAST);
     }
 
     public static SwrlSearch getAppSearch() {
-        return new SwrlSearch(HttpUrl.parse("https://www.swrl.co/api/v1/search/app"), Type.APP);
+        return new SwrlSearch(HttpUrl.parse("https://www.swrl.co/api/v1/search/app"), HttpUrl.parse("https://www.swrl.co/api/v1/details/app"), Type.APP);
     }
 
     public static SwrlSearch getAlbumSearch() {
-        return new SwrlSearch(HttpUrl.parse("https://www.swrl.co/api/v1/search/album"), Type.ALBUM);
+        return new SwrlSearch(HttpUrl.parse("https://www.swrl.co/api/v1/search/album"), HttpUrl.parse("https://www.swrl.co/api/v1/details/album"), Type.ALBUM);
     }
 
     public static SwrlSearch getVideoGameSearch() {
-        return new SwrlSearch(HttpUrl.parse("https://www.swrl.co/api/v1/search/videogame"), Type.VIDEO_GAME);
+        return new SwrlSearch(HttpUrl.parse("https://www.swrl.co/api/v1/search/videogame"), HttpUrl.parse("https://www.swrl.co/api/v1/details/videogame"), Type.VIDEO_GAME);
     }
 
     public static SwrlSearch getBoardGameSearch() {
-        return new SwrlSearch(HttpUrl.parse("https://www.swrl.co/api/v1/search/boardgame"), Type.BOARD_GAME);
+        return new SwrlSearch(HttpUrl.parse("https://www.swrl.co/api/v1/search/boardgame"), HttpUrl.parse("https://www.swrl.co/api/v1/details/boardgame"), Type.BOARD_GAME);
     }
 
-    public SwrlSearch(HttpUrl baseURL, Type type) {
-        BASE_URL = baseURL;
+    public SwrlSearch(HttpUrl searchBaseURL, HttpUrl details_base_url, Type type) {
+        SEARCH_BASE_URL = searchBaseURL;
+        DETAILS_BASE_URL = details_base_url;
         this.type = type;
     }
 
     @Override
     public Details byID(String id) {
-        return null;
+        HttpUrl searchUrl = DETAILS_BASE_URL.newBuilder().addPathSegment(id).build();
+        OkHttpClient client =
+                new OkHttpClient.Builder()
+                        .readTimeout(30, TimeUnit.SECONDS)
+                        .build();
+        Request request = new Request.Builder().url(searchUrl).build();
+
+        Gson gson = new Gson();
+        Details details = null;
+
+        try {
+            Response response = client.newCall(request).execute();
+
+            if (response != null) {
+                String body = response.body().string();
+                System.out.println("response.body=" + body);
+                details = gson.fromJson(body, Details.class);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (details != null) {
+            details = details.setType(type);
+        }
+
+        return details;
     }
 
     private class SearchResponse {
@@ -68,7 +96,7 @@ public class SwrlSearch implements Search {
 
     @Override
     public List<Details> byTitle(String title) {
-        HttpUrl searchUrl = BASE_URL.newBuilder().setQueryParameter("query", title).build();
+        HttpUrl searchUrl = SEARCH_BASE_URL.newBuilder().setQueryParameter("query", title).build();
         OkHttpClient client =
                 new OkHttpClient.Builder()
                         .readTimeout(30, TimeUnit.SECONDS)

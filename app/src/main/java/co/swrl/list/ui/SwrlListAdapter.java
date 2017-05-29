@@ -2,8 +2,10 @@ package co.swrl.list.ui;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.util.TypedValue;
@@ -26,6 +28,7 @@ import java.util.Objects;
 import co.swrl.list.R;
 import co.swrl.list.collection.CollectionManager;
 import co.swrl.list.item.Details;
+import co.swrl.list.item.Search;
 import co.swrl.list.item.Swrl;
 import co.swrl.list.ui.ViewActivity.ViewType;
 
@@ -126,11 +129,17 @@ class SwrlListAdapter extends ArrayAdapter<Swrl> {
     private void setTitle(View row, final Swrl swrl) {
         TextView title = (TextView) row.findViewById(R.id.list_title);
         title.setText(swrl.getTitle());
+        title.setSelected(true);
     }
 
     private void setSubTitle(View row, Swrl swrl) {
         TextView subtitle = (TextView) row.findViewById(R.id.list_subtitle);
-        subtitle.setText(swrl.getType().getFriendlyName());
+        String subtitleText = swrl.getType().getFriendlyName();
+        if (swrl.getDetails() != null && swrl.getDetails().getCreator() != null
+                && !swrl.getDetails().getCreator().isEmpty()) {
+            subtitleText = swrl.getDetails().getCreator();
+        }
+        subtitle.setText(subtitleText);
     }
 
     private void setClickableRow(View row, final int position, final ViewType viewType) {
@@ -216,8 +225,7 @@ class SwrlListAdapter extends ArrayAdapter<Swrl> {
             @Override
             public void onClick(View v) {
                 collectionManager.save(swrl);
-                Activity addActivity = (Activity) getContext();
-                addActivity.finish();
+                new GetSwrlDetails().execute(swrl);
             }
         });
     }
@@ -231,7 +239,7 @@ class SwrlListAdapter extends ArrayAdapter<Swrl> {
                 collectionManager.saveDetails(originalSwrl, swrl.getDetails());
                 collectionManager.updateTitle(originalSwrl, swrl.getTitle());
                 ArrayList<Swrl> newSwrls = new ArrayList<>();
-                for (Object originalSwrl: originalSwrls) {
+                for (Object originalSwrl : originalSwrls) {
                     newSwrls.add((Swrl) originalSwrl);
                 }
                 newSwrls.remove(originalSwrl);
@@ -304,5 +312,44 @@ class SwrlListAdapter extends ArrayAdapter<Swrl> {
         insert(swrl, position);
         collectionManager.markAsActive(swrl);
         notifyDataSetChanged();
+    }
+
+    private class GetSwrlDetails extends AsyncTask<Swrl, Void, Details> {
+
+        private Swrl mSwrl;
+        private ProgressDialog addingDialog;
+
+        @Override
+        protected Details doInBackground(Swrl... params) {
+            Swrl swrl = params[0];
+            mSwrl = swrl;
+            Details details = null;
+
+            try {
+                Search search = swrl.getType().getSearch();
+                details = search.byID(swrl.getDetails().getId());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return details;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            addingDialog = new ProgressDialog(getContext());
+            addingDialog.setMessage("Adding Swrl...");
+            addingDialog.show();
+        }
+
+        @Override
+        protected void onPostExecute(Details details) {
+            if (details != null) {
+                collectionManager.saveDetails(mSwrl, details);
+            }
+            addingDialog.hide();
+            Activity addActivity = (Activity) getContext();
+            addActivity.finish();
+        }
     }
 }

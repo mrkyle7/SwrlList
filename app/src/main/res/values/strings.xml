@@ -53,4 +53,5 @@
     <string name="thumbnail">Thumbnail</string>
     <string name="no_details">No Details found.</string>
     <string name="app_title">Swrl List</string>
+    <string name="refresh_details">Refresh Details</string>
 </resources>
