@@ -104,8 +104,6 @@ public class ViewPageDetails extends Fragment {
             new GetSearchResults(resultsAdapter, null, swrl.getType(), noSearchResultsText).execute(String.valueOf(swrlSearchTextView.getText()));
         } else {
             rootView = inflater.inflate(R.layout.fragment_view, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.title);
-            textView.setText(swrl != null ? swrl.getTitle() : "No Swrls?");
             final ImageView poster = (ImageView) rootView.findViewById(R.id.imageView);
             View posterBackground = rootView.findViewById(R.id.image_background);
             int color = getContext().getResources().getColor(swrl.getType().getColor());
@@ -124,18 +122,32 @@ public class ViewPageDetails extends Fragment {
 
                             @Override
                             public void onError() {
-                                resizeView(poster, 150);
+                                resizeView(poster, 150, rootView);
                             }
                         });
             } else {
                 poster.setImageResource(iconResource);
             }
+
+            TextView titleText = (TextView) rootView.findViewById(R.id.title);
+            String title = swrl.getTitle();
+            if (details.getCreator() != null && !details.getCreator().isEmpty()){
+                title = title + " - " + details.getCreator();
+            }
+            titleText.setText(title);
+
             TextView categories = (TextView) rootView.findViewById(R.id.categories);
             if (details.getCategories() != null) {
                 String categoriesString = "Categories: " + TextUtils.join(", ", details.getCategories());
                 categories.setText(categoriesString);
             }
+
+            TextView overviewText = (TextView) rootView.findViewById(R.id.overview);
+            if (details.getOverview() != null && !details.getOverview().isEmpty()){
+                overviewText.setText(details.getOverview());
+            }
         }
+
 
         return rootView;
     }
@@ -144,12 +156,12 @@ public class ViewPageDetails extends Fragment {
         return (actionId == EditorInfo.IME_ACTION_SEARCH) || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN);
     }
 
-    private void resizeView(ImageView view, int size) {
-        view.getLayoutParams().height = getDPI(size);
-        view.getLayoutParams().width = getDPI(size);
+    private void resizeView(ImageView view, int size, View rootView) {
+        view.getLayoutParams().height = getDPI(size, rootView);
+        view.getLayoutParams().width = getDPI(size, rootView);
     }
 
-    private int getDPI(int i) {
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, i, getContext().getResources().getDisplayMetrics());
+    private int getDPI(int i, View rootView) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, i, rootView.getContext().getResources().getDisplayMetrics());
     }
 }

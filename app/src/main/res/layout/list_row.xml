@@ -51,7 +51,7 @@
             android:id="@+id/list_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ellipsize="marquee"
+            android:ellipsize="end"
             android:maxLines="1"
             android:layout_marginBottom="5dp"
             android:layout_marginStart="10dp"
