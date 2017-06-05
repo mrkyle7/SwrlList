@@ -111,6 +111,12 @@ public class ViewActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
+    }
+
     private void setupPager() {
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         setupViewPager(mSectionsPagerAdapter);
@@ -281,7 +287,9 @@ public class ViewActivity extends AppCompatActivity {
                     Log.d(LOG_CONTEXT, "Updating details for " + currentSwrl.toString());
                     db.saveDetails(currentSwrl, details);
                     currentSwrl.setDetails(details);
-                    mSectionsPagerAdapter.notifyDataSetChanged();
+                    if (mSectionsPagerAdapter != null) {
+                        mSectionsPagerAdapter.notifyDataSetChanged();
+                    }
                 }
             }
             progressDialog.hide();

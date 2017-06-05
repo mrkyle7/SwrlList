@@ -107,9 +107,20 @@ public class ViewPageDetails extends Fragment {
             final ImageView poster = (ImageView) rootView.findViewById(R.id.imageView);
             View posterBackground = rootView.findViewById(R.id.image_background);
             int color = getContext().getResources().getColor(swrl.getType().getColor());
-            posterBackground.setBackgroundColor(color);
+//            posterBackground.setBackgroundColor(color);
 
             int iconResource = swrl.getType().getIcon();
+
+            ImageView background = (ImageView) rootView.findViewById(R.id.imageView2);
+//            background.setImageResource(iconResource);
+            if (details.getPosterURL() != null && !Objects.equals(details.getPosterURL(), "")) {
+                Picasso.with(getActivity().getBaseContext())
+                        .load(details.getPosterURL())
+                        .error(iconResource)
+                        .into(background);
+            } else {
+                background.setImageResource(iconResource);
+            }
             if (details.getPosterURL() != null && !Objects.equals(details.getPosterURL(), "")) {
                 Picasso.with(getActivity().getBaseContext())
                         .load(details.getPosterURL())
@@ -131,20 +142,43 @@ public class ViewPageDetails extends Fragment {
 
             TextView titleText = (TextView) rootView.findViewById(R.id.title);
             String title = swrl.getTitle();
-            if (details.getCreator() != null && !details.getCreator().isEmpty()){
-                title = title + " - " + details.getCreator();
-            }
             titleText.setText(title);
+
+            TextView directorText = (TextView) rootView.findViewById(R.id.director);
+            if (details.getCreator() != null && !details.getCreator().isEmpty()) {
+                directorText.setText(swrl.getType().getCreatorType() + ": " + details.getCreator());
+            } else {
+                directorText.setVisibility(GONE);
+            }
 
             TextView categories = (TextView) rootView.findViewById(R.id.categories);
             if (details.getCategories() != null) {
                 String categoriesString = "Categories: " + TextUtils.join(", ", details.getCategories());
                 categories.setText(categoriesString);
+            } else {
+                categories.setVisibility(GONE);
+            }
+
+            TextView ratings = (TextView) rootView.findViewById(R.id.ratings);
+            if (details.getRatings() != null) {
+                String ratingsString = "Ratings: ";
+
+                for (Details.Ratings rating: details.getRatings()){
+                    ratingsString += rating.getSource().equals("Internet Movie Database") ? "IMDB" : rating.getSource();
+                    ratingsString += ": ";
+                    ratingsString += rating.getValue();
+                    ratingsString += "; ";
+                }
+                ratings.setText(ratingsString);
+            } else {
+                ratings.setVisibility(GONE);
             }
 
             TextView overviewText = (TextView) rootView.findViewById(R.id.overview);
-            if (details.getOverview() != null && !details.getOverview().isEmpty()){
+            if (details.getOverview() != null && !details.getOverview().isEmpty()) {
                 overviewText.setText(details.getOverview());
+            } else {
+                overviewText.setVisibility(GONE);
             }
         }
 

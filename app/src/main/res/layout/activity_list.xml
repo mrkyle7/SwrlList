@@ -136,7 +136,7 @@
             fab:fab_title="Film"
             fab:fab_colorPressed="@color/film"
             fab:fab_size="mini"
-            fab:fab_icon="@drawable/ic_local_movies_black_24dp"
+            fab:fab_icon="@drawable/ic_film"
             />
 
     </com.getbase.floatingactionbutton.FloatingActionsMenu>

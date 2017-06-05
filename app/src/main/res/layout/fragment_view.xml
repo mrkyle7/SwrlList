@@ -6,61 +6,94 @@
     <android.support.v7.widget.LinearLayoutCompat
         android:id="@+id/top_section"
         android:layout_width="match_parent"
-        android:layout_height="200dp">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <RelativeLayout
             android:id="@+id/image_background"
-            android:layout_width="0dp"
-            android:layout_height="200dp"
-            android:layout_weight="0.4">
+            android:layout_width="match_parent"
+            android:layout_height="200dp">
+
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:adjustViewBounds="true"
+                android:alpha="0.4"
+                android:cropToPadding="true"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_boardgame_icon" />
 
             <ImageView
                 android:id="@+id/imageView"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_centerInParent="true"
                 android:adjustViewBounds="true"
-                android:maxHeight="180dp" />
-        </RelativeLayout>
+                android:maxHeight="190dp"
+                android:src="@drawable/ic_boardgame_icon" />
 
-        <android.support.v7.widget.LinearLayoutCompat
-            android:layout_width="0dp"
-            android:layout_weight="0.6"
-            android:layout_height="200dp"
-            android:layout_toEndOf="@id/image_background"
-            android:orientation="vertical"
-            android:padding="5dp"
-            >
+        </RelativeLayout>
+    </android.support.v7.widget.LinearLayoutCompat>
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/top_section"
+        android:paddingBottom="50dp">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:text="Title"
                 android:textColor="#000000"
                 android:textSize="22sp" />
+
+            <TextView
+                android:id="@+id/director"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:text="Bobby Joe"
+                android:textColor="@color/black_semi_transparent"
+                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/categories"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/title"
-                android:layout_marginTop="10dp"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:text="Bi-Mon-Sci-Fi-Con"
                 android:textColor="@color/black_semi_transparent"
-                android:textSize="18sp"
-                />
-        </android.support.v7.widget.LinearLayoutCompat>
+                android:textSize="18sp" />
 
-    </android.support.v7.widget.LinearLayoutCompat>
+            <TextView
+                android:id="@+id/ratings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:text="9/10"
+                android:textColor="@color/black_semi_transparent"
+                android:textSize="18sp" />
 
-    <TextView
-        android:id="@+id/overview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/top_section"
-        android:layout_marginTop="20dp"
-        android:textColor="@color/black_semi_transparent"
-        android:textSize="20sp"
-        android:padding="16dp"
-        />
-
+            <TextView
+                android:id="@+id/overview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:text="A thing about a thing"
+                android:textColor="@color/black_semi_transparent"
+                android:textSize="20sp" />
+        </LinearLayout>
+    </ScrollView>
 </RelativeLayout>
