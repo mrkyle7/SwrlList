@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +31,7 @@ import co.swrl.list.collection.CollectionManager;
 import co.swrl.list.item.Details;
 import co.swrl.list.item.Search;
 import co.swrl.list.item.Swrl;
+import co.swrl.list.item.Type;
 import co.swrl.list.ui.ViewActivity.ViewType;
 
 import static android.support.v4.app.ActivityCompat.startActivity;
@@ -107,6 +109,7 @@ class SwrlListAdapter extends ArrayAdapter<Swrl> {
         if (swrl != null) {
             setTitle(row, swrl);
             setSubTitle(row, swrl);
+            setSubtitle2(row, swrl);
             setImage(row, swrl);
             switch (listType) {
                 case ACTIVE_SWRLS:
@@ -133,13 +136,52 @@ class SwrlListAdapter extends ArrayAdapter<Swrl> {
     }
 
     private void setSubTitle(View row, Swrl swrl) {
-        TextView subtitle = (TextView) row.findViewById(R.id.list_subtitle);
+        TextView subtitle = (TextView) row.findViewById(R.id.list_subtitle1);
         String subtitleText = swrl.getType().getFriendlyName();
-        if (swrl.getDetails() != null && swrl.getDetails().getCreator() != null
-                && !swrl.getDetails().getCreator().isEmpty()) {
-            subtitleText = swrl.getDetails().getCreator();
+        if (swrl.getDetails() != null) {
+            switch (swrl.getType()) {
+                case FILM:
+                    if (swrl.getDetails().getActors() != null) subtitleText = swrl.getDetails().getActors();
+                    break;
+                case TV:
+                    if (swrl.getDetails().getCreator() != null) subtitleText = swrl.getDetails().getCreator();
+                    break;
+                case BOOK:
+                    if (swrl.getDetails().getCreator() != null) subtitleText = swrl.getDetails().getCreator();
+                    break;
+                case ALBUM:
+                    if (swrl.getDetails().getCreator() != null) subtitleText = swrl.getDetails().getCreator();
+                    break;
+                case VIDEO_GAME:
+                    if (swrl.getDetails().getPlatform() != null) subtitleText = swrl.getDetails().getPlatform();
+                    break;
+                case BOARD_GAME:
+                    if (swrl.getDetails().getCreator() != null) subtitleText = swrl.getDetails().getCreator();
+                    break;
+                case APP:
+                    if (swrl.getDetails().getCreator() != null) subtitleText = swrl.getDetails().getCreator();
+                    break;
+                case PODCAST:
+                    if (swrl.getDetails().getCreator() != null) subtitleText = swrl.getDetails().getCreator();
+                    break;
+                case UNKNOWN:
+                    break;
+            }
         }
         subtitle.setText(subtitleText);
+    }
+
+    private void setSubtitle2(View row, Swrl swrl) {
+        TextView subtitle2 = (TextView) row.findViewById(R.id.list_subtitle2);
+        String subtitle2Text = "No Details...";
+        if (swrl.getDetails() != null && swrl.getDetails().getCategories() != null
+                && !swrl.getDetails().getCategories().isEmpty()) {
+            subtitle2Text = TextUtils.join(", ", swrl.getDetails().getCategories());
+        }
+        if (swrl.getType() == Type.BOOK && swrl.getDetails() != null && swrl.getDetails().getPublicationDate() != null){
+            subtitle2Text = swrl.getDetails().getPublicationDate();
+        }
+        subtitle2.setText(subtitle2Text);
     }
 
     private void setClickableRow(View row, final int position, final ViewType viewType) {
@@ -150,7 +192,7 @@ class SwrlListAdapter extends ArrayAdapter<Swrl> {
                 viewActivity.putExtra(ViewActivity.EXTRAS_SWRLS, getAllItems());
                 viewActivity.putExtra(ViewActivity.EXTRAS_INDEX, position);
                 viewActivity.putExtra(ViewActivity.EXTRAS_TYPE, viewType);
-                startActivity((Activity) getContext(), viewActivity, null);
+                startActivity(getContext(), viewActivity, null);
             }
         });
     }
@@ -164,6 +206,7 @@ class SwrlListAdapter extends ArrayAdapter<Swrl> {
         Details details = swrl.getDetails();
 
         if (details != null && details.getPosterURL() != null && !Objects.equals(details.getPosterURL(), "")) {
+            resizeThumbnailForImage(thumbnail);
             Picasso.with(getContext())
                     .load(details.getPosterURL())
                     .placeholder(R.drawable.progress_spinner)
@@ -192,8 +235,8 @@ class SwrlListAdapter extends ArrayAdapter<Swrl> {
     }
 
     private void resizeThumbnailForImage(ImageView thumbnail) {
-        thumbnail.getLayoutParams().height = getDPI(66);
-        thumbnail.getLayoutParams().width = getDPI(66);
+        thumbnail.getLayoutParams().height = getDPI(80);
+        thumbnail.getLayoutParams().width = getDPI(65);
     }
 
 

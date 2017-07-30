@@ -57,22 +57,12 @@
                 android:textSize="22sp" />
 
             <TextView
-                android:id="@+id/director"
+                android:id="@+id/keyDetails"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingEnd="16dp"
                 android:paddingStart="16dp"
-                android:text="Bobby Joe"
-                android:textColor="@color/black_semi_transparent"
-                android:textSize="18sp" />
-
-            <TextView
-                android:id="@+id/categories"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingEnd="16dp"
-                android:paddingStart="16dp"
-                android:text="Bi-Mon-Sci-Fi-Con"
+                android:text="Bobby Joe | Action, Comedy| 2004"
                 android:textColor="@color/black_semi_transparent"
                 android:textSize="18sp" />
 
@@ -82,6 +72,7 @@
                 android:layout_height="wrap_content"
                 android:paddingEnd="16dp"
                 android:paddingStart="16dp"
+                android:paddingTop="16dp"
                 android:text="9/10"
                 android:textColor="@color/black_semi_transparent"
                 android:textSize="18sp" />

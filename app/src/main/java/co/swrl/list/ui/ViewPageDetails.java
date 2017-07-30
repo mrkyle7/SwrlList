@@ -64,7 +64,7 @@ public class ViewPageDetails extends Fragment {
         assert swrl != null;
         Details details = swrl.getDetails();
         final View rootView;
-        if (details == null || swrl.getDetails().getId() == null || swrl.getDetails().getId().isEmpty()) {
+        if (details == null || details.getId() == null || details.getId().isEmpty()) {
             rootView = inflater.inflate(R.layout.activity_add_swrl, container, false);
             CollectionManager db = new SQLiteCollectionManager(getActivity());
 
@@ -105,14 +105,11 @@ public class ViewPageDetails extends Fragment {
         } else {
             rootView = inflater.inflate(R.layout.fragment_view, container, false);
             final ImageView poster = (ImageView) rootView.findViewById(R.id.imageView);
-            View posterBackground = rootView.findViewById(R.id.image_background);
             int color = getContext().getResources().getColor(swrl.getType().getColor());
-//            posterBackground.setBackgroundColor(color);
 
             int iconResource = swrl.getType().getIcon();
 
             ImageView background = (ImageView) rootView.findViewById(R.id.imageView2);
-//            background.setImageResource(iconResource);
             if (details.getPosterURL() != null && !Objects.equals(details.getPosterURL(), "")) {
                 Picasso.with(getActivity().getBaseContext())
                         .load(details.getPosterURL())
@@ -144,26 +141,49 @@ public class ViewPageDetails extends Fragment {
             String title = swrl.getTitle();
             titleText.setText(title);
 
-            TextView directorText = (TextView) rootView.findViewById(R.id.director);
-            if (details.getCreator() != null && !details.getCreator().isEmpty()) {
-                directorText.setText(swrl.getType().getCreatorType() + ": " + details.getCreator());
-            } else {
-                directorText.setVisibility(GONE);
+            TextView keyDetails = (TextView) rootView.findViewById(R.id.keyDetails);
+
+            String keyDetailsText = null;
+
+            String separator = " | ";
+            switch (swrl.getType()) {
+                case FILM:
+                    String director = details.getCreator() == null ? "" : details.getCreator() + separator;
+                    String genres = details.getCategories() == null ? "" : TextUtils.join(", ", details.getCategories()) + separator;
+                    String actors = details.getActors() == null ? "" : details.getActors() + separator;
+                    String runtime = details.getRuntime() == null ? "" : details.getRuntime() + separator;
+                    keyDetailsText = director + genres + actors + runtime;
+                    break;
+                case TV:
+                    break;
+                case BOOK:
+                    break;
+                case ALBUM:
+                    break;
+                case VIDEO_GAME:
+                    break;
+                case BOARD_GAME:
+                    break;
+                case APP:
+                    break;
+                case PODCAST:
+                    break;
+                case UNKNOWN:
+                    break;
             }
 
-            TextView categories = (TextView) rootView.findViewById(R.id.categories);
-            if (details.getCategories() != null) {
-                String categoriesString = "Categories: " + TextUtils.join(", ", details.getCategories());
-                categories.setText(categoriesString);
+
+            if (keyDetailsText != null) {
+                keyDetails.setText(keyDetailsText);
             } else {
-                categories.setVisibility(GONE);
+                keyDetails.setVisibility(GONE);
             }
 
             TextView ratings = (TextView) rootView.findViewById(R.id.ratings);
             if (details.getRatings() != null) {
                 String ratingsString = "Ratings: ";
 
-                for (Details.Ratings rating: details.getRatings()){
+                for (Details.Ratings rating : details.getRatings()) {
                     ratingsString += rating.getSource().equals("Internet Movie Database") ? "IMDB" : rating.getSource();
                     ratingsString += ": ";
                     ratingsString += rating.getValue();

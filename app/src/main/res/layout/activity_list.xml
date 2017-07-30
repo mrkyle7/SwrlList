@@ -33,7 +33,7 @@
         android:id="@+id/addItemFAB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        fab:fab_addButtonColorNormal="@android:color/holo_red_light"
+        fab:fab_addButtonColorNormal="@color/colorAccent"
         fab:fab_addButtonColorPressed="@android:color/holo_red_dark"
         fab:fab_addButtonPlusIconColor="@android:color/white"
         fab:fab_labelStyle="@style/menu_labels_style"
