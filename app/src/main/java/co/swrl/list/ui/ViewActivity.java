@@ -179,7 +179,7 @@ public class ViewActivity extends AppCompatActivity {
                         @Override
                         public void onClick(View v) {
                             AlertDialog.Builder confirmDialog = new AlertDialog.Builder(v.getContext());
-                            confirmDialog.setTitle("Mark the Swrl as 'done' and remove from list?");
+                            confirmDialog.setTitle("Mark the Swrl as 'done' and markAsDone from list?");
                             confirmDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {

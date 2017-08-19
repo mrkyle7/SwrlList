@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/list_row"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     android:background="@drawable/row_background"
     android:gravity="center_vertical"
-    android:orientation="horizontal"
-    android:paddingEnd="10dp">
+    android:orientation="horizontal">
 
     <RelativeLayout
         android:id="@+id/image_layout"
@@ -119,8 +118,15 @@
         android:layout_marginBottom="5dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="5dp"
+        android:layout_marginEnd="10dp"
         android:background="@drawable/round_button"
         android:contentDescription="@string/item_done"
         android:scaleType="centerInside"
         android:tint="#FFFFFF" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/colorPrimary"
+        android:layout_gravity="bottom"
+        />
 </RelativeLayout>
