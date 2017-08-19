@@ -44,6 +44,7 @@ public class ViewActivity extends AppCompatActivity {
     public static final String EXTRAS_INDEX = "index";
     public static final String EXTRAS_TYPE = "type";
     private SectionsPagerAdapter mSectionsPagerAdapter;
+    private int position;
 
     public enum ViewType {
         VIEW(),
@@ -82,6 +83,24 @@ public class ViewActivity extends AppCompatActivity {
                     && !currentSwrl.getDetails().getId().isEmpty()) {
                 new GetSwrlDetails().execute(currentSwrl.getDetails().getId());
             }
+            return true;
+        } else if (id == R.id.action_markAsDone) {
+            Log.d("VIEW", "Current Swrl = " + currentSwrl);
+            AlertDialog.Builder confirmDialog = new AlertDialog.Builder(this);
+            confirmDialog.setTitle("Mark the Swrl as 'done' and remove from list?");
+            confirmDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    mSectionsPagerAdapter.deletePage(position);
+                }
+            });
+            confirmDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            confirmDialog.show();
             return true;
         }
 
@@ -126,6 +145,7 @@ public class ViewActivity extends AppCompatActivity {
         ViewPager mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.setCurrentItem(firstSwrlIndex);
+        position = firstSwrlIndex;
         currentSwrl = (Swrl) swrls.get(firstSwrlIndex);
         setButton(firstSwrlIndex, mSectionsPagerAdapter);
         ActionBar actionBar = getSupportActionBar();
@@ -147,6 +167,7 @@ public class ViewActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(final int position) {
+                ViewActivity.this.position = position;
                 setButton(position, mSectionsPagerAdapter);
                 currentSwrl = (Swrl) swrls.get(position);
                 ActionBar actionBar = getSupportActionBar();
@@ -172,29 +193,7 @@ public class ViewActivity extends AppCompatActivity {
         if (viewType != null) {
             switch (viewType) {
                 case VIEW:
-                    button.setIcon(R.drawable.ic_done_black_24dp);
-                    button.setColorNormal(getResources().getColor(R.color.add));
-                    button.setColorPressed(getResources().getColor(R.color.add_pressed));
-                    button.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            AlertDialog.Builder confirmDialog = new AlertDialog.Builder(v.getContext());
-                            confirmDialog.setTitle("Mark the Swrl as 'done' and markAsDone from list?");
-                            confirmDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    mSectionsPagerAdapter.deletePage(position);
-                                }
-                            });
-                            confirmDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
-                            });
-                            confirmDialog.show();
-                        }
-                    });
+                    button.setVisibility(View.GONE);
                     break;
                 case ADD:
                     button.setIcon(R.drawable.ic_add_black_24dp);
@@ -247,8 +246,17 @@ public class ViewActivity extends AppCompatActivity {
             swrls.remove(position);
             if (swrls.size() == 0) {
                 finish();
+            } else {
+                notifyDataSetChanged();
+                Swrl nextCurrent;
+                if (swrls.size() == position) {
+                    nextCurrent = (Swrl) swrls.get(swrls.size() - 1);
+                } else {
+                    nextCurrent = (Swrl) swrls.get(position);
+                }
+                ActionBar actionBar = getSupportActionBar();
+                actionBar.setTitle(nextCurrent.getTitle());
             }
-            notifyDataSetChanged();
         }
 
     }

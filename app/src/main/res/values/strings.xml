@@ -5,6 +5,9 @@
     <string name="pkey_version_number">version_number</string>
     <string name="whatsNewLatest">
         <![CDATA[
+        <h4>Version 7.15 (19 August 2017)</h4>
+        \u2022 Remove Done button from View Screen
+        \u2022 Bug Fixes
         <h4>Version 7.14 (19 August 2017)</h4>
         \u2022 Swipe to mark Swrls as Done
         <h4>Version 7.13 (30 July 2017)</h4>
@@ -62,4 +65,5 @@
     <string name="no_details">No Details found.</string>
     <string name="app_title">Swrl List</string>
     <string name="refresh_details">Refresh Details</string>
+    <string name="mark_as_done">Mark As Done</string>
 </resources>

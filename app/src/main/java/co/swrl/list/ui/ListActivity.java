@@ -47,6 +47,7 @@ public class ListActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         swrlListAdapter.refreshAll();
+        setNoSwrlsText();
         FloatingActionsMenu addSwrlMenu = (FloatingActionsMenu) findViewById(R.id.addItemFAB);
         addSwrlMenu.collapseImmediately();
     }
@@ -59,6 +60,7 @@ public class ListActivity extends AppCompatActivity {
         } else {
             super.onBackPressed();
         }
+        setNoSwrlsText();
     }
 
 
@@ -84,6 +86,10 @@ public class ListActivity extends AppCompatActivity {
         list.setHasFixedSize(true);
         setUpItemTouchHelper(list);
         setUpAnimationDecoratorHelper(list);
+        setNoSwrlsText();
+    }
+
+    private void setNoSwrlsText() {
         TextView noSwrlsText = (TextView) findViewById(R.id.noSwrlsText);
         if (swrlListAdapter.getItemCount() > 0){
             noSwrlsText.setVisibility(GONE);
