@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -199,6 +200,7 @@ class SwrlListAdapter extends ArrayAdapter<Swrl> {
 
     private void setImage(View row, Swrl swrl) {
         final ImageView thumbnail = (ImageView) row.findViewById(R.id.list_image);
+        thumbnail.setBackgroundColor(Color.TRANSPARENT);
         int iconResource = swrl.getType().getIcon();
         View imageBackground = row.findViewById(R.id.row_left_border);
         int color = getContext().getResources().getColor(swrl.getType().getColor());
