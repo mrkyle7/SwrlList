@@ -91,7 +91,7 @@ public class ListActivity extends AppCompatActivity {
 
     private void setNoSwrlsText() {
         TextView noSwrlsText = (TextView) findViewById(R.id.noSwrlsText);
-        if (swrlListAdapter.getItemCount() > 0){
+        if (swrlListAdapter.getItemCount() > 0) {
             noSwrlsText.setVisibility(GONE);
         } else {
             noSwrlsText.setVisibility(VISIBLE);
@@ -100,7 +100,7 @@ public class ListActivity extends AppCompatActivity {
 
     private void setUpItemTouchHelper(final RecyclerView recyclerView) {
 
-        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
 
             // we want to cache these and not allocate anything repeatedly in the onChildDraw method
             Drawable background;
@@ -148,21 +148,33 @@ public class ListActivity extends AppCompatActivity {
                     init();
                 }
 
-                // draw red background
-                background.setBounds(itemView.getRight() + (int) dX, itemView.getTop(), itemView.getRight(), itemView.getBottom());
+                // draw green background
+                if (dX > 0) { //swipe right
+                    background.setBounds(itemView.getLeft() - (int) dX, itemView.getTop(), itemView.getRight(), itemView.getBottom());
+                } else {
+                    background.setBounds(itemView.getRight() + (int) dX, itemView.getTop(), itemView.getRight(), itemView.getBottom());
+                }
                 background.draw(c);
 
-                // draw x mark
+                // draw mark
                 int itemHeight = itemView.getBottom() - itemView.getTop();
                 int intrinsicWidth = xMark.getIntrinsicWidth();
                 int intrinsicHeight = xMark.getIntrinsicWidth();
 
-                int xMarkLeft = itemView.getRight() - xMarkMargin - intrinsicWidth;
-                int xMarkRight = itemView.getRight() - xMarkMargin;
-                int xMarkTop = itemView.getTop() + (itemHeight - intrinsicHeight)/2;
+                int xMarkTop = itemView.getTop() + (itemHeight - intrinsicHeight) / 2;
                 int xMarkBottom = xMarkTop + intrinsicHeight;
-                xMark.setBounds(xMarkLeft, xMarkTop, xMarkRight, xMarkBottom);
 
+                int xMarkLeft;
+                int xMarkRight;
+
+                if (dX > 0) { //swipe Right
+                    xMarkLeft = itemView.getLeft() + xMarkMargin;
+                    xMarkRight = itemView.getLeft() + xMarkMargin + intrinsicWidth;
+                } else {
+                    xMarkLeft = itemView.getRight() - xMarkMargin - intrinsicWidth;
+                    xMarkRight = itemView.getRight() - xMarkMargin;
+                }
+                xMark.setBounds(xMarkLeft, xMarkTop, xMarkRight, xMarkBottom);
                 xMark.draw(c);
 
                 super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
@@ -174,7 +186,7 @@ public class ListActivity extends AppCompatActivity {
     }
 
     /**
-     * We're gonna setup another ItemDecorator that will draw the red background in the empty space while the items are animating to thier new positions
+     * We're gonna setup another ItemDecorator that will draw the red background in the empty space while the items are animating to their new positions
      * after an item is removed.
      */
     private void setUpAnimationDecoratorHelper(RecyclerView recyclerView) {
@@ -277,7 +289,7 @@ public class ListActivity extends AppCompatActivity {
         moreButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (showingMainButtons){
+                if (showingMainButtons) {
                     disableButtons(mainButtons);
                     enableButtons(otherButtons);
                     showingMainButtons = false;
@@ -305,6 +317,7 @@ public class ListActivity extends AppCompatActivity {
             });
         }
     }
+
     private void disableButtons(HashMap<Integer, Type> buttons) {
         for (final Map.Entry<Integer, Type> button : buttons.entrySet()) {
             FloatingActionButton actionButton = (FloatingActionButton) findViewById(button.getKey());

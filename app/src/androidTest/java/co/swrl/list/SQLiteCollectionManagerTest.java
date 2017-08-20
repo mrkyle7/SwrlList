@@ -224,4 +224,28 @@ public class SQLiteCollectionManagerTest extends AndroidTestCase {
         Details detailsFromOriginalSwrl = swrlWithDetails.getDetails();
         assertEquals(detailsFromOriginalSwrl, detailsFromDB);
     }
+
+    @Test
+    public void updatingASwrlToAnExistingSwrlWithTheSameTitleReplacesExistingSwrl() throws Exception {
+        Swrl swrl = new Swrl("The Matrix", Type.FILM);
+        db.save(swrl);
+
+        assertThat(db.getActive(), contains(swrl));
+
+        db.markAsDone(swrl);
+
+        assertThat(db.getActive(), is(emptyCollectionOf(Swrl.class)));
+        assertThat(db.getDone(), contains(swrl));
+
+        Swrl swrl2 = new Swrl("Matrix", Type.FILM);
+        db.save(swrl2);
+
+        assertThat(db.getActive(), contains(swrl2));
+        assertThat(db.getDone(), contains(swrl));
+
+        db.updateTitle(swrl2, "The Matrix");
+
+        assertEquals("The Matrix", db.getActive().get(0).getTitle());
+        assertThat(db.getDone(), is(emptyCollectionOf(Swrl.class)));
+    }
 }

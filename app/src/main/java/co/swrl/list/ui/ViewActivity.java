@@ -249,13 +249,15 @@ public class ViewActivity extends AppCompatActivity {
             } else {
                 notifyDataSetChanged();
                 Swrl nextCurrent;
-                if (swrls.size() == position) {
+                if (swrls.size() <= position) {
                     nextCurrent = (Swrl) swrls.get(swrls.size() - 1);
                 } else {
                     nextCurrent = (Swrl) swrls.get(position);
                 }
                 ActionBar actionBar = getSupportActionBar();
-                actionBar.setTitle(nextCurrent.getTitle());
+                if (actionBar != null) {
+                    actionBar.setTitle(nextCurrent.getTitle());
+                }
             }
         }
 

@@ -5,6 +5,8 @@
     <string name="pkey_version_number">version_number</string>
     <string name="whatsNewLatest">
         <![CDATA[
+        <h4>Version 7.16 (20 August 2017)</h4>
+        \u2022 Various fixes on View screen
         <h4>Version 7.15 (19 August 2017)</h4>
         \u2022 Remove Done button from View Screen
         \u2022 Bug Fixes

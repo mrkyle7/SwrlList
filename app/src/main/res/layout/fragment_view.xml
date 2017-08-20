@@ -1,45 +1,41 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:isScrollContainer="true">
+    android:isScrollContainer="true"
+    android:paddingBottom="5dp">
 
-    <android.support.v7.widget.LinearLayoutCompat
-        android:id="@+id/top_section"
+
+    <RelativeLayout
+        android:id="@+id/image_background"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="@dimen/viewImageHeight">
 
-        <RelativeLayout
-            android:id="@+id/image_background"
+        <ImageView
+            android:id="@+id/imageView2"
             android:layout_width="match_parent"
-            android:layout_height="200dp">
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
+            android:alpha="0.4"
+            android:cropToPadding="true"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_boardgame_icon" />
 
-            <ImageView
-                android:id="@+id/imageView2"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:adjustViewBounds="true"
-                android:alpha="0.4"
-                android:cropToPadding="true"
-                android:scaleType="centerCrop"
-                android:src="@drawable/ic_boardgame_icon" />
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:adjustViewBounds="true"
+            android:backgroundTint="@null"
+            android:maxHeight="@dimen/viewPosterHeight"
+            android:src="@drawable/ic_boardgame_icon" />
 
-            <ImageView
-                android:id="@+id/imageView"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_centerInParent="true"
-                android:adjustViewBounds="true"
-                android:maxHeight="190dp"
-                android:src="@drawable/ic_boardgame_icon" />
-
-        </RelativeLayout>
-    </android.support.v7.widget.LinearLayoutCompat>
+    </RelativeLayout>
 
     <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/top_section"
+        android:layout_below="@+id/image_background"
         android:paddingBottom="50dp">
 
         <LinearLayout

@@ -215,11 +215,12 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
                 Swrls.COLUMN_NAME_TYPE + " = ?";
         String[] whereArgs = {oldTitle, type};
 
-        dbWriter.update(
+        dbWriter.updateWithOnConflict(
                 Swrls.TABLE_NAME,
                 values,
                 whereClause,
-                whereArgs
+                whereArgs,
+                SQLiteDatabase.CONFLICT_REPLACE
         );
         dbWriter.close();
     }

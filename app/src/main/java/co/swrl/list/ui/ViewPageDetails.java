@@ -15,6 +15,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Callback;
@@ -39,6 +40,7 @@ public class ViewPageDetails extends Fragment {
     private static final String ARG_SWRL = "swrl";
     private static final String ARG_SWRLS = "swrls";
     private static final String ARG_POSITION = "position";
+    private boolean isImageFitToScreen;
 
     public ViewPageDetails() {
     }
@@ -86,7 +88,7 @@ public class ViewPageDetails extends Fragment {
             noSearchResultsText.setVisibility(GONE);
 
             final TextView swrlSearchTextView = (TextView) rootView.findViewById(R.id.addSwrlText);
-            swrlSearchTextView.setText(swrl.getTitle());
+            swrlSearchTextView.append(swrl.getTitle());
 
             swrlSearchTextView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
                 @Override
@@ -137,6 +139,26 @@ public class ViewPageDetails extends Fragment {
                 poster.setImageResource(iconResource);
             }
 
+            final RelativeLayout imageContainer = (RelativeLayout) rootView.findViewById(R.id.image_background);
+            poster.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(isImageFitToScreen) {
+                        isImageFitToScreen=false;
+                        imageContainer.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, (int) getContext().getResources().getDimension(R.dimen.viewImageHeight)));
+                        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+                        layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+                        poster.setLayoutParams(layoutParams);
+                        poster.setAdjustViewBounds(true);
+                    }else{
+                        isImageFitToScreen=true;
+                        imageContainer.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
+                        poster.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
+                        poster.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                    }
+                }
+            });
             TextView titleText = (TextView) rootView.findViewById(R.id.title);
             String title = swrl.getTitle();
             titleText.setText(title);

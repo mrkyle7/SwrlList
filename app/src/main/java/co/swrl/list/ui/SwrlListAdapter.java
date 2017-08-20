@@ -270,7 +270,7 @@ class SwrlListAdapter extends ArrayAdapter<Swrl> {
             @Override
             public void onClick(View v) {
                 collectionManager.save(swrl);
-                new GetSwrlDetails().execute(swrl);
+                new GetSwrlDetails(ListType.SEARCH_RESULTS).execute(swrl);
             }
         });
     }
@@ -283,6 +283,7 @@ class SwrlListAdapter extends ArrayAdapter<Swrl> {
             public void onClick(View v) {
                 collectionManager.saveDetails(originalSwrl, swrl.getDetails());
                 collectionManager.updateTitle(originalSwrl, swrl.getTitle());
+                new GetSwrlDetails(ListType.VIEW_SEARCH_RESULTS).execute(swrl);
                 ArrayList<Swrl> newSwrls = new ArrayList<>();
                 for (Object originalSwrl : originalSwrls) {
                     newSwrls.add((Swrl) originalSwrl);
@@ -295,7 +296,7 @@ class SwrlListAdapter extends ArrayAdapter<Swrl> {
                 viewActivity.putExtra(ViewActivity.EXTRAS_SWRLS, newSwrls);
                 viewActivity.putExtra(ViewActivity.EXTRAS_INDEX, position);
                 viewActivity.putExtra(ViewActivity.EXTRAS_TYPE, VIEW);
-                startActivity((Activity) getContext(), viewActivity, null);
+                startActivity(getContext(), viewActivity, null);
             }
         });
     }
@@ -361,8 +362,13 @@ class SwrlListAdapter extends ArrayAdapter<Swrl> {
 
     private class GetSwrlDetails extends AsyncTask<Swrl, Void, Details> {
 
+        private final ListType listType;
         private Swrl mSwrl;
         private ProgressDialog addingDialog;
+
+        GetSwrlDetails(ListType listType){
+            this.listType = listType;
+        }
 
         @Override
         protected Details doInBackground(Swrl... params) {
@@ -382,9 +388,11 @@ class SwrlListAdapter extends ArrayAdapter<Swrl> {
 
         @Override
         protected void onPreExecute() {
-            addingDialog = new ProgressDialog(getContext());
-            addingDialog.setMessage("Adding Swrl...");
-            addingDialog.show();
+            if (listType == ListType.SEARCH_RESULTS) {
+                addingDialog = new ProgressDialog(getContext());
+                addingDialog.setMessage("Adding Swrl...");
+                addingDialog.show();
+            }
         }
 
         @Override
@@ -392,9 +400,11 @@ class SwrlListAdapter extends ArrayAdapter<Swrl> {
             if (details != null) {
                 collectionManager.saveDetails(mSwrl, details);
             }
-            addingDialog.hide();
-            Activity addActivity = (Activity) getContext();
-            addActivity.finish();
+            if (listType == ListType.SEARCH_RESULTS) {
+                addingDialog.hide();
+                Activity addActivity = (Activity) getContext();
+                addActivity.finish();
+            }
         }
     }
 }

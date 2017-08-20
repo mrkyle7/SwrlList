@@ -3,7 +3,6 @@ package co.swrl.list.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -18,8 +17,6 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -35,20 +32,14 @@ import static co.swrl.list.ui.ViewActivity.ViewType.VIEW;
 
 public class SwrlListRecyclerAdapter extends RecyclerView.Adapter {
 
-    private static final int PENDING_REMOVAL_TIMEOUT = 3000; // 3sec
     private final Context context;
     private List<Swrl> swrls;
     private final CollectionManager collectionManager;
-    private List<Swrl> swrlsPendingRemoval;
-
-    private Handler handler = new Handler();
-    private HashMap<Swrl, Runnable> pendingRunnables = new HashMap<>();
 
     public SwrlListRecyclerAdapter(Context context, CollectionManager collectionManager) {
         this.context = context;
-        swrls = collectionManager.getActive();
         this.collectionManager = collectionManager;
-        swrlsPendingRemoval = new ArrayList<>();
+        swrls = collectionManager.getActive();
     }
 
     @Override
