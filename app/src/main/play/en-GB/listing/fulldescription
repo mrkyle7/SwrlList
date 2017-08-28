@@ -2,14 +2,14 @@ Sister app to http://swrl.co, Swrl List is an Android app where you can quickly 
 
 What does it currently do?
 
-- Adds simple items to the list and persists them. No images yet, but that's soon to come!
+- Add Films, TV Shows, Books and Music Albums quickly for later viewing
+- Grab reviews, images and descriptions from online databases (eg the TVDB)
+- Quick add items when offline or in the cinema and get the details later
 
 What will it do?
 
 Possible features will include:
 
-- Add Films, TV Shows, Books and Music Albums quickly for later viewing
-- Grab reviews, images and descriptions from online databases (eg the TVDB)
 - Share and recommend items using http://swrl.co and native Android sharing
 - Notifications for when Films are released to DVD
 - Buy items directly from the app

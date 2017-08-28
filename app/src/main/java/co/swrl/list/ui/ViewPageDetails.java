@@ -1,6 +1,5 @@
 package co.swrl.list.ui;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -15,6 +14,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -70,14 +70,12 @@ public class ViewPageDetails extends Fragment {
             rootView = inflater.inflate(R.layout.activity_add_swrl, container, false);
             CollectionManager db = new SQLiteCollectionManager(getActivity());
 
-            final ProgressDialog searchProgressDisplay = new ProgressDialog(getActivity());
-            searchProgressDisplay.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            searchProgressDisplay.setMessage("No Details, searching...");
-
             LinearLayout footer = (LinearLayout) rootView.findViewById(R.id.footer);
             footer.setVisibility(GONE);
 
             final TextView noSearchResultsText = (TextView) rootView.findViewById(R.id.noSearchResults);
+            final TextView progressText = (TextView) rootView.findViewById(R.id.progressSearchingText);
+            final ProgressBar progressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
 
             ArrayList<?> swrls = (ArrayList<?>) getArguments().getSerializable(ARG_SWRLS);
             int position = getArguments().getInt(ARG_POSITION);
@@ -86,6 +84,8 @@ public class ViewPageDetails extends Fragment {
             resultsList.setAdapter(resultsAdapter);
             resultsList.setEmptyView(noSearchResultsText);
             noSearchResultsText.setVisibility(GONE);
+            progressText.setVisibility(GONE);
+            progressBar.setVisibility(GONE);
 
             final TextView swrlSearchTextView = (TextView) rootView.findViewById(R.id.addSwrlText);
             swrlSearchTextView.append(swrl.getTitle());
@@ -96,14 +96,14 @@ public class ViewPageDetails extends Fragment {
                     if (enterKeyPressedOrActionDone(actionId, event)) {
                         InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                        new GetSearchResults(resultsAdapter, searchProgressDisplay, swrl.getType(), noSearchResultsText).execute(String.valueOf(swrlSearchTextView.getText()));
+                        new GetSearchResults(resultsAdapter, progressBar, progressText, swrl.getType(), noSearchResultsText).execute(String.valueOf(swrlSearchTextView.getText()));
                         return true;
                     } else {
                         return false;
                     }
                 }
             });
-            new GetSearchResults(resultsAdapter, null, swrl.getType(), noSearchResultsText).execute(String.valueOf(swrlSearchTextView.getText()));
+            new GetSearchResults(resultsAdapter, progressBar, progressText, swrl.getType(), noSearchResultsText).execute(String.valueOf(swrlSearchTextView.getText()));
         } else {
             rootView = inflater.inflate(R.layout.fragment_view, container, false);
             final ImageView poster = (ImageView) rootView.findViewById(R.id.imageView);

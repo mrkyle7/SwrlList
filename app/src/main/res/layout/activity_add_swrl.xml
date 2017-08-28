@@ -6,58 +6,80 @@
     android:layout_height="match_parent"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="co.swrl.list.ui.AddSwrlActivity">
-    <RelativeLayout
-        android:id="@+id/input_header"
-        android:layout_width="match_parent"
+
+    <EditText
+        android:id="@+id/addSwrlText"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true">
-
-        <EditText
-            android:id="@+id/addSwrlText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:hint="@string/addSwrlText"
-            android:imeOptions="actionSearch"
-            android:inputType="textPersonName"
-            android:nextFocusDown="@id/addItemEditText"/>
-
-    </RelativeLayout>
+        android:hint="@string/addSwrlText"
+        android:imeOptions="actionSearch"
+        android:inputType="textPersonName"
+        android:nextFocusDown="@id/addItemEditText"
+        android:paddingTop="@dimen/activity_vertical_margin" />
 
     <ListView
         android:id="@+id/searchResults"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_above="@+id/footer"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/input_header"
-        android:layout_above="@+id/footer"/>
+        android:layout_below="@+id/addSwrlText" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center_vertical"
+        android:gravity="center"
+        android:progressDrawable="@drawable/circular_progress_bar" />
+
+    <TextView
+        android:id="@+id/progressSearchingText"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/footer"
+        android:layout_below="@+id/progressBar"
+        android:gravity="center_horizontal"
+        android:paddingTop="5sp"
+        android:text="@string/searching" />
 
     <TextView
         android:id="@+id/noSearchResults"
-        android:text="No Search Results."
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/input_header"
         android:layout_above="@+id/footer"
-        android:gravity="center" />
+        android:layout_below="@+id/addSwrlText"
+        android:gravity="center"
+        android:text="@string/no_search_results" />
 
-    <LinearLayout android:id="@+id/footer" android:layout_width="fill_parent"
-        android:layout_height="wrap_content" android:orientation="horizontal"
-        android:layout_alignParentBottom="true" style="@android:style/ButtonBar"
-        android:background="@null" >
+    <LinearLayout
+        android:id="@+id/footer"
+        style="@android:style/ButtonBar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@null"
+        android:orientation="horizontal">
 
-        <Button android:id="@+id/cancel_add" android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:layout_weight="1"
+        <Button
+            android:id="@+id/cancel_add"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="@string/cancel" />
 
-        <Button android:id="@+id/add_swrl_button" android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:layout_weight="1"
+        <Button
+            android:id="@+id/add_swrl_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="@string/quick_add_swrl" />
 
     </LinearLayout>

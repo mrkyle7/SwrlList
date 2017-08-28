@@ -1,6 +1,5 @@
 package co.swrl.list.ui;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +11,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import co.swrl.list.R;
@@ -20,6 +20,7 @@ import co.swrl.list.collection.SQLiteCollectionManager;
 import co.swrl.list.item.Swrl;
 import co.swrl.list.item.Type;
 
+import static android.view.View.GONE;
 import static android.view.View.INVISIBLE;
 
 public class AddSwrlActivity extends AppCompatActivity {
@@ -29,7 +30,6 @@ public class AddSwrlActivity extends AppCompatActivity {
     private TextView swrlSearchTextView;
     private CollectionManager db;
     private SwrlListAdapter resultsAdapter;
-    private ProgressDialog searchProgressDisplay;
     private View noSearchResultsText;
 
     @Override
@@ -38,16 +38,22 @@ public class AddSwrlActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_swrl);
         resultsAdapter = SwrlListAdapter.getResultsListAdapter(this, db);
-        searchProgressDisplay = new ProgressDialog(this);
-        searchProgressDisplay.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        searchProgressDisplay.setMessage("Searching...");
         setType();
         setTitle();
         setSearchTextView();
+        hideProgressDetails();
         setUpResultsList();
         setUpAddButton();
         setUpCancelButton();
         setUpTitleSearch();
+    }
+
+    private void hideProgressDetails() {
+        ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        TextView progressText = (TextView) findViewById(R.id.progressSearchingText);
+
+        progressBar.setVisibility(GONE);
+        progressText.setVisibility(GONE);
     }
 
     private void setUpResultsList() {
@@ -96,7 +102,9 @@ public class AddSwrlActivity extends AppCompatActivity {
                 if (enterKeyPressedOrActionDone(actionId, event)) {
                     InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                    new GetSearchResults(resultsAdapter, searchProgressDisplay, swrlType, noSearchResultsText).execute(String.valueOf(swrlSearchTextView.getText()));
+                    ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
+                    TextView progressText = (TextView) findViewById(R.id.progressSearchingText);
+                    new GetSearchResults(resultsAdapter, progressBar, progressText, swrlType, noSearchResultsText).execute(String.valueOf(swrlSearchTextView.getText()));
                     return true;
                 } else {
                     return false;

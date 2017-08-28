@@ -1,8 +1,9 @@
 package co.swrl.list.ui;
 
-import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -11,18 +12,21 @@ import co.swrl.list.item.Search;
 import co.swrl.list.item.Swrl;
 import co.swrl.list.item.Type;
 
+import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 public class GetSearchResults extends AsyncTask<String, Void, ArrayList<Swrl>> {
 
     private SwrlListAdapter resultsAdapter;
-    private ProgressDialog searchProgressDisplay;
+    private final ProgressBar progressSpinner;
+    private final TextView progressText;
     private Type swrlType;
     private View noSearchResultsText;
 
-    GetSearchResults(SwrlListAdapter resultsAdapter, ProgressDialog searchProgressDisplay, Type swrlType, View noSearchResultsText) {
+    GetSearchResults(SwrlListAdapter resultsAdapter, ProgressBar progressSpinner, TextView progressText, Type swrlType, View noSearchResultsText) {
         this.resultsAdapter = resultsAdapter;
-        this.searchProgressDisplay = searchProgressDisplay;
+        this.progressSpinner = progressSpinner;
+        this.progressText = progressText;
         this.swrlType = swrlType;
         this.noSearchResultsText = noSearchResultsText;
     }
@@ -34,8 +38,10 @@ public class GetSearchResults extends AsyncTask<String, Void, ArrayList<Swrl>> {
     protected void onPreExecute() {
         //if no network show a warning or something
         resultsAdapter.clear();
-        if (searchProgressDisplay != null) {
-            searchProgressDisplay.show();
+        noSearchResultsText.setVisibility(GONE);
+        if (progressSpinner != null && progressText != null){
+            progressSpinner.setVisibility(VISIBLE);
+            progressText.setVisibility(VISIBLE);
         }
     }
 
@@ -49,6 +55,10 @@ public class GetSearchResults extends AsyncTask<String, Void, ArrayList<Swrl>> {
             for (Details result : results) {
                 Swrl swrl = new Swrl(result.getTitle(), swrlType);
                 swrl.setDetails(result);
+                if (results.indexOf(result) < 7){
+                    Details details = search.byID(result.getId());
+                    swrl.setDetails(details);
+                }
                 swrls.add(swrl);
             }
         }
@@ -57,8 +67,9 @@ public class GetSearchResults extends AsyncTask<String, Void, ArrayList<Swrl>> {
 
     @Override
     protected void onPostExecute(ArrayList<Swrl> results) {
-        if (searchProgressDisplay != null) {
-            searchProgressDisplay.dismiss();
+        if (progressSpinner != null && progressText != null){
+            progressSpinner.setVisibility(GONE);
+            progressText.setVisibility(GONE);
         }
         noSearchResultsText.setVisibility(VISIBLE);
         resultsAdapter.addAll(results);
@@ -68,8 +79,9 @@ public class GetSearchResults extends AsyncTask<String, Void, ArrayList<Swrl>> {
     @Override
     protected void onCancelled(ArrayList<Swrl> results) {
         noSearchResultsText.setVisibility(VISIBLE);
-        if (searchProgressDisplay != null) {
-            searchProgressDisplay.dismiss();
+        if (progressSpinner != null && progressText != null){
+            progressSpinner.setVisibility(GONE);
+            progressText.setVisibility(GONE);
         }
     }
 
