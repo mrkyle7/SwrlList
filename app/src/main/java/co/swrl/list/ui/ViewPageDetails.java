@@ -3,6 +3,7 @@ package co.swrl.list.ui;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Html;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.KeyEvent;
@@ -155,7 +156,7 @@ public class ViewPageDetails extends Fragment {
                         imageContainer.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 
                         poster.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
-                        poster.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                        poster.setScaleType(ImageView.ScaleType.FIT_CENTER);
                     }
                 }
             });
@@ -218,7 +219,7 @@ public class ViewPageDetails extends Fragment {
 
             TextView overviewText = (TextView) rootView.findViewById(R.id.overview);
             if (details.getOverview() != null && !details.getOverview().isEmpty()) {
-                overviewText.setText(details.getOverview());
+                overviewText.setText(Html.fromHtml(details.getOverview()));
             } else {
                 overviewText.setVisibility(GONE);
             }

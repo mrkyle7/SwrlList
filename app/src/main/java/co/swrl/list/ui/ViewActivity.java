@@ -150,14 +150,6 @@ public class ViewActivity extends AppCompatActivity {
         setButton(firstSwrlIndex, mSectionsPagerAdapter);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle(currentSwrl.getTitle());
-//        int color = getResources().getColor(currentSwrl.getType().getColor());
-//        actionBar.setBackgroundDrawable(new ColorDrawable(color));
-
-        if (viewType == ViewType.ADD && currentSwrl.getDetails() != null
-                && currentSwrl.getDetails().getId() != null
-                && !currentSwrl.getDetails().getId().isEmpty()) {
-            new GetSwrlDetails().execute(currentSwrl.getDetails().getId());
-        }
 
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -172,13 +164,6 @@ public class ViewActivity extends AppCompatActivity {
                 currentSwrl = (Swrl) swrls.get(position);
                 ActionBar actionBar = getSupportActionBar();
                 actionBar.setTitle(currentSwrl.getTitle());
-//                int color = getResources().getColor(currentSwrl.getType().getColor());
-//                actionBar.setBackgroundDrawable(new ColorDrawable(color));
-                if (viewType == ViewType.ADD && currentSwrl.getDetails() != null
-                        && currentSwrl.getDetails().getId() != null
-                        && !currentSwrl.getDetails().getId().isEmpty()) {
-                    new GetSwrlDetails().execute(currentSwrl.getDetails().getId());
-                }
             }
 
             @Override

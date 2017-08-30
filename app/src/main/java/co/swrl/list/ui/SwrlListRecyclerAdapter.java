@@ -129,7 +129,7 @@ public class SwrlListRecyclerAdapter extends RecyclerView.Adapter {
         Details details = swrl.getDetails();
 
         if (details != null && details.getPosterURL() != null && !Objects.equals(details.getPosterURL(), "")) {
-            resizeThumbnailForImage(thumbnail);
+            resizeThumbnailForIcon(thumbnail);
             Picasso.with(context)
                     .load(details.getPosterURL())
                     .placeholder(R.drawable.progress_spinner)

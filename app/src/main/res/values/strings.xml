@@ -5,6 +5,8 @@
     <string name="pkey_version_number">version_number</string>
     <string name="whatsNewLatest">
         <![CDATA[
+        <h4>Version 7.18 (30 August 2017)</h4>
+        \u2022 Various UI improvements
         <h4>Version 7.17 (28 August 2017)</h4>
         \u2022 Show searching spinner on view page when open
         <h4>Version 7.16 (20 August 2017)</h4>

@@ -206,9 +206,8 @@ class SwrlListAdapter extends ArrayAdapter<Swrl> {
         int color = getContext().getResources().getColor(swrl.getType().getColor());
         imageBackground.setBackgroundColor(color);
         Details details = swrl.getDetails();
-
         if (details != null && details.getPosterURL() != null && !Objects.equals(details.getPosterURL(), "")) {
-            resizeThumbnailForImage(thumbnail);
+            resizeThumbnailForIcon(thumbnail);
             Picasso.with(getContext())
                     .load(details.getPosterURL())
                     .placeholder(R.drawable.progress_spinner)

@@ -32,7 +32,7 @@
                 android:layout_height="match_parent"
                 android:layout_margin="0dp"
                 android:contentDescription="@string/thumbnail"
-                android:src="@drawable/ic_film"
+                android:src="@drawable/progress_spinner"
                 android:scaleType="centerCrop"
                 android:layout_centerInParent="true"/>
 
