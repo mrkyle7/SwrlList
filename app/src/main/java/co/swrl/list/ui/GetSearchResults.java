@@ -18,6 +18,7 @@ import static android.view.View.VISIBLE;
 public class GetSearchResults extends AsyncTask<String, Void, ArrayList<Swrl>> {
 
     private SwrlListAdapter resultsAdapter;
+    private SwrlResultsRecyclerAdapter recyclerAdapter;
     private final ProgressBar progressSpinner;
     private final TextView progressText;
     private Type swrlType;
@@ -30,6 +31,13 @@ public class GetSearchResults extends AsyncTask<String, Void, ArrayList<Swrl>> {
         this.swrlType = swrlType;
         this.noSearchResultsText = noSearchResultsText;
     }
+    GetSearchResults(SwrlResultsRecyclerAdapter resultsAdapter, ProgressBar progressSpinner, TextView progressText, Type swrlType, View noSearchResultsText) {
+        this.recyclerAdapter = resultsAdapter;
+        this.progressSpinner = progressSpinner;
+        this.progressText = progressText;
+        this.swrlType = swrlType;
+        this.noSearchResultsText = noSearchResultsText;
+    }
 
     /**
      * Cancel background network operation if we do not have network connectivity.
@@ -37,7 +45,11 @@ public class GetSearchResults extends AsyncTask<String, Void, ArrayList<Swrl>> {
     @Override
     protected void onPreExecute() {
         //if no network show a warning or something
-        resultsAdapter.clear();
+        if (resultsAdapter != null) {
+            resultsAdapter.clear();
+        } else {
+            recyclerAdapter.clear();
+        }
         noSearchResultsText.setVisibility(GONE);
         if (progressSpinner != null && progressText != null){
             progressSpinner.setVisibility(VISIBLE);
@@ -71,14 +83,22 @@ public class GetSearchResults extends AsyncTask<String, Void, ArrayList<Swrl>> {
             progressSpinner.setVisibility(GONE);
             progressText.setVisibility(GONE);
         }
-        noSearchResultsText.setVisibility(VISIBLE);
-        resultsAdapter.addAll(results);
+        if (results.size() == 0){
+            noSearchResultsText.setVisibility(VISIBLE);
+        }
+        if(resultsAdapter != null){
+            resultsAdapter.addAll(results);
+        } else {
+            recyclerAdapter.addAll(results);
+        }
     }
 
 
     @Override
     protected void onCancelled(ArrayList<Swrl> results) {
-        noSearchResultsText.setVisibility(VISIBLE);
+        if (results.size() == 0){
+            noSearchResultsText.setVisibility(VISIBLE);
+        }
         if (progressSpinner != null && progressText != null){
             progressSpinner.setVisibility(GONE);
             progressText.setVisibility(GONE);

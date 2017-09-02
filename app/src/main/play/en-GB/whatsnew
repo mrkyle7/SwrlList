@@ -1,3 +1,7 @@
+Version 7.19 (02 September 2017)
+<br />
+- Tweaking the images in the list view to render faster
+<br />
 Version 7.18 (30 August 2017)
 <br />
 - Various UI improvements
@@ -14,11 +18,3 @@ Version 7.15 (19 August 2017)
 <br />
 - Remove Done button from view screen
 - Bug Fixes
-<br />
-Version 7.14 (19 August 2017)
-<br />
-- Swipe to mark Swrls as Done
-<br />
-Version 7.13 (30 July 2017)
-<br />
-- Cosmetic changes

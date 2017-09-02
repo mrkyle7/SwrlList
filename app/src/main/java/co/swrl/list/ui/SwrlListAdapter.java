@@ -2,11 +2,9 @@ package co.swrl.list.ui;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
@@ -30,7 +28,6 @@ import java.util.Objects;
 import co.swrl.list.R;
 import co.swrl.list.collection.CollectionManager;
 import co.swrl.list.item.Details;
-import co.swrl.list.item.Search;
 import co.swrl.list.item.Swrl;
 import co.swrl.list.item.Type;
 import co.swrl.list.ui.ViewActivity.ViewType;
@@ -51,21 +48,8 @@ class SwrlListAdapter extends ArrayAdapter<Swrl> {
     private final Swrl originalSwrl;
 
     private enum ListType {
-        ACTIVE_SWRLS,
         SEARCH_RESULTS,
         VIEW_SEARCH_RESULTS;
-    }
-
-    public static SwrlListAdapter getActiveListAdapter(Context context, CollectionManager collectionManager) {
-        return new SwrlListAdapter(
-                context,
-                R.id.list_row,
-                (ArrayList<Swrl>) collectionManager.getActive(),
-                collectionManager,
-                ListType.ACTIVE_SWRLS,
-                null,
-                null,
-                0);
     }
 
     public static SwrlListAdapter getResultsListAdapter(Context context, CollectionManager collectionManager) {
@@ -113,10 +97,6 @@ class SwrlListAdapter extends ArrayAdapter<Swrl> {
             setSubtitle2(row, swrl);
             setImage(row, swrl);
             switch (listType) {
-                case ACTIVE_SWRLS:
-                    setDoneButton(row, swrl, position);
-                    setClickableRow(row, position, VIEW);
-                    break;
                 case SEARCH_RESULTS:
                     setAddButton(row, swrl);
                     setClickableRow(row, position, ADD);
@@ -269,7 +249,8 @@ class SwrlListAdapter extends ArrayAdapter<Swrl> {
             @Override
             public void onClick(View v) {
                 collectionManager.save(swrl);
-                new GetSwrlDetails(ListType.SEARCH_RESULTS).execute(swrl);
+                Activity addActivity = (Activity) getContext();
+                addActivity.finish();
             }
         });
     }
@@ -282,7 +263,6 @@ class SwrlListAdapter extends ArrayAdapter<Swrl> {
             public void onClick(View v) {
                 collectionManager.saveDetails(originalSwrl, swrl.getDetails());
                 collectionManager.updateTitle(originalSwrl, swrl.getTitle());
-                new GetSwrlDetails(ListType.VIEW_SEARCH_RESULTS).execute(swrl);
                 ArrayList<Swrl> newSwrls = new ArrayList<>();
                 for (Object originalSwrl : originalSwrls) {
                     newSwrls.add((Swrl) originalSwrl);
@@ -357,53 +337,5 @@ class SwrlListAdapter extends ArrayAdapter<Swrl> {
         insert(swrl, position);
         collectionManager.markAsActive(swrl);
         notifyDataSetChanged();
-    }
-
-    private class GetSwrlDetails extends AsyncTask<Swrl, Void, Details> {
-
-        private final ListType listType;
-        private Swrl mSwrl;
-        private ProgressDialog addingDialog;
-
-        GetSwrlDetails(ListType listType){
-            this.listType = listType;
-        }
-
-        @Override
-        protected Details doInBackground(Swrl... params) {
-            Swrl swrl = params[0];
-            mSwrl = swrl;
-            Details details = null;
-
-            try {
-                Search search = swrl.getType().getSearch();
-                details = search.byID(swrl.getDetails().getId());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            return details;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            if (listType == ListType.SEARCH_RESULTS) {
-                addingDialog = new ProgressDialog(getContext());
-                addingDialog.setMessage("Adding Swrl...");
-                addingDialog.show();
-            }
-        }
-
-        @Override
-        protected void onPostExecute(Details details) {
-            if (details != null) {
-                collectionManager.saveDetails(mSwrl, details);
-            }
-            if (listType == ListType.SEARCH_RESULTS) {
-                addingDialog.hide();
-                Activity addActivity = (Activity) getContext();
-                addActivity.finish();
-            }
-        }
     }
 }

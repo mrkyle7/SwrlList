@@ -84,6 +84,9 @@ public class ListActivity extends AppCompatActivity {
         list.setLayoutManager(new LinearLayoutManager(this));
         list.setAdapter(swrlListAdapter);
         list.setHasFixedSize(true);
+        list.setItemViewCacheSize(100);
+        list.setDrawingCacheEnabled(true);
+        list.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
         setUpItemTouchHelper(list);
         setUpAnimationDecoratorHelper(list);
         setNoSwrlsText();

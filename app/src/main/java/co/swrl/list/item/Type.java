@@ -36,7 +36,7 @@ public enum Type {
         this.creatorType = creatorType;
     }
 
-    public int getColor() {
+    public int      getColor() {
         return color;
     }
 

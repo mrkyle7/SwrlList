@@ -3,6 +3,8 @@ package co.swrl.list.ui;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -10,7 +12,6 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -21,7 +22,6 @@ import co.swrl.list.item.Swrl;
 import co.swrl.list.item.Type;
 
 import static android.view.View.GONE;
-import static android.view.View.INVISIBLE;
 
 public class AddSwrlActivity extends AppCompatActivity {
 
@@ -29,7 +29,7 @@ public class AddSwrlActivity extends AppCompatActivity {
     private Type swrlType;
     private TextView swrlSearchTextView;
     private CollectionManager db;
-    private SwrlListAdapter resultsAdapter;
+    private AddSwrlResultsRecyclerAdapter resultsAdapter;
     private View noSearchResultsText;
 
     @Override
@@ -37,12 +37,13 @@ public class AddSwrlActivity extends AppCompatActivity {
         db = new SQLiteCollectionManager(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_swrl);
-        resultsAdapter = SwrlListAdapter.getResultsListAdapter(this, db);
+        resultsAdapter = new AddSwrlResultsRecyclerAdapter(this, db);
         setType();
         setTitle();
         setSearchTextView();
         hideProgressDetails();
         setUpResultsList();
+        setNoResultsText();
         setUpAddButton();
         setUpCancelButton();
         setUpTitleSearch();
@@ -57,11 +58,17 @@ public class AddSwrlActivity extends AppCompatActivity {
     }
 
     private void setUpResultsList() {
-        ListView resultsList = (ListView) findViewById(R.id.searchResults);
+        RecyclerView resultsList = (RecyclerView) findViewById(R.id.searchResults);
+        resultsList.setLayoutManager(new LinearLayoutManager(this));
         resultsList.setAdapter(resultsAdapter);
+        resultsList.setHasFixedSize(true);
+        resultsList.setItemViewCacheSize(100);
+        resultsList.setDrawingCacheEnabled(true);
+        resultsList.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+    }
+
+    private void setNoResultsText() {
         noSearchResultsText = findViewById(R.id.noSearchResults);
-        resultsList.setEmptyView(noSearchResultsText);
-        noSearchResultsText.setVisibility(INVISIBLE);
     }
 
     private void setSearchTextView() {
