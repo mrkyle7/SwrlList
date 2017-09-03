@@ -1,8 +1,10 @@
-package co.swrl.list.ui;
+package co.swrl.list.ui.activity;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.TypedValue;
@@ -14,7 +16,6 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -30,6 +31,9 @@ import co.swrl.list.collection.CollectionManager;
 import co.swrl.list.collection.SQLiteCollectionManager;
 import co.swrl.list.item.Details;
 import co.swrl.list.item.Swrl;
+import co.swrl.list.item.search.GetSearchResults;
+import co.swrl.list.ui.list.SwrlListViewFactory;
+import co.swrl.list.ui.list.ViewSwrlResultsRecyclerAdapter;
 
 import static android.view.View.GONE;
 
@@ -78,12 +82,10 @@ public class ViewPageDetails extends Fragment {
             final TextView progressText = (TextView) rootView.findViewById(R.id.progressSearchingText);
             final ProgressBar progressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
 
-            ArrayList<?> swrls = (ArrayList<?>) getArguments().getSerializable(ARG_SWRLS);
+            ArrayList<Swrl> originalSwrls = getSwrlsFromArgs();
             int position = getArguments().getInt(ARG_POSITION);
-            final SwrlListAdapter resultsAdapter = SwrlListAdapter.getViewResultsListAdapter(getActivity(), db, swrl, swrls, position);
-            final ListView resultsList = (ListView) rootView.findViewById(R.id.searchResultsList);
-            resultsList.setAdapter(resultsAdapter);
-            resultsList.setEmptyView(noSearchResultsText);
+            final ViewSwrlResultsRecyclerAdapter resultsAdapter = new ViewSwrlResultsRecyclerAdapter(getActivity(), db, originalSwrls, swrl, position);
+            SwrlListViewFactory.setUpListView(getActivity(), (RecyclerView) rootView.findViewById(R.id.listView), resultsAdapter);
             noSearchResultsText.setVisibility(GONE);
             progressText.setVisibility(GONE);
             progressBar.setVisibility(GONE);
@@ -108,8 +110,6 @@ public class ViewPageDetails extends Fragment {
         } else {
             rootView = inflater.inflate(R.layout.fragment_view, container, false);
             final ImageView poster = (ImageView) rootView.findViewById(R.id.imageView);
-            int color = getContext().getResources().getColor(swrl.getType().getColor());
-
             int iconResource = swrl.getType().getIcon();
 
             ImageView background = (ImageView) rootView.findViewById(R.id.imageView2);
@@ -144,15 +144,15 @@ public class ViewPageDetails extends Fragment {
             poster.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(isImageFitToScreen) {
-                        isImageFitToScreen=false;
+                    if (isImageFitToScreen) {
+                        isImageFitToScreen = false;
                         imageContainer.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, (int) getContext().getResources().getDimension(R.dimen.viewImageHeight)));
                         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.MATCH_PARENT);
                         layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
                         poster.setLayoutParams(layoutParams);
                         poster.setAdjustViewBounds(true);
-                    }else{
-                        isImageFitToScreen=true;
+                    } else {
+                        isImageFitToScreen = true;
                         imageContainer.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 
                         poster.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
@@ -227,6 +227,18 @@ public class ViewPageDetails extends Fragment {
 
 
         return rootView;
+    }
+
+    @NonNull
+    private ArrayList<Swrl> getSwrlsFromArgs() {
+        ArrayList<?> swrlsFromArgs = (ArrayList<?>) getArguments().getSerializable(ARG_SWRLS);
+        ArrayList<Swrl> originalSwrls = new ArrayList<>();
+        if (swrlsFromArgs != null) {
+            for (Object swrlFromArg : swrlsFromArgs) {
+                originalSwrls.add((Swrl) swrlFromArg);
+            }
+        }
+        return originalSwrls;
     }
 
     private boolean enterKeyPressedOrActionDone(int actionId, KeyEvent event) {

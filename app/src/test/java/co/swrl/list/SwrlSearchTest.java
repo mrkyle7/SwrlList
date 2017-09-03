@@ -8,7 +8,7 @@ import org.junit.Test;
 import java.util.List;
 
 import co.swrl.list.item.Details;
-import co.swrl.list.item.SwrlSearch;
+import co.swrl.list.item.search.SwrlSearch;
 import co.swrl.list.item.Type;
 import okhttp3.HttpUrl;
 import okhttp3.mockwebserver.MockResponse;

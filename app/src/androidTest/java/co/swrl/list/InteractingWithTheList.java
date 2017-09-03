@@ -19,7 +19,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import co.swrl.list.item.Swrl;
-import co.swrl.list.ui.ListActivity;
+import co.swrl.list.ui.activity.ListActivity;
 
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;

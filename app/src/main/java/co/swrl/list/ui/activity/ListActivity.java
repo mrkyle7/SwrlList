@@ -1,4 +1,4 @@
-package co.swrl.list.ui;
+package co.swrl.list.ui.activity;
 
 import android.content.Intent;
 import android.graphics.Canvas;
@@ -9,7 +9,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
@@ -26,6 +25,9 @@ import co.swrl.list.SwrlPreferences;
 import co.swrl.list.collection.CollectionManager;
 import co.swrl.list.collection.SQLiteCollectionManager;
 import co.swrl.list.item.Type;
+import co.swrl.list.ui.SwrlDialogs;
+import co.swrl.list.ui.list.SwrlListViewFactory;
+import co.swrl.list.ui.list.SwrlListRecyclerAdapter;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -80,13 +82,7 @@ public class ListActivity extends AppCompatActivity {
     }
 
     private void setUpList() {
-        RecyclerView list = (RecyclerView) findViewById(R.id.itemListView);
-        list.setLayoutManager(new LinearLayoutManager(this));
-        list.setAdapter(swrlListAdapter);
-        list.setHasFixedSize(true);
-        list.setItemViewCacheSize(100);
-        list.setDrawingCacheEnabled(true);
-        list.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+        RecyclerView list = SwrlListViewFactory.setUpListView(this, (RecyclerView) findViewById(R.id.listView), swrlListAdapter);
         setUpItemTouchHelper(list);
         setUpAnimationDecoratorHelper(list);
         setNoSwrlsText();

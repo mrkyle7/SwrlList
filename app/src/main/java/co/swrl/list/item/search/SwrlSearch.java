@@ -1,4 +1,4 @@
-package co.swrl.list.item;
+package co.swrl.list.item.search;
 
 
 import com.google.gson.Gson;
@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import co.swrl.list.item.Details;
+import co.swrl.list.item.Type;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;

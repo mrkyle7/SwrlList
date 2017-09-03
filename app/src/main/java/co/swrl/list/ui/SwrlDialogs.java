@@ -21,7 +21,7 @@ import static android.content.DialogInterface.BUTTON_POSITIVE;
 public class SwrlDialogs {
     private final Activity activity;
 
-    SwrlDialogs(Activity activity) {
+    public SwrlDialogs(Activity activity) {
         this.activity = activity;
     }
 

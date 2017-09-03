@@ -1,6 +1,9 @@
 package co.swrl.list.item;
 
 import co.swrl.list.R;
+import co.swrl.list.item.search.Search;
+import co.swrl.list.item.search.SwrlSearch;
+import co.swrl.list.item.search.UnknownSearch;
 
 public enum Type {
     FILM("Film", R.color.film,

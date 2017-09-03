@@ -1,4 +1,4 @@
-package co.swrl.list.ui;
+package co.swrl.list.ui.activity;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -27,8 +27,10 @@ import co.swrl.list.R;
 import co.swrl.list.collection.CollectionManager;
 import co.swrl.list.collection.SQLiteCollectionManager;
 import co.swrl.list.item.Details;
-import co.swrl.list.item.Search;
+import co.swrl.list.item.search.Search;
 import co.swrl.list.item.Swrl;
+
+import static co.swrl.list.ui.activity.ViewActivity.ViewType.ADD;
 
 public class ViewActivity extends AppCompatActivity {
 
@@ -150,7 +152,9 @@ public class ViewActivity extends AppCompatActivity {
         setButton(firstSwrlIndex, mSectionsPagerAdapter);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle(currentSwrl.getTitle());
-
+        if (viewType == ADD) {
+            new GetSwrlDetails().execute(currentSwrl.getDetails().getId());
+        }
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -164,6 +168,9 @@ public class ViewActivity extends AppCompatActivity {
                 currentSwrl = (Swrl) swrls.get(position);
                 ActionBar actionBar = getSupportActionBar();
                 actionBar.setTitle(currentSwrl.getTitle());
+                if (viewType == ADD) {
+                    new GetSwrlDetails().execute(currentSwrl.getDetails().getId());
+                }
             }
 
             @Override

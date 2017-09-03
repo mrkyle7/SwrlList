@@ -1,4 +1,4 @@
-package co.swrl.list.ui;
+package co.swrl.list.ui.list;
 
 import android.content.Context;
 import android.support.design.widget.Snackbar;

@@ -1,9 +1,8 @@
-package co.swrl.list.ui;
+package co.swrl.list.ui.activity;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -20,6 +19,9 @@ import co.swrl.list.collection.CollectionManager;
 import co.swrl.list.collection.SQLiteCollectionManager;
 import co.swrl.list.item.Swrl;
 import co.swrl.list.item.Type;
+import co.swrl.list.item.search.GetSearchResults;
+import co.swrl.list.ui.list.AddSwrlResultsRecyclerAdapter;
+import co.swrl.list.ui.list.SwrlListViewFactory;
 
 import static android.view.View.GONE;
 
@@ -58,17 +60,12 @@ public class AddSwrlActivity extends AppCompatActivity {
     }
 
     private void setUpResultsList() {
-        RecyclerView resultsList = (RecyclerView) findViewById(R.id.searchResults);
-        resultsList.setLayoutManager(new LinearLayoutManager(this));
-        resultsList.setAdapter(resultsAdapter);
-        resultsList.setHasFixedSize(true);
-        resultsList.setItemViewCacheSize(100);
-        resultsList.setDrawingCacheEnabled(true);
-        resultsList.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+        SwrlListViewFactory.setUpListView(this, (RecyclerView) findViewById(R.id.listView), resultsAdapter);
     }
 
     private void setNoResultsText() {
         noSearchResultsText = findViewById(R.id.noSearchResults);
+        noSearchResultsText.setVisibility(GONE);
     }
 
     private void setSearchTextView() {

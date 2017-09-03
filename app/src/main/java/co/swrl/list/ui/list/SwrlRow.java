@@ -1,9 +1,12 @@
-package co.swrl.list.ui;
+package co.swrl.list.ui.list;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.TypedValue;
@@ -18,6 +21,7 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -26,11 +30,13 @@ import co.swrl.list.collection.CollectionManager;
 import co.swrl.list.item.Details;
 import co.swrl.list.item.Swrl;
 import co.swrl.list.item.Type;
+import co.swrl.list.item.search.Search;
+import co.swrl.list.ui.activity.ViewActivity;
 
 import static android.support.v4.content.ContextCompat.startActivity;
 import static co.swrl.list.R.drawable.ic_add_black_24dp;
-import static co.swrl.list.ui.ViewActivity.ViewType.ADD;
-import static co.swrl.list.ui.ViewActivity.ViewType.VIEW;
+import static co.swrl.list.ui.activity.ViewActivity.ViewType.ADD;
+import static co.swrl.list.ui.activity.ViewActivity.ViewType.VIEW;
 
 
 public class SwrlRow extends RecyclerView.ViewHolder {
@@ -121,8 +127,10 @@ public class SwrlRow extends RecyclerView.ViewHolder {
 
         if (details != null && details.getPosterURL() != null && !Objects.equals(details.getPosterURL(), "")) {
             resizeThumbnailForIcon(thumbnail, context);
-            Picasso.with(context)
-                    .load(details.getPosterURL())
+            Picasso picasso = Picasso.with(context);
+//            picasso.setIndicatorsEnabled(true);
+//            picasso.setLoggingEnabled(true);
+            picasso.load(details.getPosterURL())
                     .placeholder(R.drawable.progress_spinner)
                     .error(iconResource)
                     .resize(600, 600)
@@ -183,14 +191,141 @@ public class SwrlRow extends RecyclerView.ViewHolder {
         });
     }
 
-    public void setAddButton(final Swrl swrl, final CollectionManager collectionManager, final Context context) {
+    public void setAddButton(final Swrl swrl, final CollectionManager collectionManager, final Activity activity) {
         addButton.setImageResource(ic_add_black_24dp);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 collectionManager.save(swrl);
-                Activity addActivity = (Activity) context;
-                addActivity.finish();
+                final AsyncTask<Swrl, Void, Details> getSwrlDetails = getSwrlDetailsAsyncTask();
+                getSwrlDetails.execute(swrl);
+            }
+
+            @NonNull
+            private AsyncTask<Swrl, Void, Details> getSwrlDetailsAsyncTask() {
+                return new AsyncTask<Swrl, Void, Details>() {
+                    private ProgressDialog addingDialog;
+                    public Swrl mSwrl;
+
+                    @Override
+                    protected void onPreExecute() {
+                        addingDialog = new ProgressDialog(activity);
+                        addingDialog.setMessage("Adding Swrl...");
+                        addingDialog.show();
+                    }
+
+                    @Override
+                    protected void onPostExecute(Details details) {
+                        updateSwrlWithDetailsAndCloseActivity(details);
+                    }
+
+
+                    @Override
+                    protected void onCancelled(Details details) {
+                        updateSwrlWithDetailsAndCloseActivity(details);
+                    }
+
+                    private void updateSwrlWithDetailsAndCloseActivity(Details details) {
+                        addingDialog.hide();
+                        if (details != null) {
+                            collectionManager.saveDetails(swrl, details);
+                        }
+                        activity.finish();
+                    }
+
+                    @Override
+                    protected Details doInBackground(Swrl... params) {
+                        Swrl swrl = params[0];
+                        mSwrl = swrl;
+                        Details details = null;
+
+                        try {
+                            Search search = swrl.getType().getSearch();
+                            details = search.byID(swrl.getDetails().getId());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        return details;
+                    }
+                };
+            }
+
+        });
+    }
+
+    public void setRowClickToReplaceViewWithDetails(final Swrl swrl, final Swrl originalSwrl, final List<Swrl> originalSwrls, final int position, final CollectionManager collectionManager, final Activity activity) {
+        itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final AsyncTask<Swrl, Void, Details> getSwrlDetails = getSwrlDetailsAsyncTask();
+                getSwrlDetails.execute(swrl);
+            }
+
+            @NonNull
+            private AsyncTask<Swrl, Void, Details> getSwrlDetailsAsyncTask() {
+                return new AsyncTask<Swrl, Void, Details>() {
+                    private ProgressDialog addingDialog;
+                    public Swrl mSwrl;
+
+                    @Override
+                    protected void onPreExecute() {
+                        addingDialog = new ProgressDialog(activity);
+                        addingDialog.setMessage("Adding Swrl...");
+                        addingDialog.show();
+                    }
+
+                    @Override
+                    protected void onPostExecute(Details details) {
+                        updateSwrlWithDetailsAndRefreshView(details);
+                    }
+
+
+                    @Override
+                    protected void onCancelled(Details details) {
+                        updateSwrlWithDetailsAndRefreshView(details);
+                    }
+
+                    private void updateSwrlWithDetailsAndRefreshView(Details details) {
+                        addingDialog.hide();
+                        if (details != null) {
+                            collectionManager.saveDetails(originalSwrl, details);
+                            collectionManager.updateTitle(originalSwrl, details.getTitle());
+                            swrl.setDetails(details);
+                        } else {
+                            collectionManager.saveDetails(originalSwrl, swrl.getDetails());
+                            collectionManager.updateTitle(originalSwrl, swrl.getTitle());
+                        }
+                        ArrayList<Swrl> newSwrls = new ArrayList<>();
+                        for (Swrl originalSwrl : originalSwrls) {
+                            newSwrls.add(originalSwrl);
+                        }
+                        newSwrls.remove(originalSwrl);
+                        newSwrls.add(position, swrl);
+                        activity.finish();
+                        Intent viewActivity = new Intent(activity, ViewActivity.class);
+                        viewActivity.putExtra(ViewActivity.EXTRAS_SWRLS, newSwrls);
+                        viewActivity.putExtra(ViewActivity.EXTRAS_INDEX, position);
+                        viewActivity.putExtra(ViewActivity.EXTRAS_TYPE, VIEW);
+                        startActivity(activity, viewActivity, null);
+                    }
+
+                    @Override
+                    protected Details doInBackground(Swrl... params) {
+                        Swrl swrl = params[0];
+                        mSwrl = swrl;
+                        Details details = null;
+
+                        try {
+                            Search search = swrl.getType().getSearch();
+                            details = search.byID(swrl.getDetails().getId());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        return details;
+                    }
+                };
             }
         });
     }

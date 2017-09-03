@@ -2,7 +2,7 @@ package co.swrl.list;
 
 import org.junit.Test;
 
-import co.swrl.list.ui.ListActivity;
+import co.swrl.list.ui.activity.ListActivity;
 import co.swrl.list.ui.SwrlDialogs;
 
 import static org.mockito.Mockito.mock;
