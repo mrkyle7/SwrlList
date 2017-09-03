@@ -81,7 +81,7 @@ public class ViewPageDetails extends Fragment {
             ArrayList<?> swrls = (ArrayList<?>) getArguments().getSerializable(ARG_SWRLS);
             int position = getArguments().getInt(ARG_POSITION);
             final SwrlListAdapter resultsAdapter = SwrlListAdapter.getViewResultsListAdapter(getActivity(), db, swrl, swrls, position);
-            final ListView resultsList = (ListView) rootView.findViewById(R.id.searchResults);
+            final ListView resultsList = (ListView) rootView.findViewById(R.id.searchResultsList);
             resultsList.setAdapter(resultsAdapter);
             resultsList.setEmptyView(noSearchResultsText);
             noSearchResultsText.setVisibility(GONE);
