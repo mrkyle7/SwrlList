@@ -49,17 +49,18 @@ public class ListActivity extends AppCompatActivity {
     private boolean showingMainButtons = true;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
-    private RecyclerView list;
     private Type typeFilter;
     private HashMap<Integer, Type> otherButtons;
     private HashMap<Integer, Type> mainButtons;
     private LinearLayout nav_drawer;
+    private SQLiteCollectionManager collectionManager;
+    private DrawerListAdapter navListAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         showWhatsNewDialogIfNewVersion(new SwrlPreferences(this), new SwrlDialogs(this));
-        SQLiteCollectionManager collectionManager = new SQLiteCollectionManager(this);
+        collectionManager = new SQLiteCollectionManager(this);
         setUpViewElements(collectionManager);
     }
 
@@ -71,6 +72,7 @@ public class ListActivity extends AppCompatActivity {
         } else {
             swrlListAdapter.refreshAllWithFilter(typeFilter);
         }
+        navListAdapter.notifyDataSetChanged();
         setNoSwrlsText();
         FloatingActionsMenu addSwrlMenu = (FloatingActionsMenu) findViewById(R.id.addItemFAB);
         addSwrlMenu.collapseImmediately();
@@ -128,13 +130,13 @@ public class ListActivity extends AppCompatActivity {
         nav_drawer = (LinearLayout) findViewById(R.id.nav_drawer);
         final ListView drawerList = (ListView) findViewById(R.id.swrl_filter_list);
 
-        DrawerListAdapter adapter = new DrawerListAdapter(this, Type.values());
-        drawerList.setAdapter(adapter);
+        navListAdapter = new DrawerListAdapter(this, Type.values());
+        drawerList.setAdapter(navListAdapter);
         drawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 typeFilter = (Type) drawerList.getAdapter().getItem(position);
-                if (typeFilter == null || typeFilter == Type.UNKNOWN){
+                if (typeFilter == null || typeFilter == Type.UNKNOWN) {
                     swrlListAdapter.refreshAll();
                 } else {
                     swrlListAdapter.refreshAllWithFilter(typeFilter);
@@ -168,7 +170,7 @@ public class ListActivity extends AppCompatActivity {
     }
 
     private void setUpList() {
-        list = SwrlListViewFactory.setUpListView(this, (RecyclerView) findViewById(R.id.listView), swrlListAdapter);
+        RecyclerView list = SwrlListViewFactory.setUpListView(this, (RecyclerView) findViewById(R.id.listView), swrlListAdapter);
         setUpItemTouchHelper(list);
         setUpAnimationDecoratorHelper(list);
         setNoSwrlsText();
@@ -452,8 +454,11 @@ public class ListActivity extends AppCompatActivity {
             Type navItem = mNavItems[position];
             border.setBackgroundColor(getApplicationContext().getResources().getColor(navItem.getColor()));
             iconView.setImageResource(navItem.getIcon());
-            titleView.setText(navItem.getFriendlyNamePlural());
-
+            String filterTitle = navItem.getFriendlyNamePlural()
+                    + " ("
+                    + (navItem == Type.UNKNOWN ? collectionManager.countActive() : collectionManager.countActiveByFilter(navItem))
+                    + ")";
+            titleView.setText(filterTitle);
             return view;
         }
     }

@@ -77,7 +77,7 @@ public class SQLiteCollectionManagerTest extends AndroidTestCase {
     }
 
     @Test
-    public void ifNoActiveSwrlsThenReturnEmptyList() throws Exception{
+    public void ifNoActiveSwrlsThenReturnEmptyList() throws Exception {
         List<Swrl> saved = db.getActive();
         assertThat(saved, is(emptyCollectionOf(Swrl.class)));
     }
@@ -133,7 +133,7 @@ public class SQLiteCollectionManagerTest extends AndroidTestCase {
     }
 
     @Test
-    public void savingASwrlMarkedAsDoneReplacesItAsActive() throws Exception{
+    public void savingASwrlMarkedAsDoneReplacesItAsActive() throws Exception {
         db.save(THE_MATRIX);
         db.markAsDone(THE_MATRIX);
 
@@ -232,6 +232,7 @@ public class SQLiteCollectionManagerTest extends AndroidTestCase {
 
         assertNull(detailsFromDB);
     }
+
     @Test
     public void savingASwrlWithDetails() throws Exception {
         Swrl swrlWithDetails = new Swrl("The Matrix", Type.FILM);
@@ -267,5 +268,36 @@ public class SQLiteCollectionManagerTest extends AndroidTestCase {
 
         assertEquals("The Matrix", db.getActive().get(0).getTitle());
         assertThat(db.getDone(), is(emptyCollectionOf(Swrl.class)));
+    }
+
+    @Test
+    public void countActiveSwrls() throws Exception {
+        Swrl swrl = new Swrl("The Matrix", Type.FILM);
+        db.save(swrl);
+
+        assertEquals(1, db.countActiveByFilter(Type.FILM));
+        assertEquals(0, db.countActiveByFilter(Type.UNKNOWN));
+        assertEquals(0, db.countActiveByFilter(Type.TV));
+        assertEquals(1, db.countActive());
+
+        Swrl swrl2 = new Swrl("Another Film Swrl", Type.FILM);
+        db.save(swrl2);
+
+        assertEquals(2, db.countActiveByFilter(Type.FILM));
+        assertEquals(0, db.countActiveByFilter(Type.TV));
+        assertEquals(2, db.countActive());
+
+
+        db.markAsDone(swrl);
+        assertEquals(1, db.countActiveByFilter(Type.FILM));
+        assertEquals(1, db.countActive());
+
+        Swrl tvSwrl = new Swrl("TV Swrl", Type.TV);
+        db.save(tvSwrl);
+
+        assertEquals(1, db.countActiveByFilter(Type.FILM));
+        assertEquals(1, db.countActiveByFilter(Type.TV));
+        assertEquals(0, db.countActiveByFilter(Type.BOOK));
+        assertEquals(2, db.countActive());
     }
 }

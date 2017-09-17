@@ -9,6 +9,8 @@ import co.swrl.list.item.Type;
 public interface CollectionManager {
     List<Swrl> getActive();
     List<Swrl> getActiveWithFilter(Type typeFilter);
+    int countActive();
+    int countActiveByFilter(Type typeFilter);
     List<Swrl> getDone();
     void save(Swrl swrl);
     void markAsDone(Swrl swrl);

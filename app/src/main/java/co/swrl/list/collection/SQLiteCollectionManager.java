@@ -40,6 +40,70 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
     }
 
     @Override
+    public int countActive() {
+        SQLiteDatabase dbReader = db.getReadableDatabase();
+        int status = Swrls.STATUS_ACTIVE;
+
+        String[] projection = {
+                "count(1)"
+        };
+        String selection = Swrls.COLUMN_NAME_STATUS + " = ?" ;
+        String[] selectionArgs = {
+                String.valueOf(status)
+        };
+
+        Cursor row = dbReader.query(
+                Swrls.TABLE_NAME,
+                projection,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                null
+        );
+
+        row.moveToFirst();
+        int count = row.getInt(0);
+
+        row.close();
+        dbReader.close();
+        return count;
+    }
+
+    @Override
+    public int countActiveByFilter(Type typeFilter) {
+        SQLiteDatabase dbReader = db.getReadableDatabase();
+        int status = Swrls.STATUS_ACTIVE;
+
+        String[] projection = {
+                "count(1)"
+        };
+        String selection = Swrls.COLUMN_NAME_STATUS + " = ?" +
+                " AND " + Swrls.COLUMN_NAME_TYPE + " = ?";
+        String[] selectionArgs = {
+                String.valueOf(status),
+                typeFilter.toString()
+        };
+
+        Cursor row = dbReader.query(
+                Swrls.TABLE_NAME,
+                projection,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                null
+        );
+
+        row.moveToFirst();
+        int count = row.getInt(0);
+
+        row.close();
+        dbReader.close();
+        return count;
+    }
+
+    @Override
     public List<Swrl> getDone() {
         return getSwrlsByStatus(Swrls.STATUS_DONE);
     }
