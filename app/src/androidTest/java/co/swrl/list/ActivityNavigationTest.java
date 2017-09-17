@@ -1,6 +1,7 @@
 package co.swrl.list;
 
 import android.app.Activity;
+import android.support.test.espresso.contrib.RecyclerViewActions;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.espresso.matcher.BoundedMatcher;
 import android.support.test.filters.LargeTest;
@@ -31,13 +32,16 @@ import static android.support.test.espresso.intent.Intents.intended;
 import static android.support.test.espresso.intent.matcher.BundleMatchers.hasEntry;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasExtras;
+import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static co.swrl.list.Helpers.THE_MATRIX;
 import static co.swrl.list.Helpers.THE_MATRIX_DETAILS;
 import static co.swrl.list.Helpers.THE_MATRIX_RELOADED;
 import static co.swrl.list.Helpers.THE_MATRIX_RELOADED_DETAILS;
+import static co.swrl.list.Helpers.atPosition;
 import static co.swrl.list.Helpers.clearAllSettings;
 import static co.swrl.list.Helpers.launchAndAvoidWhatsNewDialog;
 import static co.swrl.list.Helpers.purgeDatabase;
@@ -69,9 +73,8 @@ public class ActivityNavigationTest {
         THE_MATRIX_RELOADED.setDetails(THE_MATRIX_RELOADED_DETAILS);
         activity = launchAndAvoidWhatsNewDialog(listActivityIntents, new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED});
 
-        onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX)))
-                .onChildView(withId(R.id.list_title))
-                .perform(click());
+        onView(withId(R.id.listView))
+                .perform(RecyclerViewActions.actionOnItem(hasDescendant(withText("The Matrix")), click()));
 
         intended(allOf(
                 hasComponent(ViewActivity.class.getName()),
@@ -84,9 +87,8 @@ public class ActivityNavigationTest {
 
         pressBack();
 
-        onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX_RELOADED)))
-                .onChildView(withId(R.id.list_title))
-                .perform(click());
+        onView(withId(R.id.listView))
+                .perform(RecyclerViewActions.actionOnItem(hasDescendant(withText("The Matrix Reloaded")), click()));
 
         intended(allOf(
                 hasComponent(ViewActivity.class.getName()),
@@ -98,15 +100,17 @@ public class ActivityNavigationTest {
 
     }
 
-    @Test @Ignore //TODO: fix test
+    @Test //TODO: fix test
     public void canNavigateBetweenListAndAddSwrlScreen() throws Exception {
         THE_MATRIX.setDetails(THE_MATRIX_DETAILS);
         THE_MATRIX_RELOADED.setDetails(THE_MATRIX_RELOADED_DETAILS);
         activity = launchAndAvoidWhatsNewDialog(listActivityIntents, new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED});
 
-        onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX))).check(matches(isDisplayed()));
+        onView(withId(R.id.listView))
+                .check(matches(atPosition(0, hasDescendant(withText("The Matrix Reloaded")))));
 
         onView(withId(R.id.addItemFAB)).perform(click());
+
         onView(withId(R.id.add_film)).perform(click());
 
         intended(allOf(

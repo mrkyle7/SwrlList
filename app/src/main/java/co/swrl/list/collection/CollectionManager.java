@@ -4,9 +4,11 @@ import java.util.List;
 
 import co.swrl.list.item.Details;
 import co.swrl.list.item.Swrl;
+import co.swrl.list.item.Type;
 
 public interface CollectionManager {
     List<Swrl> getActive();
+    List<Swrl> getActiveWithFilter(Type typeFilter);
     List<Swrl> getDone();
     void save(Swrl swrl);
     void markAsDone(Swrl swrl);

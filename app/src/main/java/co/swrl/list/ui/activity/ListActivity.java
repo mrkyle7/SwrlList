@@ -1,5 +1,6 @@
 package co.swrl.list.ui.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -8,10 +9,20 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
@@ -26,8 +37,8 @@ import co.swrl.list.collection.CollectionManager;
 import co.swrl.list.collection.SQLiteCollectionManager;
 import co.swrl.list.item.Type;
 import co.swrl.list.ui.SwrlDialogs;
-import co.swrl.list.ui.list.SwrlListViewFactory;
 import co.swrl.list.ui.list.SwrlListRecyclerAdapter;
+import co.swrl.list.ui.list.SwrlListViewFactory;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -36,6 +47,13 @@ public class ListActivity extends AppCompatActivity {
 
     private SwrlListRecyclerAdapter swrlListAdapter;
     private boolean showingMainButtons = true;
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private RecyclerView list;
+    private Type typeFilter;
+    private HashMap<Integer, Type> otherButtons;
+    private HashMap<Integer, Type> mainButtons;
+    private LinearLayout nav_drawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +66,11 @@ public class ListActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        swrlListAdapter.refreshAll();
+        if (typeFilter == null || typeFilter == Type.UNKNOWN) {
+            swrlListAdapter.refreshAll();
+        } else {
+            swrlListAdapter.refreshAllWithFilter(typeFilter);
+        }
         setNoSwrlsText();
         FloatingActionsMenu addSwrlMenu = (FloatingActionsMenu) findViewById(R.id.addItemFAB);
         addSwrlMenu.collapseImmediately();
@@ -65,6 +87,25 @@ public class ListActivity extends AppCompatActivity {
         setNoSwrlsText();
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Pass the event to ActionBarDrawerToggle
+        // If it returns true, then it has handled
+        // the nav drawer indicator touch event
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+
+        // Handle your other action bar items...
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mDrawerToggle.syncState();
+    }
 
     public static void showWhatsNewDialogIfNewVersion(SwrlPreferences preferences, SwrlDialogs dialogs) {
         if (preferences.isPackageNewVersion()) {
@@ -79,10 +120,55 @@ public class ListActivity extends AppCompatActivity {
         swrlListAdapter = new SwrlListRecyclerAdapter(getApplicationContext(), collectionManager);
         setUpList();
         setUpAddSwrlButtons();
+        setUpNavigationDrawer();
+    }
+
+    private void setUpNavigationDrawer() {
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        nav_drawer = (LinearLayout) findViewById(R.id.nav_drawer);
+        final ListView drawerList = (ListView) findViewById(R.id.swrl_filter_list);
+
+        DrawerListAdapter adapter = new DrawerListAdapter(this, Type.values());
+        drawerList.setAdapter(adapter);
+        drawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                typeFilter = (Type) drawerList.getAdapter().getItem(position);
+                if (typeFilter == null || typeFilter == Type.UNKNOWN){
+                    swrlListAdapter.refreshAll();
+                } else {
+                    swrlListAdapter.refreshAllWithFilter(typeFilter);
+                }
+                mDrawerLayout.closeDrawer(nav_drawer);
+                drawerList.setItemChecked(position, true);
+            }
+        });
+
+        mDrawerToggle = new ActionBarDrawerToggle(this,
+                mDrawerLayout,
+                R.string.drawer_open,
+                R.string.drawer_closed) {
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                if (typeFilter == null || typeFilter == Type.UNKNOWN) {
+                    getSupportActionBar().setTitle(getApplicationContext().getResources().getString(R.string.app_title));
+                } else {
+                    getSupportActionBar().setTitle(getApplicationContext().getResources().getString(R.string.app_title) + " - " + typeFilter.getFriendlyNamePlural());
+                }
+            }
+
+            public void onDrawerOpened(View view) {
+                super.onDrawerOpened(view);
+                getSupportActionBar().setTitle(R.string.app_menu_title);
+            }
+        };
+        mDrawerLayout.addDrawerListener(mDrawerToggle);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     private void setUpList() {
-        RecyclerView list = SwrlListViewFactory.setUpListView(this, (RecyclerView) findViewById(R.id.listView), swrlListAdapter);
+        list = SwrlListViewFactory.setUpListView(this, (RecyclerView) findViewById(R.id.listView), swrlListAdapter);
         setUpItemTouchHelper(list);
         setUpAnimationDecoratorHelper(list);
         setNoSwrlsText();
@@ -269,14 +355,14 @@ public class ListActivity extends AppCompatActivity {
     }
 
     private void setUpAddSwrlButtons() {
-        final HashMap<Integer, Type> mainButtons = new HashMap<>();
+        mainButtons = new HashMap<>();
         mainButtons.put(R.id.add_film, Type.FILM);
         mainButtons.put(R.id.add_album, Type.ALBUM);
         mainButtons.put(R.id.add_board_game, Type.BOARD_GAME);
         mainButtons.put(R.id.add_tv, Type.TV);
         mainButtons.put(R.id.add_book, Type.BOOK);
 
-        final HashMap<Integer, Type> otherButtons = new HashMap<>();
+        otherButtons = new HashMap<>();
         otherButtons.put(R.id.add_podcast, Type.PODCAST);
         otherButtons.put(R.id.add_phone_app, Type.APP);
         otherButtons.put(R.id.add_video_game, Type.VIDEO_GAME);
@@ -302,8 +388,8 @@ public class ListActivity extends AppCompatActivity {
 
     }
 
-    private void enableButtons(HashMap<Integer, Type> mainButtons) {
-        for (final Map.Entry<Integer, Type> button : mainButtons.entrySet()) {
+    private void enableButtons(HashMap<Integer, Type> buttons) {
+        for (final Map.Entry<Integer, Type> button : buttons.entrySet()) {
             FloatingActionButton actionButton = (FloatingActionButton) findViewById(button.getKey());
             actionButton.setVisibility(VISIBLE);
             actionButton.setOnClickListener(new View.OnClickListener() {
@@ -321,6 +407,54 @@ public class ListActivity extends AppCompatActivity {
         for (final Map.Entry<Integer, Type> button : buttons.entrySet()) {
             FloatingActionButton actionButton = (FloatingActionButton) findViewById(button.getKey());
             actionButton.setVisibility(GONE);
+        }
+    }
+
+    private class DrawerListAdapter extends BaseAdapter {
+
+        private final Context mContext;
+        private final Type[] mNavItems;
+
+        public DrawerListAdapter(Context context, Type[] navItems) {
+            this.mContext = context;
+            this.mNavItems = navItems;
+        }
+
+        @Override
+        public int getCount() {
+            return mNavItems.length;
+        }
+
+        @Override
+        public Object getItem(int i) {
+            return mNavItems[i];
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View view;
+            if (convertView == null) {
+                LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                view = inflater.inflate(R.layout.drawer_item, null);
+            } else {
+                view = convertView;
+            }
+
+            ImageView border = (ImageView) view.findViewById(R.id.nav_left_border);
+            ImageView iconView = (ImageView) view.findViewById(R.id.icon);
+            TextView titleView = (TextView) view.findViewById(R.id.title);
+
+            Type navItem = mNavItems[position];
+            border.setBackgroundColor(getApplicationContext().getResources().getColor(navItem.getColor()));
+            iconView.setImageResource(navItem.getIcon());
+            titleView.setText(navItem.getFriendlyNamePlural());
+
+            return view;
         }
     }
 }

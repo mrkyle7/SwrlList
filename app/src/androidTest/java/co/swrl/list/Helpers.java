@@ -5,11 +5,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.matcher.BoundedMatcher;
 import android.support.test.rule.ActivityTestRule;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.view.WindowManager;
 
 import com.google.gson.Gson;
+
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
 
 import co.swrl.list.collection.SQLiteCollectionManager;
 import co.swrl.list.item.Details;
@@ -21,6 +28,7 @@ import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.intent.Checks.checkNotNull;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
@@ -36,6 +44,7 @@ class Helpers {
     static final Swrl THE_MATRIX = new Swrl("The Matrix", Type.FILM);
     static final Swrl THE_MATRIX_RELOADED = new Swrl("The Matrix Reloaded", Type.FILM);
     static final Swrl THE_MATRIX_REVOLUTIONS = new Swrl("The Matrix Revolutions", Type.FILM);
+    static final Swrl BILLIONS = new Swrl("Billions", Type.TV);
     static final Details THE_MATRIX_DETAILS = new Gson().fromJson("{\"title\":\"The Matrix (1991)\",\"overview\":\"overview\",\"tmdb-id\":\"403\"}", Details.class);
     static final Details THE_MATRIX_RELOADED_DETAILS = new Gson().fromJson("{\"title\":\"The Matrix Reloaded (1992)\",\"overview\":\"overview\"}", Details.class);
     static final Details THE_MATRIX_REVOLUTIONS_DETAILS = new Gson().fromJson("{\"title\":\"The Matrix Revolutions (1992)\",\"overview\":\"overview\"}", Details.class);
@@ -109,5 +118,26 @@ class Helpers {
     static void purgeDatabase() {
         SQLiteCollectionManager db = new SQLiteCollectionManager(InstrumentationRegistry.getTargetContext());
         db.permanentlyDeleteAll();
+    }
+
+    public static Matcher<View> atPosition(final int position, @NonNull final Matcher<View> itemMatcher) {
+        checkNotNull(itemMatcher);
+        return new BoundedMatcher<View, RecyclerView>(RecyclerView.class) {
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("has item at position " + position + ": ");
+                itemMatcher.describeTo(description);
+            }
+
+            @Override
+            protected boolean matchesSafely(final RecyclerView view) {
+                RecyclerView.ViewHolder viewHolder = view.findViewHolderForAdapterPosition(position);
+                if (viewHolder == null) {
+                    // has no item on such position
+                    return false;
+                }
+                return itemMatcher.matches(viewHolder.itemView);
+            }
+        };
     }
 }

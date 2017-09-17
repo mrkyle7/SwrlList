@@ -35,6 +35,11 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
     }
 
     @Override
+    public List<Swrl> getActiveWithFilter(Type typeFilter) {
+        return getSwrlsByStatusAndType(Swrls.STATUS_ACTIVE, typeFilter);
+    }
+
+    @Override
     public List<Swrl> getDone() {
         return getSwrlsByStatus(Swrls.STATUS_DONE);
     }
@@ -64,6 +69,49 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
                 sortOrder
         );
 
+        ArrayList<Swrl> swrls = getSwrlsFromRows(row);
+        row.close();
+        dbReader.close();
+        return swrls;
+    }
+
+    @NonNull
+    private List<Swrl> getSwrlsByStatusAndType(int status, Type typeFilter) {
+        SQLiteDatabase dbReader = db.getReadableDatabase();
+        String[] projection = {
+                Swrls._ID,
+                Swrls.COLUMN_NAME_TITLE,
+                Swrls.COLUMN_NAME_TYPE,
+                Swrls.COLUMN_NAME_DETAILS
+        };
+
+        String selection = Swrls.COLUMN_NAME_STATUS + " = ?" +
+                " AND " + Swrls.COLUMN_NAME_TYPE + " = ?";
+        String[] selectionArgs = {
+                String.valueOf(status),
+                typeFilter.toString()
+        };
+
+        String sortOrder = Swrls.COLUMN_NAME_CREATED + " DESC";
+
+        Cursor row = dbReader.query(
+                Swrls.TABLE_NAME,
+                projection,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                sortOrder
+        );
+
+        ArrayList<Swrl> swrls = getSwrlsFromRows(row);
+        row.close();
+        dbReader.close();
+        return swrls;
+    }
+
+    @NonNull
+    private ArrayList<Swrl> getSwrlsFromRows(Cursor row) {
         ArrayList<Swrl> swrls = new ArrayList<>();
 
         while (row.moveToNext()) {
@@ -78,8 +126,6 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
 
             swrls.add(swrl);
         }
-        row.close();
-        dbReader.close();
         return swrls;
     }
 
@@ -113,7 +159,7 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
 
         dbWriter.replace(Swrls.TABLE_NAME, null, values);
         Details details = swrl.getDetails();
-        if (details != null){
+        if (details != null) {
             saveDetails(swrl, details);
         }
         dbWriter.close();

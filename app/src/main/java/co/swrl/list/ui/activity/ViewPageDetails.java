@@ -1,6 +1,7 @@
 package co.swrl.list.ui.activity;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -46,6 +47,7 @@ public class ViewPageDetails extends Fragment {
     private static final String ARG_SWRLS = "swrls";
     private static final String ARG_POSITION = "position";
     private boolean isImageFitToScreen;
+    private AsyncTask<String, Void, ArrayList<Swrl>> searchResultsTask;
 
     public ViewPageDetails() {
     }
@@ -68,165 +70,230 @@ public class ViewPageDetails extends Fragment {
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         final Swrl swrl = (Swrl) getArguments().getSerializable(ARG_SWRL);
-        assert swrl != null;
-        Details details = swrl.getDetails();
+        Details details = null;
+        if (swrl != null) {
+            details = swrl.getDetails();
+        }
         final View rootView;
-        if (details == null || details.getId() == null || details.getId().isEmpty()) {
-            rootView = inflater.inflate(R.layout.activity_add_swrl, container, false);
-            CollectionManager db = new SQLiteCollectionManager(getActivity());
-
-            LinearLayout footer = (LinearLayout) rootView.findViewById(R.id.footer);
-            footer.setVisibility(GONE);
-
-            final TextView noSearchResultsText = (TextView) rootView.findViewById(R.id.noSearchResults);
-            final TextView progressText = (TextView) rootView.findViewById(R.id.progressSearchingText);
-            final ProgressBar progressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
-
-            ArrayList<Swrl> originalSwrls = getSwrlsFromArgs();
-            int position = getArguments().getInt(ARG_POSITION);
-            final ViewSwrlResultsRecyclerAdapter resultsAdapter = new ViewSwrlResultsRecyclerAdapter(getActivity(), db, originalSwrls, swrl, position);
-            SwrlListViewFactory.setUpListView(getActivity(), (RecyclerView) rootView.findViewById(R.id.listView), resultsAdapter);
-            noSearchResultsText.setVisibility(GONE);
-            progressText.setVisibility(GONE);
-            progressBar.setVisibility(GONE);
-
-            final TextView swrlSearchTextView = (TextView) rootView.findViewById(R.id.addSwrlText);
-            swrlSearchTextView.append(swrl.getTitle());
-
-            swrlSearchTextView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-                @Override
-                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                    if (enterKeyPressedOrActionDone(actionId, event)) {
-                        InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                        new GetSearchResults(resultsAdapter, progressBar, progressText, swrl.getType(), noSearchResultsText).execute(String.valueOf(swrlSearchTextView.getText()));
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-            });
-            new GetSearchResults(resultsAdapter, progressBar, progressText, swrl.getType(), noSearchResultsText).execute(String.valueOf(swrlSearchTextView.getText()));
+        if (hasNoDetails(details)) {
+            rootView = showSearchByTitle(inflater, container, swrl);
         } else {
-            rootView = inflater.inflate(R.layout.fragment_view, container, false);
-            final ImageView poster = (ImageView) rootView.findViewById(R.id.imageView);
-            int iconResource = swrl.getType().getIcon();
+            rootView = showSwrlDetails(inflater, container, swrl, details);
+        }
+        return rootView;
+    }
 
-            ImageView background = (ImageView) rootView.findViewById(R.id.imageView2);
-            if (details.getPosterURL() != null && !Objects.equals(details.getPosterURL(), "")) {
-                Picasso.with(getActivity().getBaseContext())
-                        .load(details.getPosterURL())
-                        .error(iconResource)
-                        .into(background);
-            } else {
-                background.setImageResource(iconResource);
-            }
-            if (details.getPosterURL() != null && !Objects.equals(details.getPosterURL(), "")) {
-                Picasso.with(getActivity().getBaseContext())
-                        .load(details.getPosterURL())
-                        .placeholder(R.drawable.progress_spinner)
-                        .error(iconResource)
-                        .into(poster, new Callback() {
-                            @Override
-                            public void onSuccess() {
-                            }
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (searchResultsTask != null) {
+            searchResultsTask.cancel(true);
+        }
+    }
 
-                            @Override
-                            public void onError() {
-                                resizeView(poster, 150, rootView);
-                            }
-                        });
-            } else {
-                poster.setImageResource(iconResource);
-            }
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (searchResultsTask != null) {
+            searchResultsTask.cancel(true);
+        }
+    }
 
-            final RelativeLayout imageContainer = (RelativeLayout) rootView.findViewById(R.id.image_background);
-            poster.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (isImageFitToScreen) {
-                        isImageFitToScreen = false;
-                        imageContainer.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, (int) getContext().getResources().getDimension(R.dimen.viewImageHeight)));
-                        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.MATCH_PARENT);
-                        layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
-                        poster.setLayoutParams(layoutParams);
-                        poster.setAdjustViewBounds(true);
-                    } else {
-                        isImageFitToScreen = true;
-                        imageContainer.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (searchResultsTask != null) {
+            searchResultsTask.cancel(true);
+        }
+    }
 
-                        poster.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
-                        poster.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                    }
+    @Override
+    public void onDetach() {
+        super.onDetach();
+    }
+
+    @NonNull
+    private View showSwrlDetails(LayoutInflater inflater, ViewGroup container, Swrl swrl, Details details) {
+        final View rootView;
+        rootView = inflater.inflate(R.layout.fragment_view, container, false);
+        final ImageView poster = (ImageView) rootView.findViewById(R.id.imageView);
+        int iconResource = swrl.getType().getIcon();
+
+        ImageView background = (ImageView) rootView.findViewById(R.id.imageView2);
+        if (details.getPosterURL() != null && !Objects.equals(details.getPosterURL(), "")) {
+            Picasso.with(getActivity().getBaseContext())
+                    .load(details.getPosterURL())
+                    .error(iconResource)
+                    .into(background);
+        } else {
+            background.setImageResource(iconResource);
+        }
+        if (details.getPosterURL() != null && !Objects.equals(details.getPosterURL(), "")) {
+            Picasso.with(getActivity().getBaseContext())
+                    .load(details.getPosterURL())
+                    .placeholder(R.drawable.progress_spinner)
+                    .error(iconResource)
+                    .into(poster, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                        }
+
+                        @Override
+                        public void onError() {
+                            resizeView(poster, 150, rootView);
+                        }
+                    });
+        } else {
+            poster.setImageResource(iconResource);
+        }
+
+        final RelativeLayout imageContainer = (RelativeLayout) rootView.findViewById(R.id.image_background);
+        poster.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isImageFitToScreen) {
+                    isImageFitToScreen = false;
+                    imageContainer.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, (int) getContext().getResources().getDimension(R.dimen.viewImageHeight)));
+                    RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+                    layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+                    poster.setLayoutParams(layoutParams);
+                    poster.setAdjustViewBounds(true);
+                } else {
+                    isImageFitToScreen = true;
+                    imageContainer.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
+                    poster.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
+                    poster.setScaleType(ImageView.ScaleType.FIT_CENTER);
                 }
-            });
-            TextView titleText = (TextView) rootView.findViewById(R.id.title);
-            String title = swrl.getTitle();
-            titleText.setText(title);
-
-            TextView keyDetails = (TextView) rootView.findViewById(R.id.keyDetails);
-
-            String keyDetailsText = null;
-
-            String separator = " | ";
-            switch (swrl.getType()) {
-                case FILM:
-                    String director = details.getCreator() == null ? "" : details.getCreator() + separator;
-                    String genres = details.getCategories() == null ? "" : TextUtils.join(", ", details.getCategories()) + separator;
-                    String actors = details.getActors() == null ? "" : details.getActors() + separator;
-                    String runtime = details.getRuntime() == null ? "" : details.getRuntime() + separator;
-                    keyDetailsText = director + genres + actors + runtime;
-                    break;
-                case TV:
-                    break;
-                case BOOK:
-                    break;
-                case ALBUM:
-                    break;
-                case VIDEO_GAME:
-                    break;
-                case BOARD_GAME:
-                    break;
-                case APP:
-                    break;
-                case PODCAST:
-                    break;
-                case UNKNOWN:
-                    break;
             }
+        });
+        TextView titleText = (TextView) rootView.findViewById(R.id.title);
+        String title = swrl.getTitle();
+        titleText.setText(title);
 
+        TextView keyDetails = (TextView) rootView.findViewById(R.id.keyDetails);
 
-            if (keyDetailsText != null) {
-                keyDetails.setText(keyDetailsText);
-            } else {
-                keyDetails.setVisibility(GONE);
-            }
+        String keyDetailsText = null;
 
-            TextView ratings = (TextView) rootView.findViewById(R.id.ratings);
-            if (details.getRatings() != null) {
-                String ratingsString = "Ratings: ";
-
-                for (Details.Ratings rating : details.getRatings()) {
-                    ratingsString += rating.getSource().equals("Internet Movie Database") ? "IMDB" : rating.getSource();
-                    ratingsString += ": ";
-                    ratingsString += rating.getValue();
-                    ratingsString += "; ";
-                }
-                ratings.setText(ratingsString);
-            } else {
-                ratings.setVisibility(GONE);
-            }
-
-            TextView overviewText = (TextView) rootView.findViewById(R.id.overview);
-            if (details.getOverview() != null && !details.getOverview().isEmpty()) {
-                overviewText.setText(Html.fromHtml(details.getOverview()));
-            } else {
-                overviewText.setVisibility(GONE);
-            }
+        String separator = " | ";
+        switch (swrl.getType()) {
+            case FILM:
+                String director = details.getCreator() == null ? "" : details.getCreator() + separator;
+                String genres = details.getCategories() == null ? "" : TextUtils.join(", ", details.getCategories()) + separator;
+                String actors = details.getActors() == null ? "" : details.getActors() + separator;
+                String runtime = details.getRuntime() == null ? "" : details.getRuntime() + separator;
+                keyDetailsText = director + genres + actors + runtime;
+                break;
+            case TV:
+                break;
+            case BOOK:
+                break;
+            case ALBUM:
+                break;
+            case VIDEO_GAME:
+                break;
+            case BOARD_GAME:
+                break;
+            case APP:
+                break;
+            case PODCAST:
+                break;
+            case UNKNOWN:
+                break;
         }
 
 
+        if (keyDetailsText != null) {
+            keyDetails.setText(keyDetailsText);
+        } else {
+            keyDetails.setVisibility(GONE);
+        }
+
+        TextView ratings = (TextView) rootView.findViewById(R.id.ratings);
+        if (details.getRatings() != null) {
+            String ratingsString = "Ratings: ";
+
+            for (Details.Ratings rating : details.getRatings()) {
+                ratingsString += rating.getSource().equals("Internet Movie Database") ? "IMDB" : rating.getSource();
+                ratingsString += ": ";
+                ratingsString += rating.getValue();
+                ratingsString += "; ";
+            }
+            ratings.setText(ratingsString);
+        } else {
+            ratings.setVisibility(GONE);
+        }
+
+        TextView overviewText = (TextView) rootView.findViewById(R.id.overview);
+        if (details.getOverview() != null && !details.getOverview().isEmpty()) {
+            overviewText.setText(Html.fromHtml(details.getOverview()));
+        } else {
+            overviewText.setVisibility(GONE);
+        }
         return rootView;
+    }
+
+    @NonNull
+    private View showSearchByTitle(LayoutInflater inflater, ViewGroup container, final Swrl swrl) {
+        View rootView;
+        rootView = inflater.inflate(R.layout.activity_add_swrl, container, false);
+        CollectionManager db = new SQLiteCollectionManager(getActivity());
+        final TextView noSearchResultsText = (TextView) rootView.findViewById(R.id.noSearchResults);
+        final TextView progressText = (TextView) rootView.findViewById(R.id.progressSearchingText);
+        final ProgressBar progressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
+        ArrayList<Swrl> originalSwrls = getSwrlsFromArgs();
+        int position = getArguments().getInt(ARG_POSITION);
+
+        removeFooter(rootView);
+
+        final ViewSwrlResultsRecyclerAdapter resultsAdapter = setUpSearchResults(swrl, rootView, db, noSearchResultsText, progressText, progressBar, originalSwrls, position);
+
+        final TextView swrlSearchTextView = setUpSearchTextView(swrl, rootView, noSearchResultsText, progressText, progressBar, resultsAdapter);
+
+        searchResultsTask = new GetSearchResults(resultsAdapter, progressBar, progressText, swrl.getType(), noSearchResultsText).execute(String.valueOf(swrlSearchTextView.getText()));
+        return rootView;
+    }
+
+    @NonNull
+    private ViewSwrlResultsRecyclerAdapter setUpSearchResults(Swrl swrl, View rootView, CollectionManager db, TextView noSearchResultsText, TextView progressText, ProgressBar progressBar, ArrayList<Swrl> originalSwrls, int position) {
+        final ViewSwrlResultsRecyclerAdapter resultsAdapter = new ViewSwrlResultsRecyclerAdapter(getActivity(), db, originalSwrls, swrl, position);
+        SwrlListViewFactory.setUpListView(getActivity(), (RecyclerView) rootView.findViewById(R.id.listView), resultsAdapter);
+
+        noSearchResultsText.setVisibility(GONE);
+        progressText.setVisibility(GONE);
+        progressBar.setVisibility(GONE);
+        return resultsAdapter;
+    }
+
+    @NonNull
+    private TextView setUpSearchTextView(final Swrl swrl, View rootView, final TextView noSearchResultsText, final TextView progressText, final ProgressBar progressBar, final ViewSwrlResultsRecyclerAdapter resultsAdapter) {
+        final TextView swrlSearchTextView = (TextView) rootView.findViewById(R.id.addSwrlText);
+        swrlSearchTextView.append(swrl.getTitle());
+
+        swrlSearchTextView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (enterKeyPressedOrActionDone(actionId, event)) {
+                    InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                    searchResultsTask.cancel(true);
+                    searchResultsTask = new GetSearchResults(resultsAdapter, progressBar, progressText, swrl.getType(), noSearchResultsText).execute(String.valueOf(swrlSearchTextView.getText()));
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        });
+        return swrlSearchTextView;
+    }
+
+    private void removeFooter(View rootView) {
+        LinearLayout footer = (LinearLayout) rootView.findViewById(R.id.footer);
+        footer.setVisibility(GONE);
+    }
+
+    private boolean hasNoDetails(Details details) {
+        return details == null || details.getId() == null || details.getId().isEmpty();
     }
 
     @NonNull

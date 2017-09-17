@@ -10,6 +10,7 @@ import java.util.List;
 
 import co.swrl.list.collection.CollectionManager;
 import co.swrl.list.item.Swrl;
+import co.swrl.list.item.Type;
 
 
 public class SwrlListRecyclerAdapter extends RecyclerView.Adapter {
@@ -47,8 +48,16 @@ public class SwrlListRecyclerAdapter extends RecyclerView.Adapter {
     }
 
     public void refreshAll() {
+        List<Swrl> active = collectionManager.getActive();
         swrls.clear();
-        swrls.addAll(collectionManager.getActive());
+        swrls.addAll(active);
+        notifyDataSetChanged();
+    }
+
+    public void refreshAllWithFilter(Type type) {
+        List<Swrl> filtered = collectionManager.getActiveWithFilter(type);
+        swrls.clear();
+        swrls.addAll(filtered);
         notifyDataSetChanged();
     }
 

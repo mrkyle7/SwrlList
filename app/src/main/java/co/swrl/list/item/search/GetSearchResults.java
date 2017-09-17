@@ -1,6 +1,7 @@
 package co.swrl.list.item.search;
 
 import android.os.AsyncTask;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -22,6 +23,7 @@ public class GetSearchResults extends AsyncTask<String, Void, ArrayList<Swrl>> {
     private final TextView progressText;
     private Type swrlType;
     private View noSearchResultsText;
+    private final String LOG_NAME = "GET_SEARCH_RESULTS";
 
     public GetSearchResults(SwrlResultsRecyclerAdapter resultsAdapter, ProgressBar progressSpinner, TextView progressText, Type swrlType, View noSearchResultsText) {
         this.recyclerAdapter = resultsAdapter;
@@ -47,6 +49,7 @@ public class GetSearchResults extends AsyncTask<String, Void, ArrayList<Swrl>> {
     @Override
     protected ArrayList<Swrl> doInBackground(String... query) {
         String searchTerm = query[0];
+        Log.d(LOG_NAME, "Searching for: " + searchTerm);
         ArrayList<Swrl> swrls = new ArrayList<>();
         Search search = swrlType.getSearch();
         ArrayList<Details> results = (ArrayList<Details>) search.byTitle(searchTerm);
@@ -66,7 +69,7 @@ public class GetSearchResults extends AsyncTask<String, Void, ArrayList<Swrl>> {
             progressSpinner.setVisibility(GONE);
             progressText.setVisibility(GONE);
         }
-        if (results.size() == 0) {
+        if (results == null || results.size() == 0) {
             noSearchResultsText.setVisibility(VISIBLE);
         }
         recyclerAdapter.addAll(results);
@@ -75,7 +78,8 @@ public class GetSearchResults extends AsyncTask<String, Void, ArrayList<Swrl>> {
 
     @Override
     protected void onCancelled(ArrayList<Swrl> results) {
-        if (results.size() == 0) {
+        Log.d(LOG_NAME, "I was cancelled");
+        if (results == null || results.size() == 0) {
             noSearchResultsText.setVisibility(VISIBLE);
         }
         if (progressSpinner != null && progressText != null) {

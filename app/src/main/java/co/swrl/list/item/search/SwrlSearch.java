@@ -1,6 +1,8 @@
 package co.swrl.list.item.search;
 
 
+import android.util.Log;
+
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -19,6 +21,7 @@ public class SwrlSearch implements Search {
     private final HttpUrl SEARCH_BASE_URL;
     private final HttpUrl DETAILS_BASE_URL;
     private final Type type;
+    private final String LOG_NAME = "Swrl_Search";
 
     public static SwrlSearch getFilmSearch() {
         return new SwrlSearch(HttpUrl.parse("https://www.swrl.co/api/v1/search/film"), HttpUrl.parse("https://www.swrl.co/api/v1/details/film"), Type.FILM);
@@ -75,7 +78,7 @@ public class SwrlSearch implements Search {
 
             if (response != null) {
                 String body = response.body().string();
-                System.out.println("response.body=" + body);
+                Log.d(LOG_NAME, "response.body=" + body);
                 details = gson.fromJson(body, Details.class);
             }
         } catch (IOException e) {
@@ -113,7 +116,7 @@ public class SwrlSearch implements Search {
 
             if (response != null) {
                 String body = response.body().string();
-                System.out.println("response.body=" + body);
+                Log.d(LOG_NAME, "response.body=" + body);
                 searchResponse = gson.fromJson(body, SearchResponse.class);
             }
         } catch (IOException e) {

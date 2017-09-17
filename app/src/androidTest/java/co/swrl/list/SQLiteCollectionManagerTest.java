@@ -16,6 +16,7 @@ import co.swrl.list.item.Details;
 import co.swrl.list.item.Swrl;
 import co.swrl.list.item.Type;
 
+import static co.swrl.list.Helpers.BILLIONS;
 import static co.swrl.list.Helpers.THE_MATRIX;
 import static co.swrl.list.Helpers.THE_MATRIX_DETAILS;
 import static co.swrl.list.Helpers.THE_MATRIX_RELOADED;
@@ -54,6 +55,25 @@ public class SQLiteCollectionManagerTest extends AndroidTestCase {
         List<Swrl> saved = db.getActive();
 
         assertThat(saved, containsInAnyOrder(THE_MATRIX, THE_MATRIX_RELOADED));
+    }
+
+    @Test
+    public void canAddAndGetActiveSwrlsByTypeFromDB() throws Exception {
+        db.save(THE_MATRIX);
+        db.save(THE_MATRIX_RELOADED);
+        db.save(BILLIONS);
+
+        List<Swrl> films = db.getActiveWithFilter(Type.FILM);
+
+        assertThat(films, containsInAnyOrder(THE_MATRIX, THE_MATRIX_RELOADED));
+
+        List<Swrl> tvShows = db.getActiveWithFilter(Type.TV);
+
+        assertThat(tvShows, containsInAnyOrder(BILLIONS));
+
+        List<Swrl> books = db.getActiveWithFilter(Type.BOOK);
+
+        assertThat(books, is(emptyCollectionOf(Swrl.class)));
     }
 
     @Test
