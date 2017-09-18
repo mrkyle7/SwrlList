@@ -5,6 +5,8 @@
     <string name="pkey_version_number">version_number</string>
     <string name="whatsNewLatest">
         <![CDATA[
+        <h4>Version 7.23 (17 September 2017)</h4>
+        \u2022 Fixes to number totals of list filters
         <h4>Version 7.22 (17 September 2017)</h4>
         \u2022 Add number totals to filters
         <h4>Version 7.21 (17 September 2017)</h4>

@@ -50,11 +50,9 @@ public class ListActivity extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
     private Type typeFilter;
-    private HashMap<Integer, Type> otherButtons;
-    private HashMap<Integer, Type> mainButtons;
     private LinearLayout nav_drawer;
     private SQLiteCollectionManager collectionManager;
-    private DrawerListAdapter navListAdapter;
+    private DrawerListAdapter navListAdapter = new DrawerListAdapter(this, Type.values());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,7 +117,7 @@ public class ListActivity extends AppCompatActivity {
     private void setUpViewElements(CollectionManager collectionManager) {
         setContentView(R.layout.activity_list);
         getSupportActionBar().setTitle(R.string.app_title);
-        swrlListAdapter = new SwrlListRecyclerAdapter(getApplicationContext(), collectionManager);
+        swrlListAdapter = new SwrlListRecyclerAdapter(this, collectionManager, navListAdapter);
         setUpList();
         setUpAddSwrlButtons();
         setUpNavigationDrawer();
@@ -129,8 +127,6 @@ public class ListActivity extends AppCompatActivity {
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         nav_drawer = (LinearLayout) findViewById(R.id.nav_drawer);
         final ListView drawerList = (ListView) findViewById(R.id.swrl_filter_list);
-
-        navListAdapter = new DrawerListAdapter(this, Type.values());
         drawerList.setAdapter(navListAdapter);
         drawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -142,7 +138,7 @@ public class ListActivity extends AppCompatActivity {
                     swrlListAdapter.refreshAllWithFilter(typeFilter);
                 }
                 mDrawerLayout.closeDrawer(nav_drawer);
-                drawerList.setItemChecked(position, true);
+                setNoSwrlsText();
             }
         });
 
@@ -176,8 +172,12 @@ public class ListActivity extends AppCompatActivity {
         setNoSwrlsText();
     }
 
-    private void setNoSwrlsText() {
+    public void setNoSwrlsText() {
+        String content = "No "
+                + (typeFilter == null || typeFilter == Type.UNKNOWN ? "Swrls" : typeFilter.getFriendlyNamePlural())
+                + " yet!\n\nAdd some by clicking the button below.";
         TextView noSwrlsText = (TextView) findViewById(R.id.noSwrlsText);
+        noSwrlsText.setText(content);
         if (swrlListAdapter.getItemCount() > 0) {
             noSwrlsText.setVisibility(GONE);
         } else {
@@ -357,14 +357,15 @@ public class ListActivity extends AppCompatActivity {
     }
 
     private void setUpAddSwrlButtons() {
-        mainButtons = new HashMap<>();
+        final HashMap<Integer, Type> otherButtons = new HashMap<>();
+        final HashMap<Integer, Type> mainButtons = new HashMap<>();
+
         mainButtons.put(R.id.add_film, Type.FILM);
         mainButtons.put(R.id.add_album, Type.ALBUM);
         mainButtons.put(R.id.add_board_game, Type.BOARD_GAME);
         mainButtons.put(R.id.add_tv, Type.TV);
         mainButtons.put(R.id.add_book, Type.BOOK);
 
-        otherButtons = new HashMap<>();
         otherButtons.put(R.id.add_podcast, Type.PODCAST);
         otherButtons.put(R.id.add_phone_app, Type.APP);
         otherButtons.put(R.id.add_video_game, Type.VIDEO_GAME);
@@ -412,7 +413,7 @@ public class ListActivity extends AppCompatActivity {
         }
     }
 
-    private class DrawerListAdapter extends BaseAdapter {
+    public class DrawerListAdapter extends BaseAdapter {
 
         private final Context mContext;
         private final Type[] mNavItems;

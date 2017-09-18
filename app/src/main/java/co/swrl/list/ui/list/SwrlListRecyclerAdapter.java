@@ -11,18 +11,23 @@ import java.util.List;
 import co.swrl.list.collection.CollectionManager;
 import co.swrl.list.item.Swrl;
 import co.swrl.list.item.Type;
+import co.swrl.list.ui.activity.ListActivity;
 
 
 public class SwrlListRecyclerAdapter extends RecyclerView.Adapter {
 
     private final Context context;
     private List<Swrl> swrls;
+    private final ListActivity.DrawerListAdapter navListAdapter;
+    private final ListActivity activity;
     private final CollectionManager collectionManager;
 
-    public SwrlListRecyclerAdapter(Context context, CollectionManager collectionManager) {
-        this.context = context;
+    public SwrlListRecyclerAdapter(ListActivity activity, CollectionManager collectionManager, ListActivity.DrawerListAdapter navListAdapter) {
+        this.activity = activity;
+        this.context = this.activity.getApplicationContext();
         this.collectionManager = collectionManager;
         swrls = collectionManager.getActive();
+        this.navListAdapter = navListAdapter;
     }
 
     @Override
@@ -52,6 +57,8 @@ public class SwrlListRecyclerAdapter extends RecyclerView.Adapter {
         swrls.clear();
         swrls.addAll(active);
         notifyDataSetChanged();
+        navListAdapter.notifyDataSetChanged();
+        activity.setNoSwrlsText();
     }
 
     public void refreshAllWithFilter(Type type) {
@@ -59,6 +66,8 @@ public class SwrlListRecyclerAdapter extends RecyclerView.Adapter {
         swrls.clear();
         swrls.addAll(filtered);
         notifyDataSetChanged();
+        navListAdapter.notifyDataSetChanged();
+        activity.setNoSwrlsText();
     }
 
     public void markAsDone(RecyclerView.ViewHolder viewHolder, int position) {
@@ -67,6 +76,8 @@ public class SwrlListRecyclerAdapter extends RecyclerView.Adapter {
             swrls.remove(position);
             collectionManager.markAsDone(swrlToRemove);
             notifyItemRemoved(position);
+            navListAdapter.notifyDataSetChanged();
+            activity.setNoSwrlsText();
             showUndoSnackbar(swrlToRemove, viewHolder.itemView, position);
         }
     }
@@ -87,6 +98,8 @@ public class SwrlListRecyclerAdapter extends RecyclerView.Adapter {
         swrls.add(position, swrl);
         collectionManager.markAsActive(swrl);
         notifyItemInserted(position);
+        navListAdapter.notifyDataSetChanged();
+        activity.setNoSwrlsText();
     }
 
 }

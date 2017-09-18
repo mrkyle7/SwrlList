@@ -1,3 +1,7 @@
+Version 7.23 (17 September 2017)
+<br />
+- Fixes to number totals of list filters
+<br />
 Version 7.22 (17 September 2017)
 <br />
 - Add number totals to filters
@@ -13,11 +17,3 @@ Version 7.20 (03 September 2017)
 Version 7.19 (02 September 2017)
 <br />
 - Tweaking the images in the list view to render faster
-<br />
-Version 7.18 (30 August 2017)
-<br />
-- Various UI improvements
-<br />
-Version 7.17 (28 August 2017)
-<br />
-- Show searching spinner on view page when open
