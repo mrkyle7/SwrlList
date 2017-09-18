@@ -67,7 +67,6 @@ public class SwrlSearchTest {
         Details result = search.byID("603");
 
         assertEquals("Welcome to the Real World.", result.getTagline());
-        assertEquals("87%", result.getRatings().get(1).getValue());
         assertEquals("Lana Wachowski, Lilly Wachowski", result.getCreator());
         assertEquals("603", result.getId());
         assertEquals(Type.FILM, result.getType());

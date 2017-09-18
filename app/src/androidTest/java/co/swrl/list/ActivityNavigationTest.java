@@ -12,7 +12,6 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,7 +22,6 @@ import co.swrl.list.ui.activity.AddSwrlActivity;
 import co.swrl.list.ui.activity.ListActivity;
 import co.swrl.list.ui.activity.ViewActivity;
 
-import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -34,7 +32,6 @@ import static android.support.test.espresso.intent.matcher.IntentMatchers.hasCom
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasExtras;
 import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static co.swrl.list.Helpers.THE_MATRIX;
@@ -48,7 +45,6 @@ import static co.swrl.list.Helpers.purgeDatabase;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 
 @RunWith(AndroidJUnit4.class)
@@ -100,7 +96,7 @@ public class ActivityNavigationTest {
 
     }
 
-    @Test //TODO: fix test
+    @Test
     public void canNavigateBetweenListAndAddSwrlScreen() throws Exception {
         THE_MATRIX.setDetails(THE_MATRIX_DETAILS);
         THE_MATRIX_RELOADED.setDetails(THE_MATRIX_RELOADED_DETAILS);
@@ -109,81 +105,77 @@ public class ActivityNavigationTest {
         onView(withId(R.id.listView))
                 .check(matches(atPosition(0, hasDescendant(withText("The Matrix Reloaded")))));
 
-        onView(withId(R.id.addItemFAB)).perform(click());
+        onView(withId(R.id.fab_expand_menu_button)).perform(click());
 
         onView(withId(R.id.add_film)).perform(click());
 
         intended(allOf(
                 hasComponent(AddSwrlActivity.class.getName()),
-                hasExtras(hasEntry(equalTo("type"), equalTo(Type.FILM)))));
+                hasExtras(hasEntry(equalTo("swrlType"), equalTo(Type.FILM)))));
 
         onView(isAssignableFrom(Toolbar.class)).check(matches(withToolbarTitle(is("Add a Film"))));
 
         pressBack();
+        pressBack();
 
-        onView(withId(R.id.addItemFAB)).perform(click());
+        onView(withId(R.id.fab_expand_menu_button)).perform(click());
         onView(withId(R.id.add_board_game)).perform(click());
 
         intended(allOf(
                 hasComponent(AddSwrlActivity.class.getName()),
-                hasExtras(hasEntry(equalTo("type"), equalTo(Type.BOARD_GAME)))));
+                hasExtras(hasEntry(equalTo("swrlType"), equalTo(Type.BOARD_GAME)))));
 
         onView(isAssignableFrom(Toolbar.class)).check(matches(withToolbarTitle(is("Add a Board Game"))));
 
         pressBack();
+        pressBack();
 
-        onView(withId(R.id.addItemFAB)).perform(click());
+        onView(withId(R.id.fab_expand_menu_button)).perform(click());
         onView(withId(R.id.add_tv)).perform(click());
 
         intended(allOf(
                 hasComponent(AddSwrlActivity.class.getName()),
-                hasExtras(hasEntry(equalTo("type"), equalTo(Type.TV)))));
+                hasExtras(hasEntry(equalTo("swrlType"), equalTo(Type.TV)))));
 
         onView(isAssignableFrom(Toolbar.class)).check(matches(withToolbarTitle(is("Add a TV Show"))));
 
         pressBack();
+        pressBack();
 
-        onView(withId(R.id.addItemFAB)).perform(click());
+        onView(withId(R.id.fab_expand_menu_button)).perform(click());
         onView(withId(R.id.add_book)).perform(click());
 
         intended(allOf(
                 hasComponent(AddSwrlActivity.class.getName()),
-                hasExtras(hasEntry(equalTo("type"), equalTo(Type.BOOK)))));
+                hasExtras(hasEntry(equalTo("swrlType"), equalTo(Type.BOOK)))));
 
         onView(isAssignableFrom(Toolbar.class)).check(matches(withToolbarTitle(is("Add a Book"))));
 
         pressBack();
-        onView(withId(R.id.addItemFAB)).perform(click());
+        pressBack();
+
+        onView(withId(R.id.fab_expand_menu_button)).perform(click());
         onView(withId(R.id.add_album)).perform(click());
 
         intended(allOf(
                 hasComponent(AddSwrlActivity.class.getName()),
-                hasExtras(hasEntry(equalTo("type"), equalTo(Type.ALBUM)))));
+                hasExtras(hasEntry(equalTo("swrlType"), equalTo(Type.ALBUM)))));
 
         onView(isAssignableFrom(Toolbar.class)).check(matches(withToolbarTitle(is("Add a Music Album"))));
 
         pressBack();
-        onView(withId(R.id.addItemFAB)).perform(click());
-        onView(withId(R.id.add_unknown)).perform(click());
-
-        intended(allOf(
-                hasComponent(AddSwrlActivity.class.getName()),
-                hasExtras(hasEntry(equalTo("type"), equalTo(Type.UNKNOWN)))));
-
-        onView(isAssignableFrom(Toolbar.class)).check(matches(withToolbarTitle(is("Add a Swrl"))));
-
         pressBack();
 
-        onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX))).check(matches(isDisplayed()));
+        onView(withId(R.id.listView)).check(matches(atPosition(0, hasDescendant(withText("The Matrix Reloaded")))));
     }
 
-    @Test @Ignore //TODO: fix test
+    @Test
     public void pressingCancelOnAddNewSwrlScreenTakesYouBackToList() throws Exception {
         activity = launchAndAvoidWhatsNewDialog(listActivityIntents, new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED});
 
-        onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX))).check(matches(isDisplayed()));
+        onView(withId(R.id.listView)).check(matches(atPosition(0, hasDescendant(withText("The Matrix Reloaded")))));
 
-        onView(withId(R.id.addItemFAB)).perform(click());
+        onView(withId(R.id.fab_expand_menu_button)).perform(click());
         onView(withId(R.id.add_film)).perform(click());
 
         intended(hasComponent(AddSwrlActivity.class.getName()));
@@ -192,7 +184,8 @@ public class ActivityNavigationTest {
 
         onView(withId(R.id.cancel_add)).perform(click());
 
-        onData(allOf(is(instanceOf(Swrl.class)), equalTo(THE_MATRIX))).check(matches(isDisplayed()));
+        onView(withId(R.id.listView)).check(matches(atPosition(0, hasDescendant(withText("The Matrix Reloaded")))));
+
     }
 
     private static Matcher<Object> withToolbarTitle(

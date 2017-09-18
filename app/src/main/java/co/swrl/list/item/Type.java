@@ -15,7 +15,7 @@ public enum Type {
     ALBUM("Music Album", "Music Albums",
             R.color.album, SwrlSearch.getAlbumSearch(), R.drawable.ic_headset_black_24dp, "Artist"),
     VIDEO_GAME("Video Game", "Video Games",
-            R.color.video_game, SwrlSearch.getVideoGameSearch(), R.drawable.ic_video_game_icon, "Platform"),
+            R.color.video_game, SwrlSearch.getVideoGameSearch(), R.drawable.ic_video_game_icon, "Publisher"),
     BOARD_GAME("Board Game", "Board Games",
             R.color.board_game, SwrlSearch.getBoardGameSearch(), R.drawable.ic_boardgame_icon, "Designer"),
     APP("Phone App", "Phone Apps",
