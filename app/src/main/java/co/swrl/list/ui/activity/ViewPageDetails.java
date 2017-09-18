@@ -1,13 +1,12 @@
 package co.swrl.list.ui.activity;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
-import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -32,6 +31,7 @@ import co.swrl.list.collection.CollectionManager;
 import co.swrl.list.collection.SQLiteCollectionManager;
 import co.swrl.list.item.Details;
 import co.swrl.list.item.Swrl;
+import co.swrl.list.item.Type;
 import co.swrl.list.item.search.GetSearchResults;
 import co.swrl.list.ui.list.SwrlListViewFactory;
 import co.swrl.list.ui.list.ViewSwrlResultsRecyclerAdapter;
@@ -115,11 +115,50 @@ public class ViewPageDetails extends Fragment {
     @NonNull
     private View showSwrlDetails(LayoutInflater inflater, ViewGroup container, Swrl swrl, Details details) {
         final View rootView;
-        rootView = inflater.inflate(R.layout.fragment_view, container, false);
-        final ImageView poster = (ImageView) rootView.findViewById(R.id.imageView);
-        int iconResource = swrl.getType().getIcon();
+        rootView = inflater.inflate(R.layout.view_page_details, container, false);
+        LinearLayout detailsLayout = (LinearLayout) rootView.findViewById(R.id.details_layout);
+        Type type = swrl.getType();
 
+        int color = getResources().getColor(R.color.colorPrimary);
+        rootView.setBackgroundColor(color);
+
+        setPoster(details, rootView, type);
+        setTitle(swrl, details, rootView);
+
+        addTextCard(inflater, detailsLayout, "Ratings", details.getRatings());
+        addTextCard(inflater, detailsLayout, type.getCreatorType(), details.getCreator());
+        addTextCard(inflater, detailsLayout, "Platform", details.getPlatform());
+        addTextCard(inflater, detailsLayout, "Genres", details.getCategories());
+        addTextCard(inflater, detailsLayout, "Actors", details.getActors());
+        addTextCard(inflater, detailsLayout, "Runtime", details.getRuntime());
+        addTextCard(inflater, detailsLayout, "Publication Date", details.getPublicationDate());
+        addTextCard(inflater, detailsLayout, "Players", details.getMinToMaxPlayers());
+        addTextCard(inflater, detailsLayout, "Playtime", details.getMinToMaxPlaytime());
+        addTextCard(inflater, detailsLayout, "Overview", details.getOverview());
+
+        return rootView;
+    }
+
+    private void setTitle(Swrl swrl, Details details, View rootView) {
+        TextView titleText = (TextView) rootView.findViewById(R.id.title);
+        String title = swrl.getTitle();
+        TextView tagline = (TextView) rootView.findViewById(R.id.tagline);
+        if (details.getTagline() != null){
+            tagline.setText(details.getTagline());
+        } else {
+            tagline.setVisibility(GONE);
+        }
+        titleText.setText(title);
+    }
+
+    private void setPoster(Details details, final View rootView, Type type) {
+        final ImageView poster = (ImageView) rootView.findViewById(R.id.imageView);
+        int iconResource = type.getIcon();
         ImageView background = (ImageView) rootView.findViewById(R.id.imageView2);
+        final RelativeLayout imageContainer = (RelativeLayout) rootView.findViewById(R.id.image_background);
+
+        imageContainer.setBackgroundColor(Color.WHITE);
+
         if (details.getPosterURL() != null && !Objects.equals(details.getPosterURL(), "")) {
             Picasso.with(getActivity().getBaseContext())
                     .load(details.getPosterURL())
@@ -147,90 +186,46 @@ public class ViewPageDetails extends Fragment {
             poster.setImageResource(iconResource);
         }
 
-        final RelativeLayout imageContainer = (RelativeLayout) rootView.findViewById(R.id.image_background);
         poster.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (isImageFitToScreen) {
                     isImageFitToScreen = false;
-                    imageContainer.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, (int) getContext().getResources().getDimension(R.dimen.viewImageHeight)));
-                    RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.MATCH_PARENT);
-                    layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
-                    poster.setLayoutParams(layoutParams);
+                    imageContainer.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (int) getContext().getResources().getDimension(R.dimen.viewImageHeight)));
+
+                    RelativeLayout.LayoutParams posterLayout = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+                    posterLayout.addRule(RelativeLayout.CENTER_IN_PARENT);
+                    poster.setLayoutParams(posterLayout);
                     poster.setAdjustViewBounds(true);
                 } else {
                     isImageFitToScreen = true;
-                    imageContainer.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                    imageContainer.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.FILL_PARENT));
 
-                    poster.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
+                    RelativeLayout.LayoutParams posterLayout = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+                    poster.setLayoutParams(posterLayout);
+                    poster.setMaxHeight(Integer.MAX_VALUE);
                     poster.setScaleType(ImageView.ScaleType.FIT_CENTER);
                 }
             }
         });
-        TextView titleText = (TextView) rootView.findViewById(R.id.title);
-        String title = swrl.getTitle();
-        titleText.setText(title);
+    }
 
-        TextView keyDetails = (TextView) rootView.findViewById(R.id.keyDetails);
+    private void addTextCard(LayoutInflater inflater, LinearLayout detailsLayout, String title, String text) {
+        if (text != null && !text.isEmpty()) {
+            View anotherSection = inflater.inflate(R.layout.details_card_text, detailsLayout, false);
+            TextView titleView = (TextView) anotherSection.findViewById(R.id.card_title);
+            titleView.setId(View.generateViewId());
+            titleView.setText(title);
 
-        String keyDetailsText = null;
+            TextView textView = (TextView) anotherSection.findViewById(R.id.card_text);
+            textView.setId(View.generateViewId());
+            textView.setText(text);
 
-        String separator = " | ";
-        switch (swrl.getType()) {
-            case FILM:
-                String director = details.getCreator() == null ? "" : details.getCreator() + separator;
-                String genres = details.getCategories() == null ? "" : TextUtils.join(", ", details.getCategories()) + separator;
-                String actors = details.getActors() == null ? "" : details.getActors() + separator;
-                String runtime = details.getRuntime() == null ? "" : details.getRuntime() + separator;
-                keyDetailsText = director + genres + actors + runtime;
-                break;
-            case TV:
-                break;
-            case BOOK:
-                break;
-            case ALBUM:
-                break;
-            case VIDEO_GAME:
-                break;
-            case BOARD_GAME:
-                break;
-            case APP:
-                break;
-            case PODCAST:
-                break;
-            case UNKNOWN:
-                break;
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            int margin = getDPI(5, detailsLayout);
+            params.setMargins(margin, margin, margin, margin);
+            detailsLayout.addView(anotherSection, params);
         }
-
-
-        if (keyDetailsText != null) {
-            keyDetails.setText(keyDetailsText);
-        } else {
-            keyDetails.setVisibility(GONE);
-        }
-
-        TextView ratings = (TextView) rootView.findViewById(R.id.ratings);
-        if (details.getRatings() != null) {
-            String ratingsString = "Ratings: ";
-
-            for (Details.Ratings rating : details.getRatings()) {
-                ratingsString += rating.getSource().equals("Internet Movie Database") ? "IMDB" : rating.getSource();
-                ratingsString += ": ";
-                ratingsString += rating.getValue();
-                ratingsString += "; ";
-            }
-            ratings.setText(ratingsString);
-        } else {
-            ratings.setVisibility(GONE);
-        }
-
-        TextView overviewText = (TextView) rootView.findViewById(R.id.overview);
-        if (details.getOverview() != null && !details.getOverview().isEmpty()) {
-            overviewText.setText(Html.fromHtml(details.getOverview()));
-        } else {
-            overviewText.setVisibility(GONE);
-        }
-        return rootView;
     }
 
     @NonNull

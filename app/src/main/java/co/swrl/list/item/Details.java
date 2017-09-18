@@ -1,9 +1,13 @@
 package co.swrl.list.item;
 
+import android.text.Html;
+import android.text.TextUtils;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Details implements Serializable {
     private final String title;
@@ -132,7 +136,6 @@ public class Details implements Serializable {
         return result;
     }
 
-
     public class Ratings implements Serializable {
         private final String Source;
         private final String Value;
@@ -205,7 +208,8 @@ public class Details implements Serializable {
     }
 
     public String getOverview() {
-        return overview;
+        if (overview == null) return null;
+        return String.valueOf(Html.fromHtml(overview));
     }
 
     public String getPosterURL() {
@@ -220,8 +224,9 @@ public class Details implements Serializable {
         return id;
     }
 
-    public ArrayList<String> getCategories() {
-        return categories;
+    public String getCategories() {
+        if (categories == null) return null;
+        return TextUtils.join(", ", categories);
     }
 
     public Type getType() {
@@ -248,8 +253,18 @@ public class Details implements Serializable {
         return imdbID;
     }
 
-    public ArrayList<Ratings> getRatings() {
-        return ratings;
+    public String getRatings() {
+        if (ratings == null) return null;
+
+        List<String> ratingsAsString = new ArrayList<>();
+        for (Details.Ratings rating : ratings) {
+            String text = "";
+            text += rating.getSource().equals("Internet Movie Database") ? "IMDB" : rating.getSource();
+            text += ": ";
+            text += rating.getValue();
+            ratingsAsString.add(text);
+        }
+        return TextUtils.join(", ", ratingsAsString);
     }
 
     public String getCreator() {
@@ -272,12 +287,22 @@ public class Details implements Serializable {
         return maxPlayers;
     }
 
+    public String getMinToMaxPlayers(){
+        if (minPlayers == null || maxPlayers == null) return null;
+        return minPlayers + " - " + maxPlayers;
+    }
+
     public String getMinPlaytime() {
         return minPlaytime;
     }
 
     public String getMaxPlaytime() {
         return maxPlaytime;
+    }
+
+    public String getMinToMaxPlaytime(){
+        if (minPlaytime == null || maxPlaytime == null) return null;
+        return minPlaytime + " - " + maxPlaytime;
     }
 
     public String getPlatform() {

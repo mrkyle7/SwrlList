@@ -27,8 +27,8 @@ import co.swrl.list.R;
 import co.swrl.list.collection.CollectionManager;
 import co.swrl.list.collection.SQLiteCollectionManager;
 import co.swrl.list.item.Details;
-import co.swrl.list.item.search.Search;
 import co.swrl.list.item.Swrl;
+import co.swrl.list.item.search.Search;
 
 import static co.swrl.list.ui.activity.ViewActivity.ViewType.ADD;
 
@@ -149,9 +149,8 @@ public class ViewActivity extends AppCompatActivity {
         mViewPager.setCurrentItem(firstSwrlIndex);
         position = firstSwrlIndex;
         currentSwrl = (Swrl) swrls.get(firstSwrlIndex);
-        setButton(firstSwrlIndex, mSectionsPagerAdapter);
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle(currentSwrl.getTitle());
+        setButton(firstSwrlIndex);
+        updateToolbar();
         if (viewType == ADD) {
             new GetSwrlDetails().execute(currentSwrl.getDetails().getId());
         }
@@ -164,10 +163,9 @@ public class ViewActivity extends AppCompatActivity {
             @Override
             public void onPageSelected(final int position) {
                 ViewActivity.this.position = position;
-                setButton(position, mSectionsPagerAdapter);
+                setButton(position);
                 currentSwrl = (Swrl) swrls.get(position);
-                ActionBar actionBar = getSupportActionBar();
-                actionBar.setTitle(currentSwrl.getTitle());
+                updateToolbar();
                 if (viewType == ADD) {
                     new GetSwrlDetails().execute(currentSwrl.getDetails().getId());
                 }
@@ -180,7 +178,12 @@ public class ViewActivity extends AppCompatActivity {
         });
     }
 
-    private void setButton(final int position, final SectionsPagerAdapter mSectionsPagerAdapter) {
+    private void updateToolbar() {
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle(currentSwrl.getTitle());
+    }
+
+    private void setButton(final int position) {
         FloatingActionButton button = (FloatingActionButton) findViewById(R.id.viewButton);
         if (viewType != null) {
             switch (viewType) {

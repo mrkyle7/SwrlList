@@ -8,7 +8,6 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -110,7 +109,7 @@ public class SwrlRow extends RecyclerView.ViewHolder {
         String subtitle2Text = "No Details...";
         if (swrl.getDetails() != null && swrl.getDetails().getCategories() != null
                 && !swrl.getDetails().getCategories().isEmpty()) {
-            subtitle2Text = TextUtils.join(", ", swrl.getDetails().getCategories());
+            subtitle2Text = swrl.getDetails().getCategories();
         }
         if (swrl.getType() == Type.BOOK && swrl.getDetails() != null && swrl.getDetails().getPublicationDate() != null) {
             subtitle2Text = swrl.getDetails().getPublicationDate();

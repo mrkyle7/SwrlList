@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -148,16 +149,12 @@ public class ListActivity extends AppCompatActivity {
                 R.string.drawer_closed) {
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
+                ActionBar supportActionBar = getSupportActionBar();
                 if (typeFilter == null || typeFilter == Type.UNKNOWN) {
-                    getSupportActionBar().setTitle(getApplicationContext().getResources().getString(R.string.app_title));
+                    supportActionBar.setTitle(getApplicationContext().getResources().getString(R.string.app_title));
                 } else {
-                    getSupportActionBar().setTitle(getApplicationContext().getResources().getString(R.string.app_title) + " - " + typeFilter.getFriendlyNamePlural());
+                    supportActionBar.setTitle(getApplicationContext().getResources().getString(R.string.app_title) + " - " + typeFilter.getFriendlyNamePlural());
                 }
-            }
-
-            public void onDrawerOpened(View view) {
-                super.onDrawerOpened(view);
-                getSupportActionBar().setTitle(R.string.app_menu_title);
             }
         };
         mDrawerLayout.addDrawerListener(mDrawerToggle);

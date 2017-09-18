@@ -11,4 +11,8 @@
     <item name="list_item_done" type="id" />
     <item name="addItemTypeSelector" type="id" />
     <item name="search_results" type="id" />
+    <item name="another_section" type="id">another_section</item>
+    <item name="keyDetailsTitle" type="id">keyDetailsTitle</item>
+    <item name="creatorTitle" type="id">creatorTitle</item>
+    <item name="creatorText" type="id">creatorText</item>
 </resources>
