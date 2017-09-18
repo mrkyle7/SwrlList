@@ -4,6 +4,8 @@
 
 Sister app to http://swrl.co, Swrl List is an Android app where you can quickly create a list of things you **S**hould **W**atch **R**ead or **L**isten to.
 
+Play Store Listing (Alpha): https://play.google.com/store/apps/details?id=co.swrl.list
+
 # Developer Guide
 
 This is a normal Android application built with gradle.
