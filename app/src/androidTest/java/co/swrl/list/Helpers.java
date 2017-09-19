@@ -11,12 +11,14 @@ import android.support.test.espresso.matcher.BoundedMatcher;
 import android.support.test.rule.ActivityTestRule;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 
 import com.google.gson.Gson;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
 
 import co.swrl.list.collection.SQLiteCollectionManager;
 import co.swrl.list.item.Details;
@@ -45,9 +47,9 @@ class Helpers {
     static final Swrl THE_MATRIX_RELOADED = new Swrl("The Matrix Reloaded", Type.FILM);
     static final Swrl THE_MATRIX_REVOLUTIONS = new Swrl("The Matrix Revolutions", Type.FILM);
     static final Swrl BILLIONS = new Swrl("Billions", Type.TV);
-    static final Details THE_MATRIX_DETAILS = new Gson().fromJson("{\"title\":\"The Matrix (1991)\",\"overview\":\"overview\",\"tmdb-id\":\"403\"}", Details.class);
-    static final Details THE_MATRIX_RELOADED_DETAILS = new Gson().fromJson("{\"title\":\"The Matrix Reloaded (1992)\",\"overview\":\"overview\"}", Details.class);
-    static final Details THE_MATRIX_REVOLUTIONS_DETAILS = new Gson().fromJson("{\"title\":\"The Matrix Revolutions (1992)\",\"overview\":\"overview\"}", Details.class);
+    static final Details THE_MATRIX_DETAILS = new Gson().fromJson("{\"title\":\"The Matrix (1991)\",\"overview\":\"an overview\",\"tmdb-id\":\"403\"}", Details.class);
+    static final Details THE_MATRIX_RELOADED_DETAILS = new Gson().fromJson("{\"title\":\"The Matrix Reloaded (1992)\",\"an overview\":\"overview\",\"tmdb-id\":\"404\"}", Details.class);
+    static final Details THE_MATRIX_REVOLUTIONS_DETAILS = new Gson().fromJson("{\"title\":\"The Matrix Revolutions (1992)\",\"overview\":\"an overview\",\"tmdb-id\":\"405\"}", Details.class);
 
     static void clearAllSettings() {
         Context applicationContext = InstrumentationRegistry.getTargetContext();
@@ -137,6 +139,43 @@ class Helpers {
                     return false;
                 }
                 return itemMatcher.matches(viewHolder.itemView);
+            }
+        };
+    }
+
+    public static Matcher<View> doesNotExistAtPosition(final int position) {
+        return new BoundedMatcher<View, RecyclerView>(RecyclerView.class) {
+            @Override
+            public void describeTo(Description description) {
+
+            }
+
+            @Override
+            protected boolean matchesSafely(final RecyclerView view) {
+                RecyclerView.ViewHolder viewHolder = view.findViewHolderForAdapterPosition(position);
+                return viewHolder == null;
+            }
+        };
+    }
+
+    static Matcher<View> numberOfChildren(final Matcher<Integer> numChildrenMatcher) {
+        return new TypeSafeMatcher<View>() {
+
+            /**
+             * matching with viewgroup.getChildCount()
+             */
+            @Override
+            public boolean matchesSafely(View view) {
+                return view instanceof ViewGroup && numChildrenMatcher.matches(((ViewGroup) view).getChildCount());
+            }
+
+            /**
+             * gets the description
+             */
+            @Override
+            public void describeTo(Description description) {
+                description.appendText(" a view with # children ");
+                numChildrenMatcher.describeTo(description);
             }
         };
     }

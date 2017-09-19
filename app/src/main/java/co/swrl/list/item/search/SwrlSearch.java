@@ -1,8 +1,6 @@
 package co.swrl.list.item.search;
 
 
-import android.util.Log;
-
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -78,7 +76,7 @@ public class SwrlSearch implements Search {
 
             if (response != null) {
                 String body = response.body().string();
-                Log.d(LOG_NAME, "response.body=" + body);
+//                Log.d(LOG_NAME, "response.body=" + body);
                 details = gson.fromJson(body, Details.class);
             }
         } catch (IOException e) {
@@ -116,7 +114,7 @@ public class SwrlSearch implements Search {
 
             if (response != null) {
                 String body = response.body().string();
-                Log.d(LOG_NAME, "response.body=" + body);
+//                Log.d(LOG_NAME, "response.body=" + body);
                 searchResponse = gson.fromJson(body, SearchResponse.class);
             }
         } catch (IOException e) {

@@ -42,6 +42,7 @@ import static co.swrl.list.Helpers.atPosition;
 import static co.swrl.list.Helpers.clearAllSettings;
 import static co.swrl.list.Helpers.launchAndAvoidWhatsNewDialog;
 import static co.swrl.list.Helpers.purgeDatabase;
+import static co.swrl.list.ui.activity.ViewActivity.ViewType.VIEW;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
@@ -69,14 +70,14 @@ public class ActivityNavigationTest {
         THE_MATRIX_RELOADED.setDetails(THE_MATRIX_RELOADED_DETAILS);
         activity = launchAndAvoidWhatsNewDialog(listActivityIntents, new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED});
 
-        onView(withId(R.id.listView))
-                .perform(RecyclerViewActions.actionOnItem(hasDescendant(withText("The Matrix")), click()));
+        onView(withId(R.id.listView)).perform(RecyclerViewActions.actionOnItem(hasDescendant(withText("The Matrix")), click()));
 
         intended(allOf(
                 hasComponent(ViewActivity.class.getName()),
                 hasExtras(allOf(
                         hasEntry(equalTo("swrls"), contains(THE_MATRIX_RELOADED, THE_MATRIX)),
-                        hasEntry(equalTo("index"), equalTo(1))
+                        hasEntry(equalTo("index"), equalTo(1)),
+                        hasEntry(equalTo("type"), equalTo(VIEW))
                 ))));
 
         onView(isAssignableFrom(Toolbar.class)).check(matches(withToolbarTitle(is("The Matrix"))));
@@ -90,7 +91,8 @@ public class ActivityNavigationTest {
                 hasComponent(ViewActivity.class.getName()),
                 hasExtras(allOf(
                         hasEntry(equalTo("swrls"), contains(THE_MATRIX_RELOADED, THE_MATRIX)),
-                        hasEntry(equalTo("index"), equalTo(0))))));
+                        hasEntry(equalTo("index"), equalTo(0)),
+                        hasEntry(equalTo("type"), equalTo(VIEW))))));
 
         onView(isAssignableFrom(Toolbar.class)).check(matches(withToolbarTitle(is("The Matrix Reloaded"))));
 
