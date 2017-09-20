@@ -5,6 +5,8 @@
     <string name="pkey_version_number">version_number</string>
     <string name="whatsNewLatest">
         <![CDATA[
+        <h4>Version 8.3 (20 September 2017)</h4>
+        \u2022 Add Refresh All Details option
         <h4>Version 8.2 (20 September 2017)</h4>
         \u2022 Highlight selected filter
         <h4>Version 8.1 (19 September 2017)</h4>
@@ -93,4 +95,5 @@
     <string name="drawer_open">Menu Open</string>
     <string name="drawer_closed">Menu Closed</string>
     <string name="app_menu_title">Swrl List Filters</string>
+    <string name="refresh_all_details">Refresh All Details</string>
 </resources>

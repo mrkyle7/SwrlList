@@ -16,7 +16,9 @@ import org.junit.runner.RunWith;
 import co.swrl.list.item.Swrl;
 import co.swrl.list.ui.activity.ListActivity;
 
+import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.swipeRight;
 import static android.support.test.espresso.action.ViewActions.typeText;
@@ -182,6 +184,15 @@ public class InteractingWithTheList {
         onView(withId(R.id.listView)).check(matches(atPosition(1, hasDescendant(withText("The Matrix Reloaded")))));
         onView(withId(R.id.listView)).check(matches(atPosition(2, hasDescendant(withText("The Matrix")))));
         onView(withId(R.id.listView)).check(matches(numberOfChildren(is(3))));
+    }
+
+    @Test
+    public void refreshAllActionIsAvailable() throws Exception {
+        activity = launchAndAvoidWhatsNewDialog(listActivityActivityTestRule,
+                new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED, BILLIONS});
+
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+        onView(withText("Refresh All Details")).check(matches(isCompletelyDisplayed()));
     }
 }
 

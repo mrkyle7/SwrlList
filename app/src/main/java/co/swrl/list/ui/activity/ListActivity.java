@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -16,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +31,7 @@ import android.widget.TextView;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,7 +39,10 @@ import co.swrl.list.R;
 import co.swrl.list.SwrlPreferences;
 import co.swrl.list.collection.CollectionManager;
 import co.swrl.list.collection.SQLiteCollectionManager;
+import co.swrl.list.item.Details;
+import co.swrl.list.item.Swrl;
 import co.swrl.list.item.Type;
+import co.swrl.list.item.search.Search;
 import co.swrl.list.ui.SwrlDialogs;
 import co.swrl.list.ui.list.SwrlListRecyclerAdapter;
 import co.swrl.list.ui.list.SwrlListViewFactory;
@@ -89,6 +95,13 @@ public class ListActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_list, menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Pass the event to ActionBarDrawerToggle
         // If it returns true, then it has handled
@@ -97,7 +110,30 @@ public class ListActivity extends AppCompatActivity {
             return true;
         }
 
+        int id = item.getItemId();
         // Handle your other action bar items...
+        if (id == R.id.action_refresh_all){
+            new AsyncTask<ArrayList<?>,Void, Void>() {
+                @Override
+                protected Void doInBackground(ArrayList<?>... arrayLists) {
+                    ArrayList<?> swrls = arrayLists[0];
+                    for(Object swrl : swrls){
+                        Swrl mSwrl = (Swrl) swrl;
+                        if (mSwrl.getDetails() != null && mSwrl.getDetails().getId() != null && !mSwrl.getDetails().getId().isEmpty())
+                        {
+                            Search search = mSwrl.getType().getSearch();
+                            Details details = search.byID(mSwrl.getDetails().getId());
+                            swrlListAdapter.updateSwrl(mSwrl);
+                            if (details != null){
+                                collectionManager.saveDetails(mSwrl, details);
+                                swrlListAdapter.updateSwrl(mSwrl);
+                            }
+                        }
+                    }
+                    return null;
+                }
+            }.execute((ArrayList<?>) swrlListAdapter.getSwrls());
+        }
 
         return super.onOptionsItemSelected(item);
     }

@@ -52,6 +52,18 @@ public class SwrlListRecyclerAdapter extends RecyclerView.Adapter {
         return swrls.size();
     }
 
+    public List<Swrl> getSwrls(){
+        return swrls;
+    }
+
+    public void updateSwrl(Swrl swrl){
+        int currentPosition = swrls.indexOf(swrl);
+        if (currentPosition != -1){
+            swrls.set(currentPosition, swrl);
+            notifyItemChanged(currentPosition);
+        }
+    }
+
     public void refreshAll() {
         List<Swrl> active = collectionManager.getActive();
         swrls.clear();
