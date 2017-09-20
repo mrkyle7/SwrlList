@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#4990E2</color>
+    <color name="rowHighlight">#E1F5FE</color>
     <color name="colorPrimaryDark">#3b6fb2</color>
     <color name="colorAccent">#FF2E63</color>
     <color name="colorLabelFab">#000000</color>

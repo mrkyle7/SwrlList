@@ -138,6 +138,7 @@ public class ListActivity extends AppCompatActivity {
                 } else {
                     swrlListAdapter.refreshAllWithFilter(typeFilter);
                 }
+                navListAdapter.notifyDataSetChanged();
                 mDrawerLayout.closeDrawer(nav_drawer);
                 setNoSwrlsText();
             }
@@ -445,11 +446,16 @@ public class ListActivity extends AppCompatActivity {
                 view = convertView;
             }
 
-            ImageView border = (ImageView) view.findViewById(R.id.nav_left_border);
             ImageView iconView = (ImageView) view.findViewById(R.id.icon);
             TextView titleView = (TextView) view.findViewById(R.id.title);
 
             Type navItem = mNavItems[position];
+            if ((typeFilter == null && navItem == Type.UNKNOWN) || navItem == typeFilter) {
+                view.setBackgroundColor(getResources().getColor(R.color.rowHighlight));
+            } else {
+                view.setBackgroundColor(Color.WHITE);
+            }
+            ImageView border = (ImageView) view.findViewById(R.id.nav_left_border);
             border.setBackgroundColor(getApplicationContext().getResources().getColor(navItem.getColor()));
             iconView.setImageResource(navItem.getIcon());
             String filterTitle = navItem.getFriendlyNamePlural()
