@@ -1,6 +1,7 @@
 package co.swrl.list;
 
 import android.app.Activity;
+import android.support.test.espresso.contrib.DrawerActions;
 import android.support.test.espresso.contrib.RecyclerViewActions;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
@@ -28,6 +29,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.isCompletelyDis
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static co.swrl.list.Helpers.BILLIONS;
 import static co.swrl.list.Helpers.THE_MATRIX;
 import static co.swrl.list.Helpers.THE_MATRIX_RELOADED;
 import static co.swrl.list.Helpers.THE_MATRIX_REVOLUTIONS;
@@ -36,6 +38,7 @@ import static co.swrl.list.Helpers.clearAllSettings;
 import static co.swrl.list.Helpers.doesNotExistAtPosition;
 import static co.swrl.list.Helpers.launchAndAvoidWhatsNewDialog;
 import static co.swrl.list.Helpers.launchAndWakeUpActivity;
+import static co.swrl.list.Helpers.numberOfChildren;
 import static co.swrl.list.Helpers.purgeDatabase;
 import static co.swrl.list.Helpers.restartActivity;
 import static co.swrl.list.Helpers.setSavedVersionToHugeNumber;
@@ -94,14 +97,14 @@ public class InteractingWithTheList {
 
         onView(withId(R.id.listView)).check(matches(not(atPosition(1, hasDescendant(withText("The Matrix"))))));
         onView(withId(R.id.listView)).check(matches(doesNotExistAtPosition(1)));
-        onView(withId(R.id.listView)).check(matches(Helpers.numberOfChildren(is(1))));
+        onView(withId(R.id.listView)).check(matches(numberOfChildren(is(1))));
         onView(withId(R.id.listView)).check(matches(atPosition(0, hasDescendant(withText("The Matrix Reloaded")))));
 
         activity = restartActivity(activity, listActivityActivityTestRule);
 
         onView(withId(R.id.listView)).check(matches(not(atPosition(1, hasDescendant(withText("The Matrix"))))));
         onView(withId(R.id.listView)).check(matches(doesNotExistAtPosition(1)));
-        onView(withId(R.id.listView)).check(matches(Helpers.numberOfChildren(is(1))));
+        onView(withId(R.id.listView)).check(matches(numberOfChildren(is(1))));
         onView(withId(R.id.listView)).check(matches(atPosition(0, hasDescendant(withText("The Matrix Reloaded")))));
 
         onView(withId(R.id.fab_expand_menu_button)).perform(click());
@@ -114,7 +117,7 @@ public class InteractingWithTheList {
 
         onView(withId(R.id.listView)).check(matches(atPosition(0, hasDescendant(withText("The Matrix")))));
         onView(withId(R.id.listView)).check(matches(atPosition(1, hasDescendant(withText("The Matrix Reloaded")))));
-        onView(withId(R.id.listView)).check(matches(Helpers.numberOfChildren(is(2))));
+        onView(withId(R.id.listView)).check(matches(numberOfChildren(is(2))));
     }
 
 
@@ -135,16 +138,51 @@ public class InteractingWithTheList {
         onView(withId(R.id.listView)).check(matches(atPosition(0, hasDescendant(withText("The Matrix Revolutions")))));
         onView(withId(R.id.listView)).check(matches(atPosition(1, hasDescendant(withText("The Matrix Reloaded")))));
         onView(withId(R.id.listView)).check(matches(atPosition(2, hasDescendant(withText("The Matrix")))));
-        onView(withId(R.id.listView)).check(matches(Helpers.numberOfChildren(is(3))));
+        onView(withId(R.id.listView)).check(matches(numberOfChildren(is(3))));
 
         activity = restartActivity(activity, listActivityActivityTestRule);
 
         onView(withId(R.id.listView)).check(matches(atPosition(0, hasDescendant(withText("The Matrix Revolutions")))));
         onView(withId(R.id.listView)).check(matches(atPosition(1, hasDescendant(withText("The Matrix Reloaded")))));
         onView(withId(R.id.listView)).check(matches(atPosition(2, hasDescendant(withText("The Matrix")))));
-        onView(withId(R.id.listView)).check(matches(Helpers.numberOfChildren(is(3))));
+        onView(withId(R.id.listView)).check(matches(numberOfChildren(is(3))));
     }
 
+    @Test
+    public void canFilterTheList() throws Exception {
+        activity = launchAndAvoidWhatsNewDialog(listActivityActivityTestRule,
+                new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED, BILLIONS});
+
+        onView(withId(R.id.listView)).check(matches(atPosition(0, hasDescendant(withText("Billions")))));
+        onView(withId(R.id.listView)).check(matches(atPosition(1, hasDescendant(withText("The Matrix Reloaded")))));
+        onView(withId(R.id.listView)).check(matches(atPosition(2, hasDescendant(withText("The Matrix")))));
+        onView(withId(R.id.listView)).check(matches(numberOfChildren(is(3))));
+
+        onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
+
+        onView(withText("Books (0)")).check(matches(isCompletelyDisplayed()));
+        onView(withText("Films (2)")).perform(click());
+
+        onView(withId(R.id.listView)).check(matches(atPosition(0, hasDescendant(withText("The Matrix Reloaded")))));
+        onView(withId(R.id.listView)).check(matches(atPosition(1, hasDescendant(withText("The Matrix")))));
+        onView(withId(R.id.listView)).check(matches(numberOfChildren(is(2))));
+
+        onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
+
+        onView(withText("TV Shows (1)")).perform(click());
+
+        onView(withId(R.id.listView)).check(matches(atPosition(0, hasDescendant(withText("Billions")))));
+        onView(withId(R.id.listView)).check(matches(numberOfChildren(is(1))));
+
+        onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
+
+        onView(withText("All Swrls (3)")).perform(click());
+
+        onView(withId(R.id.listView)).check(matches(atPosition(0, hasDescendant(withText("Billions")))));
+        onView(withId(R.id.listView)).check(matches(atPosition(1, hasDescendant(withText("The Matrix Reloaded")))));
+        onView(withId(R.id.listView)).check(matches(atPosition(2, hasDescendant(withText("The Matrix")))));
+        onView(withId(R.id.listView)).check(matches(numberOfChildren(is(3))));
+    }
 }
 
 

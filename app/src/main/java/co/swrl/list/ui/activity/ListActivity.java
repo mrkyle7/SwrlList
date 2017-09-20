@@ -371,7 +371,7 @@ public class ListActivity extends AppCompatActivity {
         enableButtons(mainButtons);
         disableButtons(otherButtons);
 
-        FloatingActionButton moreButton = (FloatingActionButton) findViewById(R.id.add_unknown);
+        FloatingActionButton moreButton = (FloatingActionButton) findViewById(R.id.show_others);
         moreButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

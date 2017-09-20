@@ -48,7 +48,7 @@
             fab:fab_labelStyle="@style/menu_labels_style">
 
             <com.getbase.floatingactionbutton.FloatingActionButton
-                android:id="@+id/add_unknown"
+                android:id="@+id/show_others"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 fab:backgroundTint="@android:color/white"

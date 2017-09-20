@@ -132,19 +132,34 @@ public class ActivityNavigationTest {
         pressBack();
         pressBack();
 
+
         onView(withId(R.id.fab_expand_menu_button)).perform(click());
-        onView(withId(R.id.add_tv)).perform(click());
+        onView(withId(R.id.show_others)).perform(click());
+        onView(withId(R.id.add_podcast)).perform(click());
 
         intended(allOf(
                 hasComponent(AddSwrlActivity.class.getName()),
-                hasExtras(hasEntry(equalTo("swrlType"), equalTo(Type.TV)))));
+                hasExtras(hasEntry(equalTo("swrlType"), equalTo(Type.PODCAST)))));
 
-        onView(isAssignableFrom(Toolbar.class)).check(matches(withToolbarTitle(is("Add a TV Show"))));
+        onView(isAssignableFrom(Toolbar.class)).check(matches(withToolbarTitle(is("Add a Podcast"))));
 
         pressBack();
         pressBack();
 
         onView(withId(R.id.fab_expand_menu_button)).perform(click());
+        onView(withId(R.id.add_video_game)).perform(click());
+
+        intended(allOf(
+                hasComponent(AddSwrlActivity.class.getName()),
+                hasExtras(hasEntry(equalTo("swrlType"), equalTo(Type.VIDEO_GAME)))));
+
+        onView(isAssignableFrom(Toolbar.class)).check(matches(withToolbarTitle(is("Add a Video Game"))));
+
+        pressBack();
+        pressBack();
+
+        onView(withId(R.id.fab_expand_menu_button)).perform(click());
+        onView(withId(R.id.show_others)).perform(click());
         onView(withId(R.id.add_book)).perform(click());
 
         intended(allOf(
@@ -152,18 +167,6 @@ public class ActivityNavigationTest {
                 hasExtras(hasEntry(equalTo("swrlType"), equalTo(Type.BOOK)))));
 
         onView(isAssignableFrom(Toolbar.class)).check(matches(withToolbarTitle(is("Add a Book"))));
-
-        pressBack();
-        pressBack();
-
-        onView(withId(R.id.fab_expand_menu_button)).perform(click());
-        onView(withId(R.id.add_album)).perform(click());
-
-        intended(allOf(
-                hasComponent(AddSwrlActivity.class.getName()),
-                hasExtras(hasEntry(equalTo("swrlType"), equalTo(Type.ALBUM)))));
-
-        onView(isAssignableFrom(Toolbar.class)).check(matches(withToolbarTitle(is("Add a Music Album"))));
 
         pressBack();
         pressBack();
