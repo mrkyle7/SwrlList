@@ -227,7 +227,12 @@ public class Details implements Serializable {
 
     public String getCategories() {
         if (categories == null || categories.isEmpty()) return null;
-        return TextUtils.join(", ", categories);
+        ArrayList<String> formattedCategories = new ArrayList<>();
+        for (String category : categories){
+            category = category.replace("-game-genre", "");
+            formattedCategories.add(category);
+        }
+        return TextUtils.join(", ", formattedCategories);
     }
 
     public Type getType() {

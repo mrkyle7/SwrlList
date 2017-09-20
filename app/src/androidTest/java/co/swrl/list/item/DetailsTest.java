@@ -32,6 +32,23 @@ public class DetailsTest extends AndroidTestCase {
         assertEquals("cat1, cat2", details.getCategories());
     }
 
+    @Test
+    public void getCategoriesFormatsCorrectlyWithOne() throws Exception {
+        ArrayList<String> categories = new ArrayList<>();
+        categories.add("cat1");
+        Details details = new Details(null, null, null, null, null, categories, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+        assertEquals("cat1", details.getCategories());
+    }
+
+    @Test
+    public void getCategoriesRemovesAmazonBadFormatting() throws Exception {
+        ArrayList<String> categories = new ArrayList<>();
+        categories.add("adventure-game-genre");
+        categories.add("action-game-genre");
+        Details details = new Details(null, null, null, null, null, categories, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+        assertEquals("adventure, action", details.getCategories());
+    }
+
     @NonNull
     private Details getNullDetails() {
         return new Details(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);

@@ -123,10 +123,10 @@ public class ViewPageDetails extends Fragment {
         rootView.setBackgroundColor(color);
 
         setPoster(details, rootView, type);
-        setTitle(swrl, details, rootView);
+        setTitleCard(swrl, details, rootView);
 
+        addTextCard(inflater, detailsLayout, "Tagline", details.getTagline());
         addTextCard(inflater, detailsLayout, "Ratings", details.getRatings());
-        addTextCard(inflater, detailsLayout, type.getCreatorType(), details.getCreator());
         addTextCard(inflater, detailsLayout, "Platform", details.getPlatform());
         addTextCard(inflater, detailsLayout, "Genres", details.getCategories());
         addTextCard(inflater, detailsLayout, "Actors", details.getActors());
@@ -139,16 +139,17 @@ public class ViewPageDetails extends Fragment {
         return rootView;
     }
 
-    private void setTitle(Swrl swrl, Details details, View rootView) {
+    private void setTitleCard(Swrl swrl, Details details, View rootView) {
         TextView titleText = (TextView) rootView.findViewById(R.id.title);
         String title = swrl.getTitle();
-        TextView tagline = (TextView) rootView.findViewById(R.id.tagline);
-        if (details.getTagline() != null){
-            tagline.setText(details.getTagline());
-        } else {
-            tagline.setVisibility(GONE);
-        }
         titleText.setText(title);
+
+        TextView subtitle = (TextView) rootView.findViewById(R.id.sub_title);
+        if (details.getCreator() != null){
+            subtitle.setText(details.getCreator());
+        } else {
+            subtitle.setVisibility(GONE);
+        }
     }
 
     private void setPoster(Details details, final View rootView, Type type) {
