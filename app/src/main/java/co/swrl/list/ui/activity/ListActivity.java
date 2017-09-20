@@ -72,11 +72,7 @@ public class ListActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (typeFilter == null || typeFilter == Type.UNKNOWN) {
-            swrlListAdapter.refreshAll();
-        } else {
-            swrlListAdapter.refreshAllWithFilter(typeFilter);
-        }
+        refreshList();
         navListAdapter.notifyDataSetChanged();
         setNoSwrlsText();
         FloatingActionsMenu addSwrlMenu = (FloatingActionsMenu) findViewById(R.id.addItemFAB);
@@ -123,19 +119,30 @@ public class ListActivity extends AppCompatActivity {
                         {
                             Search search = mSwrl.getType().getSearch();
                             Details details = search.byID(mSwrl.getDetails().getId());
-                            swrlListAdapter.updateSwrl(mSwrl);
                             if (details != null){
                                 collectionManager.saveDetails(mSwrl, details);
-                                swrlListAdapter.updateSwrl(mSwrl);
                             }
                         }
                     }
                     return null;
                 }
+
+                @Override
+                protected void onPostExecute(Void aVoid) {
+                    refreshList();
+                }
             }.execute((ArrayList<?>) swrlListAdapter.getSwrls());
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void refreshList() {
+        if (typeFilter == null || typeFilter == Type.UNKNOWN) {
+            swrlListAdapter.refreshAll();
+        } else {
+            swrlListAdapter.refreshAllWithFilter(typeFilter);
+        }
     }
 
     @Override
@@ -169,11 +176,7 @@ public class ListActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 typeFilter = (Type) drawerList.getAdapter().getItem(position);
-                if (typeFilter == null || typeFilter == Type.UNKNOWN) {
-                    swrlListAdapter.refreshAll();
-                } else {
-                    swrlListAdapter.refreshAllWithFilter(typeFilter);
-                }
+                refreshList();
                 navListAdapter.notifyDataSetChanged();
                 mDrawerLayout.closeDrawer(nav_drawer);
                 setNoSwrlsText();

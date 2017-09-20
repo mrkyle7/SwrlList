@@ -1,3 +1,7 @@
+Version 8.4 (20 September 2017)
+<br />
+- Bug Fix for Refresh All Details option
+<br />
 Version 8.3 (20 September 2017)
 <br />
 - Add Refresh All Details option
@@ -13,11 +17,3 @@ Version 8.1 (19 September 2017)
 Version 8.0 (18 September 2017)
 <br />
 - Improve view screen details
-<br />
-Version 7.23 (17 September 2017)
-<br />
-- Fixes to number totals of list filters
-<br />
-Version 7.22 (17 September 2017)
-<br />
-- Add number totals to filters
