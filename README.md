@@ -52,3 +52,5 @@ Then run:
  8. Run:
 
      ./gradlew publishRelease
+     
+deployToPlayStore.sh run the tests and publish steps
