@@ -1,14 +1,15 @@
 package co.swrl.list;
 
 import android.support.test.InstrumentationRegistry;
+import android.support.test.filters.LargeTest;
 import android.support.test.runner.AndroidJUnit4;
-import android.test.AndroidTestCase;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.Collections;
 import java.util.List;
 
 import co.swrl.list.collection.SQLiteCollectionManager;
@@ -17,12 +18,15 @@ import co.swrl.list.item.Swrl;
 import co.swrl.list.item.Type;
 
 import static co.swrl.list.Helpers.BILLIONS;
+import static co.swrl.list.Helpers.GARDEN_STATE_RECOMMENDATION;
 import static co.swrl.list.Helpers.THE_MATRIX;
 import static co.swrl.list.Helpers.THE_MATRIX_DETAILS;
 import static co.swrl.list.Helpers.THE_MATRIX_RELOADED;
 import static co.swrl.list.Helpers.THE_MATRIX_RELOADED_DETAILS;
 import static co.swrl.list.Helpers.THE_MATRIX_REVOLUTIONS;
 import static co.swrl.list.Helpers.THE_MATRIX_REVOLUTIONS_DETAILS;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.emptyCollectionOf;
@@ -30,13 +34,13 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(AndroidJUnit4.class)
-public class SQLiteCollectionManagerTest extends AndroidTestCase {
+@LargeTest
+public class SQLiteCollectionManagerTest {
 
     private SQLiteCollectionManager db;
 
     @Before
     public void setUp() throws Exception {
-        super.setUp();
         db = new SQLiteCollectionManager(InstrumentationRegistry.getTargetContext());
         db.permanentlyDeleteAll();
     }
@@ -44,17 +48,51 @@ public class SQLiteCollectionManagerTest extends AndroidTestCase {
     @After
     public void tearDown() throws Exception {
         db.permanentlyDeleteAll();
-        super.tearDown();
     }
 
     @Test
     public void canAddAndGetActiveSwrlsFromDB() throws Exception {
         db.save(THE_MATRIX);
         db.save(THE_MATRIX_RELOADED);
+        db.save(GARDEN_STATE_RECOMMENDATION);
 
         List<Swrl> saved = db.getActive();
 
-        assertThat(saved, containsInAnyOrder(THE_MATRIX, THE_MATRIX_RELOADED));
+        assertThat(saved, containsInAnyOrder(THE_MATRIX, THE_MATRIX_RELOADED, GARDEN_STATE_RECOMMENDATION));
+    }
+
+    @Test
+    public void recommendationsDoNotLoseDetails() throws Exception {
+        db.save(GARDEN_STATE_RECOMMENDATION);
+
+        List<Swrl> saved = db.getActive();
+        List<Swrl> savedFilms = db.getActive(Type.FILM);
+        List<Swrl> all = db.getAll();
+
+        Swrl gardenStateFromDB = saved.get(0);
+        Swrl gardenStateFromDBFilmFilter = savedFilms.get(0);
+        Swrl gardenStateFromAll = all.get(0);
+
+
+        assertEquals(GARDEN_STATE_RECOMMENDATION, gardenStateFromDB);
+        assertEquals(GARDEN_STATE_RECOMMENDATION.getReview(), gardenStateFromDB.getReview());
+        assertEquals(GARDEN_STATE_RECOMMENDATION.getAuthor(), gardenStateFromDB.getAuthor());
+        assertEquals(GARDEN_STATE_RECOMMENDATION.getAuthorId(), gardenStateFromDB.getAuthorId());
+        assertEquals(GARDEN_STATE_RECOMMENDATION.getId(), gardenStateFromDB.getId());
+
+
+        assertEquals(GARDEN_STATE_RECOMMENDATION, gardenStateFromDBFilmFilter);
+        assertEquals(GARDEN_STATE_RECOMMENDATION.getReview(), gardenStateFromDBFilmFilter.getReview());
+        assertEquals(GARDEN_STATE_RECOMMENDATION.getAuthor(), gardenStateFromDBFilmFilter.getAuthor());
+        assertEquals(GARDEN_STATE_RECOMMENDATION.getAuthorId(), gardenStateFromDBFilmFilter.getAuthorId());
+        assertEquals(GARDEN_STATE_RECOMMENDATION.getId(), gardenStateFromDBFilmFilter.getId());
+
+        assertEquals(GARDEN_STATE_RECOMMENDATION, gardenStateFromAll);
+        assertEquals(GARDEN_STATE_RECOMMENDATION.getReview(), gardenStateFromAll.getReview());
+        assertEquals(GARDEN_STATE_RECOMMENDATION.getAuthor(), gardenStateFromAll.getAuthor());
+        assertEquals(GARDEN_STATE_RECOMMENDATION.getAuthorId(), gardenStateFromAll.getAuthorId());
+        assertEquals(GARDEN_STATE_RECOMMENDATION.getId(), gardenStateFromAll.getId());
+
     }
 
     @Test
@@ -63,15 +101,15 @@ public class SQLiteCollectionManagerTest extends AndroidTestCase {
         db.save(THE_MATRIX_RELOADED);
         db.save(BILLIONS);
 
-        List<Swrl> films = db.getActiveWithFilter(Type.FILM);
+        List<Swrl> films = db.getActive(Type.FILM);
 
         assertThat(films, containsInAnyOrder(THE_MATRIX, THE_MATRIX_RELOADED));
 
-        List<Swrl> tvShows = db.getActiveWithFilter(Type.TV);
+        List<Swrl> tvShows = db.getActive(Type.TV);
 
         assertThat(tvShows, containsInAnyOrder(BILLIONS));
 
-        List<Swrl> books = db.getActiveWithFilter(Type.BOOK);
+        List<Swrl> books = db.getActive(Type.BOOK);
 
         assertThat(books, is(emptyCollectionOf(Swrl.class)));
     }
@@ -112,9 +150,13 @@ public class SQLiteCollectionManagerTest extends AndroidTestCase {
 
         List<Swrl> active = db.getActive();
         List<Swrl> done = db.getDone();
+        List<Swrl> doneFilms = db.getDone(Type.FILM);
+        List<Swrl> all = db.getAll();
 
         assertThat(active, contains(THE_MATRIX_RELOADED));
         assertThat(done, contains(THE_MATRIX));
+        assertThat(doneFilms, contains(THE_MATRIX));
+        assertThat(all, containsInAnyOrder(THE_MATRIX, THE_MATRIX_RELOADED));
     }
 
     @Test
@@ -206,6 +248,12 @@ public class SQLiteCollectionManagerTest extends AndroidTestCase {
     }
 
     @Test
+    public void doesNotExplodeIfUpdatingDetailsForASwrlThatDoesNotExist() throws Exception {
+        db.saveDetails(THE_MATRIX, THE_MATRIX_DETAILS);
+        assertEquals(Collections.EMPTY_LIST, db.getAll());
+    }
+
+    @Test
     public void modifyingTheSwrlInOtherWaysDoesNotAffectTheDetails() throws Exception {
         db.save(THE_MATRIX);
         db.saveDetails(THE_MATRIX, THE_MATRIX_DETAILS);
@@ -271,33 +319,36 @@ public class SQLiteCollectionManagerTest extends AndroidTestCase {
     }
 
     @Test
-    public void countActiveSwrls() throws Exception {
-        Swrl swrl = new Swrl("The Matrix", Type.FILM);
-        db.save(swrl);
+    public void countSwrls() throws Exception {
+        Swrl film = new Swrl("The Matrix", Type.FILM);
+        db.save(film);
 
-        assertEquals(1, db.countActiveByFilter(Type.FILM));
-        assertEquals(0, db.countActiveByFilter(Type.UNKNOWN));
-        assertEquals(0, db.countActiveByFilter(Type.TV));
+        assertEquals(1, db.countActive(Type.FILM));
+        assertEquals(0, db.countActive(Type.UNKNOWN));
+        assertEquals(0, db.countActive(Type.TV));
         assertEquals(1, db.countActive());
 
-        Swrl swrl2 = new Swrl("Another Film Swrl", Type.FILM);
-        db.save(swrl2);
+        Swrl film2 = new Swrl("Another Film Swrl", Type.FILM);
+        db.save(film2);
 
-        assertEquals(2, db.countActiveByFilter(Type.FILM));
-        assertEquals(0, db.countActiveByFilter(Type.TV));
+        assertEquals(2, db.countActive(Type.FILM));
+        assertEquals(0, db.countActive(Type.TV));
         assertEquals(2, db.countActive());
 
 
-        db.markAsDone(swrl);
-        assertEquals(1, db.countActiveByFilter(Type.FILM));
+        db.markAsDone(film);
+        assertEquals(1, db.countActive(Type.FILM));
         assertEquals(1, db.countActive());
+        assertEquals(1, db.countDone());
+        assertEquals(1, db.countDone(Type.FILM));
+        assertEquals(0, db.countDone(Type.TV));
 
-        Swrl tvSwrl = new Swrl("TV Swrl", Type.TV);
-        db.save(tvSwrl);
+        Swrl tv = new Swrl("TV Swrl", Type.TV);
+        db.save(tv);
 
-        assertEquals(1, db.countActiveByFilter(Type.FILM));
-        assertEquals(1, db.countActiveByFilter(Type.TV));
-        assertEquals(0, db.countActiveByFilter(Type.BOOK));
+        assertEquals(1, db.countActive(Type.FILM));
+        assertEquals(1, db.countActive(Type.TV));
+        assertEquals(0, db.countActive(Type.BOOK));
         assertEquals(2, db.countActive());
     }
 }

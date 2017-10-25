@@ -34,7 +34,6 @@ import co.swrl.list.ui.activity.ViewActivity;
 
 import static android.support.v4.content.ContextCompat.startActivity;
 import static co.swrl.list.R.drawable.ic_add_black_24dp;
-import static co.swrl.list.ui.activity.ViewActivity.ViewType.ADD;
 import static co.swrl.list.ui.activity.ViewActivity.ViewType.VIEW;
 
 
@@ -167,16 +166,7 @@ public class SwrlRow extends RecyclerView.ViewHolder {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, i, context.getResources().getDisplayMetrics());
     }
 
-    public void setRowClickToOpenView(final int position, final List<Swrl> swrls, final Context context) {
-        setRowClickToOpenViewByType(position, swrls, context, VIEW);
-    }
-
-    public void setRowClickToOpenViewWithAddButton(final int position, final List<Swrl> swrls, final Context context) {
-        setRowClickToOpenViewByType(position, swrls, context, ADD);
-
-    }
-
-    private void setRowClickToOpenViewByType(final int position, final List<Swrl> swrls, final Context context, final ViewActivity.ViewType viewType) {
+    public void setRowClickToOpenViewByType(final int position, final List<Swrl> swrls, final Context context, final ViewActivity.ViewType viewType) {
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

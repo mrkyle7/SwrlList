@@ -1,10 +1,14 @@
 <resources>
-    <string name="app_name">SwrlList</string>
+    <string name="app_name">Swrl List</string>
     <string name="ok">OK</string>
     <string name="whatsNewTitle">What\'s new?</string>
     <string name="pkey_version_number">version_number</string>
     <string name="whatsNewLatest">
         <![CDATA[
+        <h4>Version 9.0 (25 October 2017)</h4>
+        \u2022 Discover Swrls from swrl.co to add to your list!<br/>
+        \u2022 New Icon!<br/>
+        \u2022 Loads of UI fixes
         <h4>Version 8.4 (20 September 2017)</h4>
         \u2022 Bug Fix for Refresh All Details option
         <h4>Version 8.3 (20 September 2017)</h4>
@@ -98,4 +102,10 @@
     <string name="drawer_closed">Menu Closed</string>
     <string name="app_menu_title">Swrl List Filters</string>
     <string name="refresh_all_details">Refresh All Details</string>
+    <string name="Swrl_List">Swrl List</string>
+    <string name="Done">Done</string>
+    <string name="discover">Discover</string>
+    <string name="done_title">Done</string>
+    <string name="delete">Delete Swrl</string>
+    <string name="discover_title">Discover Swrls</string>
 </resources>

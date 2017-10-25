@@ -11,6 +11,8 @@ import java.util.List;
 import co.swrl.list.collection.CollectionManager;
 import co.swrl.list.item.Swrl;
 
+import static co.swrl.list.ui.activity.ViewActivity.ViewType.ADD;
+
 
 public class AddSwrlResultsRecyclerAdapter extends RecyclerView.Adapter implements SwrlResultsRecyclerAdapter {
 
@@ -38,7 +40,7 @@ public class AddSwrlResultsRecyclerAdapter extends RecyclerView.Adapter implemen
         swrlRow.setSubtitle2(swrl);
         swrlRow.setImage(swrl, context);
         swrlRow.setAddButton(swrl, collectionManager, (Activity) context);
-        swrlRow.setRowClickToOpenViewWithAddButton(position, swrls, context);
+        swrlRow.setRowClickToOpenViewByType(position, swrls, context, ADD);
     }
 
     @Override

@@ -103,6 +103,11 @@ public class DetailsTest extends AndroidTestCase {
         assertNull(details.getRuntime());
     }
     @Test
+    public void getRuntimeWhenNA() throws Exception {
+        Details details = new Details(null, null, null, null, null, null, null, null, null, null, null, null, null, null, "N/A", null, null, null, null, null, null);
+        assertNull(details.getRuntime());
+    }
+    @Test
     public void getRuntime() throws Exception {
         Details details = new Details(null, null, null, null, null, null, null, null, null, null, null, null, null, null, "90 min", null, null, null, null, null, null);
         assertEquals("90 min", details.getRuntime());

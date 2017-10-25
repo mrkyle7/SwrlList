@@ -210,7 +210,8 @@ public class Details implements Serializable {
 
     public String getOverview() {
         if (overview == null) return null;
-        return String.valueOf(Html.fromHtml(overview));
+        String s = String.valueOf(Html.fromHtml(overview));
+        return s.trim();
     }
 
     public String getPosterURL() {
@@ -279,7 +280,7 @@ public class Details implements Serializable {
     }
 
     public String getRuntime() {
-        if (runtime == null) return null;
+        if (runtime == null || runtime.equals("N/A")) return null;
         if (runtime.matches("\\d+")) return runtime + " min";
         return runtime;
     }

@@ -34,7 +34,7 @@ import static co.swrl.list.ui.activity.ViewActivity.ViewType.ADD;
 
 public class ViewActivity extends AppCompatActivity {
 
-    public static final String LOG_CONTEXT = "VIEW";
+    public static final String LOG_CONTEXT = "VIEW_ACTIVITY";
     private ArrayList<?> swrls;
     private int firstSwrlIndex;
     private ViewType viewType;
@@ -49,8 +49,10 @@ public class ViewActivity extends AppCompatActivity {
     private int position;
 
     public enum ViewType {
-        VIEW(),
-        ADD();
+        VIEW,
+        DONE,
+        ADD,
+        ADD_DISCOVER
     }
 
     @Override
@@ -67,7 +69,16 @@ public class ViewActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_view, menu);
+        switch (viewType) {
+            case VIEW:
+                getMenuInflater().inflate(R.menu.menu_view, menu);
+                break;
+            case DONE:
+                getMenuInflater().inflate(R.menu.menu_view_done, menu);
+                break;
+            case ADD:
+                break;
+        }
         return true;
     }
 
@@ -80,19 +91,39 @@ public class ViewActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_refresh) {
-            Log.d("VIEW", "Current Swrl = " + currentSwrl);
+            Log.d(LOG_CONTEXT, "Current Swrl = " + currentSwrl);
             if (currentSwrl.getDetails() != null && currentSwrl.getDetails().getId() != null
                     && !currentSwrl.getDetails().getId().isEmpty()) {
                 new GetSwrlDetails().execute(currentSwrl.getDetails().getId());
             }
             return true;
         } else if (id == R.id.action_markAsDone) {
-            Log.d("VIEW", "Current Swrl = " + currentSwrl);
+            Log.d(LOG_CONTEXT, "Current Swrl = " + currentSwrl);
             AlertDialog.Builder confirmDialog = new AlertDialog.Builder(this);
             confirmDialog.setTitle("Mark the Swrl as 'done' and remove from list?");
             confirmDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
+                    db.markAsDone((Swrl) swrls.get(position));
+                    mSectionsPagerAdapter.deletePage(position);
+                }
+            });
+            confirmDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            confirmDialog.show();
+            return true;
+        } else if (id == R.id.action_delete) {
+            Log.d(LOG_CONTEXT, "Current Swrl = " + currentSwrl);
+            AlertDialog.Builder confirmDialog = new AlertDialog.Builder(this);
+            confirmDialog.setTitle("Delete the Swrl?");
+            confirmDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    db.permanentlyDelete((Swrl) swrls.get(position));
                     mSectionsPagerAdapter.deletePage(position);
                 }
             });
@@ -129,7 +160,10 @@ public class ViewActivity extends AppCompatActivity {
     private void setUpToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ActionBar supportActionBar = getSupportActionBar();
+        if (supportActionBar != null) {
+            supportActionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     @Override
@@ -180,7 +214,9 @@ public class ViewActivity extends AppCompatActivity {
 
     private void updateToolbar() {
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle(currentSwrl.getTitle());
+        if (actionBar != null) {
+            actionBar.setTitle(currentSwrl.getTitle());
+        }
     }
 
     private void setButton(final int position) {
@@ -190,9 +226,14 @@ public class ViewActivity extends AppCompatActivity {
                 case VIEW:
                     button.setVisibility(View.GONE);
                     break;
+                case DONE:
+                    button.setVisibility(View.GONE);
+                    break;
                 case ADD:
                     button.setIcon(R.drawable.ic_add_black_24dp);
+                    //noinspection deprecation
                     button.setColorNormal(getResources().getColor(R.color.add));
+                    //noinspection deprecation
                     button.setColorPressed(getResources().getColor(R.color.add_pressed));
                     button.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -204,11 +245,25 @@ public class ViewActivity extends AppCompatActivity {
                         }
                     });
                     break;
+                case ADD_DISCOVER:
+                    button.setIcon(R.drawable.ic_add_black_24dp);
+                    //noinspection deprecation
+                    button.setColorNormal(getResources().getColor(R.color.add));
+                    //noinspection deprecation
+                    button.setColorPressed(getResources().getColor(R.color.add_pressed));
+                    button.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            db.save((Swrl) swrls.get(position));
+                            mSectionsPagerAdapter.deletePage(position);
+                        }
+                    });
+                    break;
             }
         }
     }
 
-    public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
+    private class SectionsPagerAdapter extends FragmentStatePagerAdapter {
 
         SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -236,8 +291,7 @@ public class ViewActivity extends AppCompatActivity {
             return PagerAdapter.POSITION_NONE;
         }
 
-        public void deletePage(int position) {
-            db.markAsDone((Swrl) swrls.get(position));
+        void deletePage(int position) {
             swrls.remove(position);
             if (swrls.size() == 0) {
                 finish();

@@ -44,6 +44,7 @@ class Helpers {
     }
 
     static final Swrl THE_MATRIX = new Swrl("The Matrix", Type.FILM);
+    static final Swrl GARDEN_STATE_RECOMMENDATION = new Swrl("Garden State", Type.FILM, "A review", "Bobby Joe", 10, 7);
     static final Swrl THE_MATRIX_RELOADED = new Swrl("The Matrix Reloaded", Type.FILM);
     static final Swrl THE_MATRIX_REVOLUTIONS = new Swrl("The Matrix Revolutions", Type.FILM);
     static final Swrl BILLIONS = new Swrl("Billions", Type.TV);

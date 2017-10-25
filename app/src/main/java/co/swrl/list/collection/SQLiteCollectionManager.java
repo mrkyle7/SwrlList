@@ -22,11 +22,43 @@ import static co.swrl.list.collection.DBContract.Swrls;
 
 
 public class SQLiteCollectionManager implements CollectionManager, Serializable {
-    public static final String DB_LOG = "DB";
+    private static final String DB_LOG = "DB";
     private final DBHelper db;
+    private final String[] projection = new String[]{
+            Swrls._ID,
+            Swrls.COLUMN_NAME_TITLE,
+            Swrls.COLUMN_NAME_TYPE,
+            Swrls.COLUMN_NAME_DETAILS,
+            Swrls.COLUMN_NAME_AUTHOR,
+            Swrls.COLUMN_NAME_AUTHOR_ID,
+            Swrls.COLUMN_NAME_REVIEW,
+            Swrls.COLUMN_NAME_SWRL_ID
+    };
 
     public SQLiteCollectionManager(Context context) {
         db = new DBHelper(context);
+    }
+
+    @Override
+    public List<Swrl> getAll() {
+        SQLiteDatabase dbReader = db.getReadableDatabase();
+
+        String sortOrder = Swrls.COLUMN_NAME_CREATED + " DESC";
+
+        Cursor row = dbReader.query(
+                Swrls.TABLE_NAME,
+                projection,
+                null,
+                null,
+                null,
+                null,
+                sortOrder
+        );
+
+        ArrayList<Swrl> swrls = getSwrlsFromRows(row);
+        row.close();
+        dbReader.close();
+        return swrls;
     }
 
     @Override
@@ -35,19 +67,21 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
     }
 
     @Override
-    public List<Swrl> getActiveWithFilter(Type typeFilter) {
+    public List<Swrl> getActive(Type typeFilter) {
         return getSwrlsByStatusAndType(Swrls.STATUS_ACTIVE, typeFilter);
     }
 
     @Override
     public int countActive() {
-        SQLiteDatabase dbReader = db.getReadableDatabase();
-        int status = Swrls.STATUS_ACTIVE;
+        return countByStatus(Swrls.STATUS_ACTIVE);
+    }
 
+    private int countByStatus(int status) {
+        SQLiteDatabase dbReader = db.getReadableDatabase();
         String[] projection = {
                 "count(1)"
         };
-        String selection = Swrls.COLUMN_NAME_STATUS + " = ?" ;
+        String selection = Swrls.COLUMN_NAME_STATUS + " = ?";
         String[] selectionArgs = {
                 String.valueOf(status)
         };
@@ -71,9 +105,12 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
     }
 
     @Override
-    public int countActiveByFilter(Type typeFilter) {
+    public int countActive(Type typeFilter) {
+        return countByStatusAndType(typeFilter, Swrls.STATUS_ACTIVE);
+    }
+
+    private int countByStatusAndType(Type typeFilter, int status) {
         SQLiteDatabase dbReader = db.getReadableDatabase();
-        int status = Swrls.STATUS_ACTIVE;
 
         String[] projection = {
                 "count(1)"
@@ -108,15 +145,24 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
         return getSwrlsByStatus(Swrls.STATUS_DONE);
     }
 
+    @Override
+    public List<Swrl> getDone(Type typeFilter) {
+        return getSwrlsByStatusAndType(Swrls.STATUS_DONE, typeFilter);
+    }
+
+    @Override
+    public int countDone() {
+        return countByStatus(Swrls.STATUS_DONE);
+    }
+
+    @Override
+    public int countDone(Type typeFilter) {
+        return countByStatusAndType(typeFilter, Swrls.STATUS_DONE);
+    }
+
     @NonNull
     private List<Swrl> getSwrlsByStatus(int status) {
         SQLiteDatabase dbReader = db.getReadableDatabase();
-        String[] projection = {
-                Swrls._ID,
-                Swrls.COLUMN_NAME_TITLE,
-                Swrls.COLUMN_NAME_TYPE,
-                Swrls.COLUMN_NAME_DETAILS
-        };
 
         String selection = Swrls.COLUMN_NAME_STATUS + " = ?";
         String[] selectionArgs = {String.valueOf(status)};
@@ -142,12 +188,6 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
     @NonNull
     private List<Swrl> getSwrlsByStatusAndType(int status, Type typeFilter) {
         SQLiteDatabase dbReader = db.getReadableDatabase();
-        String[] projection = {
-                Swrls._ID,
-                Swrls.COLUMN_NAME_TITLE,
-                Swrls.COLUMN_NAME_TYPE,
-                Swrls.COLUMN_NAME_DETAILS
-        };
 
         String selection = Swrls.COLUMN_NAME_STATUS + " = ?" +
                 " AND " + Swrls.COLUMN_NAME_TYPE + " = ?";
@@ -181,9 +221,13 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
         while (row.moveToNext()) {
             String title = row.getString(row.getColumnIndexOrThrow(Swrls.COLUMN_NAME_TITLE));
             Type type = getTypeFromRow(row);
-            String storedDetailsJSON = getDetailsFromRow(row);
+            String author = row.getString(row.getColumnIndexOrThrow(Swrls.COLUMN_NAME_AUTHOR));
+            int authorId = row.getInt(row.getColumnIndexOrThrow(Swrls.COLUMN_NAME_AUTHOR_ID));
+            int id = row.getInt(row.getColumnIndexOrThrow(Swrls.COLUMN_NAME_SWRL_ID));
+            String review = row.getString(row.getColumnIndexOrThrow(Swrls.COLUMN_NAME_REVIEW));
+            String storedDetailsJSON = row.getString(row.getColumnIndexOrThrow(Swrls.COLUMN_NAME_DETAILS));
 
-            Swrl swrl = new Swrl(title, type);
+            Swrl swrl = new Swrl(title, type, review, author, authorId, id);
 
             Details details = new Gson().fromJson(storedDetailsJSON, Details.class);
             swrl.setDetails(details);
@@ -191,10 +235,6 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
             swrls.add(swrl);
         }
         return swrls;
-    }
-
-    private String getDetailsFromRow(Cursor row) {
-        return row.getString(row.getColumnIndexOrThrow(Swrls.COLUMN_NAME_DETAILS));
     }
 
     private Type getTypeFromRow(Cursor row) {
@@ -220,6 +260,10 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
         values.put(Swrls.COLUMN_NAME_TITLE, swrl.getTitle());
         values.put(Swrls.COLUMN_NAME_TYPE, swrl.getType().toString());
         values.put(Swrls.COLUMN_NAME_CREATED, System.currentTimeMillis());
+        values.put(Swrls.COLUMN_NAME_REVIEW, swrl.getReview());
+        values.put(Swrls.COLUMN_NAME_AUTHOR, swrl.getAuthor());
+        values.put(Swrls.COLUMN_NAME_AUTHOR_ID, swrl.getAuthorId());
+        values.put(Swrls.COLUMN_NAME_SWRL_ID, swrl.getId());
 
         dbWriter.replace(Swrls.TABLE_NAME, null, values);
         Details details = swrl.getDetails();
@@ -338,7 +382,7 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
     private class DBHelper extends SQLiteOpenHelper {
 
         private static final String DATABASE_NAME = "swrlList.db";
-        private static final int DATABASE_VERSION = 3;
+        private static final int DATABASE_VERSION = 4;
 
         private static final String TEXT_TYPE = " TEXT";
         private static final String INTEGER_TYPE = " INTEGER";
@@ -351,7 +395,11 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
                         Swrls.COLUMN_NAME_TYPE + TEXT_TYPE + COMMA_SEP +
                         Swrls.COLUMN_NAME_STATUS + INTEGER_TYPE + COMMA_SEP +
                         Swrls.COLUMN_NAME_CREATED + INTEGER_TYPE + COMMA_SEP +
-                        Swrls.COLUMN_NAME_DETAILS + TEXT_TYPE +
+                        Swrls.COLUMN_NAME_DETAILS + TEXT_TYPE + COMMA_SEP +
+                        Swrls.COLUMN_NAME_REVIEW + TEXT_TYPE + COMMA_SEP +
+                        Swrls.COLUMN_NAME_AUTHOR + TEXT_TYPE + COMMA_SEP +
+                        Swrls.COLUMN_NAME_AUTHOR_ID + INTEGER_TYPE + COMMA_SEP +
+                        Swrls.COLUMN_NAME_SWRL_ID + INTEGER_TYPE +
                         " )";
 
         private static final String SQL_CREATE_UNIQUE_INDEX_TITLE_TYPE =
@@ -367,6 +415,22 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
         private static final String SQL_ADD_DETAILS_COLUMN =
                 "ALTER TABLE " + Swrls.TABLE_NAME +
                         " ADD COLUMN " + Swrls.COLUMN_NAME_DETAILS + TEXT_TYPE;
+
+        private static final String SQL_ADD_REVIEW_COLUMN =
+                "ALTER TABLE " + Swrls.TABLE_NAME +
+                        " ADD COLUMN " + Swrls.COLUMN_NAME_REVIEW + TEXT_TYPE;
+
+        private static final String SQL_ADD_AUTHOR_COLUMN =
+                "ALTER TABLE " + Swrls.TABLE_NAME +
+                        " ADD COLUMN " + Swrls.COLUMN_NAME_AUTHOR + TEXT_TYPE;
+
+        private static final String SQL_ADD_AUTHOR_ID_COLUMN =
+                "ALTER TABLE " + Swrls.TABLE_NAME +
+                        " ADD COLUMN " + Swrls.COLUMN_NAME_AUTHOR_ID + INTEGER_TYPE;
+
+        private static final String SQL_ADD_SWRL_ID_COLUMN =
+                "ALTER TABLE " + Swrls.TABLE_NAME +
+                        " ADD COLUMN " + Swrls.COLUMN_NAME_SWRL_ID + INTEGER_TYPE;
 
         DBHelper(Context context) {
             super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -386,6 +450,12 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
             }
             if (oldVersion < 3) {
                 db.execSQL(SQL_ADD_DETAILS_COLUMN);
+            }
+            if (oldVersion < 4) {
+                db.execSQL(SQL_ADD_REVIEW_COLUMN);
+                db.execSQL(SQL_ADD_AUTHOR_COLUMN);
+                db.execSQL(SQL_ADD_AUTHOR_ID_COLUMN);
+                db.execSQL(SQL_ADD_SWRL_ID_COLUMN);
             }
         }
     }

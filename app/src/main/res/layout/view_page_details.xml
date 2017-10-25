@@ -69,7 +69,8 @@
                             android:text="Title"
                             android:textColor="#000000"
                             android:textSize="22sp"
-                            android:textStyle="bold" />
+                            android:textStyle="bold"
+                            android:textIsSelectable="true"/>
 
                         <TextView
                             android:id="@+id/sub_title"
@@ -78,7 +79,8 @@
                             android:padding="5dp"
                             android:text="tagline of the film for example"
                             android:textColor="#000000"
-                            android:textSize="18sp" />
+                            android:textSize="18sp"
+                            android:textIsSelectable="true"/>
                     </LinearLayout>
                 </android.support.v7.widget.CardView>
 

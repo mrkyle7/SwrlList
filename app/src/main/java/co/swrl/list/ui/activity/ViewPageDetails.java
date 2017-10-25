@@ -70,12 +70,10 @@ public class ViewPageDetails extends Fragment {
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         final Swrl swrl = (Swrl) getArguments().getSerializable(ARG_SWRL);
-        Details details = null;
-        if (swrl != null) {
-            details = swrl.getDetails();
-        }
+        assert swrl != null;
+        Details details = swrl.getDetails();
         final View rootView;
-        if (hasNoDetails(details)) {
+        if (hasNoDetails(details) && swrl.getType() != Type.UNKNOWN) {
             rootView = showSearchByTitle(inflater, container, swrl);
         } else {
             rootView = showSwrlDetails(inflater, container, swrl, details);
@@ -125,6 +123,9 @@ public class ViewPageDetails extends Fragment {
         setPoster(details, rootView, type);
         setTitleCard(swrl, details, rootView);
 
+        if (swrl.getAuthor() != null) {
+            addTextCard(inflater, detailsLayout, "Review By " + swrl.getAuthor(), swrl.getReview());
+        }
         addTextCard(inflater, detailsLayout, "Tagline", details.getTagline());
         addTextCard(inflater, detailsLayout, "Ratings", details.getRatings());
         addTextCard(inflater, detailsLayout, "Platform", details.getPlatform());
@@ -145,7 +146,7 @@ public class ViewPageDetails extends Fragment {
         titleText.setText(title);
 
         TextView subtitle = (TextView) rootView.findViewById(R.id.sub_title);
-        if (details.getCreator() != null){
+        if (details.getCreator() != null && !details.getCreator().isEmpty()) {
             subtitle.setText(details.getCreator());
         } else {
             subtitle.setVisibility(GONE);

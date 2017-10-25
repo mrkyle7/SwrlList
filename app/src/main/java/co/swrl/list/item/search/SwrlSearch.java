@@ -50,7 +50,7 @@ public class SwrlSearch implements Search {
     }
 
     public static SwrlSearch getBoardGameSearch() {
-        return new SwrlSearch(HttpUrl.parse("https://www.swrl.co/api/v1/search/boardgame"), HttpUrl.parse("https://www.swrl.co/api/v1/details/boardgame"), Type.BOARD_GAME);
+            return new SwrlSearch(HttpUrl.parse("https://www.swrl.co/api/v1/search/boardgame"), HttpUrl.parse("https://www.swrl.co/api/v1/details/boardgame"), Type.BOARD_GAME);
     }
 
     public SwrlSearch(HttpUrl searchBaseURL, HttpUrl details_base_url, Type type) {

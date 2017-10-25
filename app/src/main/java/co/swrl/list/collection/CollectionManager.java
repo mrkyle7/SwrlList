@@ -7,11 +7,15 @@ import co.swrl.list.item.Swrl;
 import co.swrl.list.item.Type;
 
 public interface CollectionManager {
+    List<Swrl> getAll();
     List<Swrl> getActive();
-    List<Swrl> getActiveWithFilter(Type typeFilter);
+    List<Swrl> getActive(Type typeFilter);
     int countActive();
-    int countActiveByFilter(Type typeFilter);
+    int countActive(Type typeFilter);
     List<Swrl> getDone();
+    List<Swrl> getDone(Type typeFilter);
+    int countDone();
+    int countDone(Type typeFilter);
     void save(Swrl swrl);
     void markAsDone(Swrl swrl);
     void markAsActive(Swrl swrl);
