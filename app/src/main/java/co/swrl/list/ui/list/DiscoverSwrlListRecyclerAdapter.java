@@ -57,7 +57,8 @@ public class DiscoverSwrlListRecyclerAdapter extends RecyclerView.Adapter implem
         if (swrls.size() != 0) {
             swrlsToPage.addAll(swrls.subList(firstPage, lastPage));
         }
-        swrlRow.setRowClickToOpenViewByType(position, swrlsToPage, context, ADD_DISCOVER);
+        int pagePosition = swrlsToPage.indexOf(swrl);
+        swrlRow.setRowClickToOpenViewByType(pagePosition, swrlsToPage, context, ADD_DISCOVER);
     }
 
     @Override

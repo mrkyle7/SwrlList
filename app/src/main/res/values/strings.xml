@@ -5,6 +5,8 @@
     <string name="pkey_version_number">version_number</string>
     <string name="whatsNewLatest">
         <![CDATA[
+        <h4>Version 9.1 (27 October 2017)</h4>
+        \u2022 Bug fix when opening swrl on discover feed
         <h4>Version 9.0 (25 October 2017)</h4>
         \u2022 Discover Swrls from swrl.co to add to your list!<br/>
         \u2022 New Icon!<br/>

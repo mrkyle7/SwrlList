@@ -142,6 +142,7 @@ public class ListActivity extends AppCompatActivity {
             new AsyncTask<ArrayList<?>, Void, Void>() {
                 @Override
                 protected Void doInBackground(ArrayList<?>... arrayLists) {
+                    CollectionManager collectionManager = new SQLiteCollectionManager(getApplicationContext());
                     ArrayList<?> swrls = arrayLists[0];
                     for (Object swrl : swrls) {
                         Swrl mSwrl = (Swrl) swrl;
