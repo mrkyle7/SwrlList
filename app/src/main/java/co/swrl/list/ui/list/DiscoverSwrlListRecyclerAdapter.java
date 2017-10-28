@@ -28,6 +28,7 @@ public class DiscoverSwrlListRecyclerAdapter extends RecyclerView.Adapter implem
     private final ListActivity.DrawerListAdapter navListAdapter;
     private final ListActivity activity;
     private final CollectionManager collectionManager;
+    private AsyncTask<Void, Void, List<Swrl>> backgroundSearch;
 
     public DiscoverSwrlListRecyclerAdapter(ListActivity activity, CollectionManager collectionManager, ListActivity.DrawerListAdapter navListAdapter) {
         this.activity = activity;
@@ -90,7 +91,8 @@ public class DiscoverSwrlListRecyclerAdapter extends RecyclerView.Adapter implem
 
     @Override
     public void refreshAll() {
-        new AsyncTask<Void, Void, List<Swrl>>() {
+        cancelExistingSearches();
+        backgroundSearch = new AsyncTask<Void, Void, List<Swrl>>() {
             @Override
             protected void onPreExecute() {
                 spinWhenGettingSwrls();
@@ -107,13 +109,20 @@ public class DiscoverSwrlListRecyclerAdapter extends RecyclerView.Adapter implem
                 removeSpinner();
                 updateList(discoveredSwrls);
             }
-        }.execute();
+
+            @Override
+            protected void onCancelled() {
+                if (backgroundSearch == null || backgroundSearch.isCancelled()) removeSpinner();
+            }
+        };
+        backgroundSearch.execute();
     }
 
     @Override
     public void refreshAllWithFilter(final Type type) {
+        cancelExistingSearches();
         if (cachedSwrls == null) {
-            new AsyncTask<Void, Void, List<Swrl>>() {
+            backgroundSearch = new AsyncTask<Void, Void, List<Swrl>>() {
                 @Override
                 protected void onPreExecute() {
                     spinWhenGettingSwrls();
@@ -131,10 +140,22 @@ public class DiscoverSwrlListRecyclerAdapter extends RecyclerView.Adapter implem
                     removeSpinner();
                     updateList(filtered);
                 }
-            }.execute();
+
+                @Override
+                protected void onCancelled() {
+                    if (backgroundSearch == null || backgroundSearch.isCancelled()) removeSpinner();
+                }
+            };
+            backgroundSearch.execute();
         } else {
             List<Swrl> filtered = getFilteredSwrls(type);
             updateList(filtered);
+        }
+    }
+
+    public void cancelExistingSearches() {
+        if (backgroundSearch != null){
+            backgroundSearch.cancel(true);
         }
     }
 

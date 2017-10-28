@@ -75,6 +75,12 @@ public class ListActivity extends AppCompatActivity {
     private final int discover_title = R.string.discover_title;
     private int title = swrl_list_title;
 
+    private final int listNoSwrlsText = R.string.listNoSwrlsText;
+    private final int doneNoSwrlsText = R.string.doneNoSwrlsText;
+    private final int discoverNoSwrlsText = R.string.discoverNoSwrlsText;
+    private int noSwrlsText = listNoSwrlsText;
+
+
     private SwrlListRecyclerAdapter activeSwrlListAdapter;
     private SwrlListRecyclerAdapter doneSwrlListAdapter;
     private SwrlListRecyclerAdapter discoverSwrlListAdapter;
@@ -139,11 +145,11 @@ public class ListActivity extends AppCompatActivity {
         int id = item.getItemId();
         // Handle your other action bar items...
         if (id == R.id.action_refresh_all) {
-            new AsyncTask<ArrayList<?>, Void, Void>() {
+            new AsyncTask<Void, Void, Void>() {
                 @Override
-                protected Void doInBackground(ArrayList<?>... arrayLists) {
+                protected Void doInBackground(Void... voids) {
                     CollectionManager collectionManager = new SQLiteCollectionManager(getApplicationContext());
-                    ArrayList<?> swrls = arrayLists[0];
+                    ArrayList<?> swrls = (ArrayList<?>) collectionManager.getAll();
                     for (Object swrl : swrls) {
                         Swrl mSwrl = (Swrl) swrl;
                         if (mSwrl.getDetails() != null && mSwrl.getDetails().getId() != null && !mSwrl.getDetails().getId().isEmpty()) {
@@ -156,7 +162,7 @@ public class ListActivity extends AppCompatActivity {
                     }
                     return null;
                 }
-            }.execute((ArrayList<?>) collectionManager.getAll());
+            }.execute();
         }
 
         return super.onOptionsItemSelected(item);
@@ -210,6 +216,9 @@ public class ListActivity extends AppCompatActivity {
                 int id = item.getItemId();
                 if (id == R.id.active_swrls) {
                     Log.d(LIST_ACTIVITY, "clicked active swrls");
+                    if (swrlListAdapter instanceof DiscoverSwrlListRecyclerAdapter){
+                        ((DiscoverSwrlListRecyclerAdapter) swrlListAdapter).cancelExistingSearches();
+                    }
                     swrlListAdapter = activeSwrlListAdapter;
                     swipeColor = doneColor;
                     swipeIcon = doneIcon;
@@ -217,9 +226,14 @@ public class ListActivity extends AppCompatActivity {
                     title = swrl_list_title;
                     resetTitle();
                     navListAdapter.notifyDataSetChanged();
+                    noSwrlsText = listNoSwrlsText;
+                    setNoSwrlsText();
                 }
                 if (id == R.id.done_swrls) {
                     Log.d(LIST_ACTIVITY, "clicked done swrls");
+                    if (swrlListAdapter instanceof DiscoverSwrlListRecyclerAdapter){
+                        ((DiscoverSwrlListRecyclerAdapter) swrlListAdapter).cancelExistingSearches();
+                    }
                     swrlListAdapter = doneSwrlListAdapter;
                     swipeColor = deleteColor;
                     swipeIcon = deleteIcon;
@@ -227,6 +241,8 @@ public class ListActivity extends AppCompatActivity {
                     title = done_title;
                     resetTitle();
                     navListAdapter.notifyDataSetChanged();
+                    noSwrlsText = doneNoSwrlsText;
+                    setNoSwrlsText();
                 }
                 if (id == R.id.discover) {
                     Log.d(LIST_ACTIVITY, "clicked discover");
@@ -237,6 +253,8 @@ public class ListActivity extends AppCompatActivity {
                     title = discover_title;
                     resetTitle();
                     navListAdapter.notifyDataSetChanged();
+                    noSwrlsText = discoverNoSwrlsText;
+                    setNoSwrlsText();
                 }
                 return true;
             }
@@ -304,15 +322,12 @@ public class ListActivity extends AppCompatActivity {
     }
 
     public void setNoSwrlsText() {
-        String content = "No "
-                + (noTypeFilterSet() ? "Swrls" : typeFilter.getFriendlyNamePlural())
-                + " yet!\n\nAdd some by clicking the button below.";
-        TextView noSwrlsText = (TextView) findViewById(R.id.noSwrlsText);
-        noSwrlsText.setText(content);
+        TextView noSwrlsTextView = (TextView) findViewById(R.id.noSwrlsText);
+        noSwrlsTextView.setText(getApplicationContext().getResources().getString(noSwrlsText));
         if (swrlListAdapter.getSwrlCount() > 0) {
-            noSwrlsText.setVisibility(GONE);
+            noSwrlsTextView.setVisibility(GONE);
         } else {
-            noSwrlsText.setVisibility(VISIBLE);
+            noSwrlsTextView.setVisibility(VISIBLE);
         }
     }
 
