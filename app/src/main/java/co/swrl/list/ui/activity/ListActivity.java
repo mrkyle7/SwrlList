@@ -164,6 +164,9 @@ public class ListActivity extends AppCompatActivity {
                 }
             }.execute();
         }
+        if (id == R.id.actions_show_whats_new){
+            new SwrlDialogs(this).buildAndShowWhatsNewDialog();
+        }
 
         return super.onOptionsItemSelected(item);
     }

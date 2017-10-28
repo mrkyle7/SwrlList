@@ -119,4 +119,5 @@
     <string name="listNoSwrlsText">No Swrls Yet!\n\nAdd some by clicking the button below.</string>
     <string name="doneNoSwrlsText">Nothing here yet!</string>
     <string name="discoverNoSwrlsText">Nothing to Discover yet!</string>
+    <string name="show_whats_new">What\'s new?</string>
 </resources>

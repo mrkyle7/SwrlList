@@ -78,6 +78,11 @@ public class InteractingWithTheList {
         restartActivity(activity, listActivityActivityTestRule);
 
         onView(withId(R.id.activity_list)).check(matches(isCompletelyDisplayed()));
+
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+        onView(withText(R.string.show_whats_new)).perform(click());
+        onView(withId(R.id.whatsNew)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(withId(R.id.dismissWhatsNewButton)).perform(click());
     }
 
     @Test
