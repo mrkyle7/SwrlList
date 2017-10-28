@@ -41,7 +41,7 @@ public enum Type {
             R.color.podcast, SwrlSearch.getPodcastSearch(), R.drawable.ic_podcast_icon, "From"),
 
     UNKNOWN("Swrl", "All Swrls",
-            R.color.colorPrimary, new UnknownSearch(), R.drawable.ic_star_black_24dp, "By");
+            R.color.colorPrimary, new UnknownSearch(), R.drawable.ic_nut, "By");
 
     private String friendlyName;
     private final String friendlyNamePlural;

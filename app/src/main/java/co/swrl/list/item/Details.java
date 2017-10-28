@@ -19,11 +19,8 @@ public class Details implements Serializable {
     @SerializedName(value = "id", alternate = {"tmdb-id", "asin-id", "itunes-id", "bgg-id", "book-id", "game-id"})
     private final String id;
 
-    @SerializedName(value = "posterURL", alternate = {"large-image-url", "big-img-url"})
+    @SerializedName(value = "posterURL", alternate = {"large-image-url", "big-img-url", "thumbnail-url", "image-url"})
     private final String posterURL;
-
-    @SerializedName(value = "thumbnailURL", alternate = {"thumbnail-url"})
-    private final String thumbnailURL;
 
     private final Type type;
 
@@ -79,8 +76,6 @@ public class Details implements Serializable {
         if (id != null ? !id.equals(details.id) : details.id != null) return false;
         if (posterURL != null ? !posterURL.equals(details.posterURL) : details.posterURL != null)
             return false;
-        if (thumbnailURL != null ? !thumbnailURL.equals(details.thumbnailURL) : details.thumbnailURL != null)
-            return false;
         if (type != details.type) return false;
         if (categories != null ? !categories.equals(details.categories) : details.categories != null)
             return false;
@@ -117,7 +112,6 @@ public class Details implements Serializable {
         result = 31 * result + (overview != null ? overview.hashCode() : 0);
         result = 31 * result + (id != null ? id.hashCode() : 0);
         result = 31 * result + (posterURL != null ? posterURL.hashCode() : 0);
-        result = 31 * result + (thumbnailURL != null ? thumbnailURL.hashCode() : 0);
         result = 31 * result + (type != null ? type.hashCode() : 0);
         result = 31 * result + (categories != null ? categories.hashCode() : 0);
         result = 31 * result + (tagline != null ? tagline.hashCode() : 0);
@@ -176,12 +170,11 @@ public class Details implements Serializable {
     }
 
 
-    public Details(String title, String overview, String id, String posterURL, String thumbnailURL, ArrayList<String> categories, String tagline, Type type, String releaseYear, String publicationDate, String url, String imdbID, String creator, String actors, String runtime, ArrayList<Ratings> ratings, String minPlayers, String maxPlayers, String minPlaytime, String maxPlaytime, String platform) {
+    public Details(String title, String overview, String id, String posterURL, ArrayList<String> categories, String tagline, Type type, String releaseYear, String publicationDate, String url, String imdbID, String creator, String actors, String runtime, ArrayList<Ratings> ratings, String minPlayers, String maxPlayers, String minPlaytime, String maxPlaytime, String platform) {
         this.title = title;
         this.overview = overview;
         this.id = id;
         this.posterURL = posterURL;
-        this.thumbnailURL = thumbnailURL;
         this.categories = categories;
         this.tagline = tagline;
         this.type = type;
@@ -201,7 +194,7 @@ public class Details implements Serializable {
     }
 
     public Details setType(Type type) {
-        return new Details(title, overview, id, posterURL, thumbnailURL, categories, tagline, type, releaseYear, publicationDate, url, imdbID, creator, actors, runtime, ratings, minPlayers, maxPlayers, minPlaytime, maxPlaytime, platform);
+        return new Details(title, overview, id, posterURL, categories, tagline, type, releaseYear, publicationDate, url, imdbID, creator, actors, runtime, ratings, minPlayers, maxPlayers, minPlaytime, maxPlaytime, platform);
     }
 
     public String getTitle() {
@@ -216,10 +209,6 @@ public class Details implements Serializable {
 
     public String getPosterURL() {
         return posterURL;
-    }
-
-    public String getThumbnailURL() {
-        return thumbnailURL;
     }
 
     public String getId() {
