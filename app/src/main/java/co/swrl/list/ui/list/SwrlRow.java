@@ -66,35 +66,35 @@ public class SwrlRow extends RecyclerView.ViewHolder {
         if (swrl.getDetails() != null) {
             switch (swrl.getType()) {
                 case FILM:
-                    if (swrl.getDetails().getActors() != null)
+                    if (swrl.getDetails().getActors() != null && !swrl.getDetails().getActors().isEmpty())
                         subtitleText = swrl.getDetails().getActors();
                     break;
                 case TV:
-                    if (swrl.getDetails().getCreator() != null)
+                    if (swrl.getDetails().getCreator() != null && !swrl.getDetails().getCreator().isEmpty())
                         subtitleText = swrl.getDetails().getCreator();
                     break;
                 case BOOK:
-                    if (swrl.getDetails().getCreator() != null)
+                    if (swrl.getDetails().getCreator() != null && !swrl.getDetails().getCreator().isEmpty())
                         subtitleText = swrl.getDetails().getCreator();
                     break;
                 case ALBUM:
-                    if (swrl.getDetails().getCreator() != null)
+                    if (swrl.getDetails().getCreator() != null && !swrl.getDetails().getCreator().isEmpty())
                         subtitleText = swrl.getDetails().getCreator();
                     break;
                 case VIDEO_GAME:
-                    if (swrl.getDetails().getPlatform() != null)
+                    if (swrl.getDetails().getPlatform() != null && !swrl.getDetails().getPlatform().isEmpty())
                         subtitleText = swrl.getDetails().getPlatform();
                     break;
                 case BOARD_GAME:
-                    if (swrl.getDetails().getCreator() != null)
+                    if (swrl.getDetails().getCreator() != null && !swrl.getDetails().getCreator().isEmpty())
                         subtitleText = swrl.getDetails().getCreator();
                     break;
                 case APP:
-                    if (swrl.getDetails().getCreator() != null)
+                    if (swrl.getDetails().getCreator() != null && !swrl.getDetails().getCreator().isEmpty())
                         subtitleText = swrl.getDetails().getCreator();
                     break;
                 case PODCAST:
-                    if (swrl.getDetails().getCreator() != null)
+                    if (swrl.getDetails().getCreator() != null && !swrl.getDetails().getCreator().isEmpty())
                         subtitleText = swrl.getDetails().getCreator();
                     break;
                 case UNKNOWN:
@@ -110,7 +110,8 @@ public class SwrlRow extends RecyclerView.ViewHolder {
                 && !swrl.getDetails().getCategories().isEmpty()) {
             subtitle2Text = swrl.getDetails().getCategories();
         }
-        if (swrl.getType() == Type.BOOK && swrl.getDetails() != null && swrl.getDetails().getPublicationDate() != null) {
+        if (swrl.getType() == Type.BOOK && swrl.getDetails() != null && swrl.getDetails().getPublicationDate() != null
+                && !swrl.getDetails().getPublicationDate().isEmpty()) {
             subtitle2Text = swrl.getDetails().getPublicationDate();
         }
         subtitle2.setText(subtitle2Text);
