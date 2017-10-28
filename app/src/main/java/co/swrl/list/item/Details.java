@@ -35,6 +35,7 @@ public class Details implements Serializable {
     @SerializedName(value = "publicationDate", alternate = {"publication-date"})
     private final String publicationDate;
 
+    @SerializedName(value = "url", alternate = {"website-url"})
     private final String url;
 
     @SerializedName(value = "imdbID", alternate = {"imdb-id"})

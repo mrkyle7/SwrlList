@@ -1,3 +1,6 @@
+Version 9.3 (28 October 2017)
+- Added clickable URls to details
+
 Version 9.2 (28 October 2017)
 - Images for albums and websites
 
@@ -11,9 +14,3 @@ Version 9.0 (25 October 2017)
 - Discover Swrls from swrl.co to add to your list!
 - New Icon!
 - Loads of UI fixes
-
-Version 8.4 (20 September 2017)
-- Bug Fix for Refresh All Details option
-
-Version 8.3 (20 September 2017)
-- Add Refresh All Details option

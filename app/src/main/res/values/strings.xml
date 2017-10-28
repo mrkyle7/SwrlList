@@ -5,6 +5,8 @@
     <string name="pkey_version_number">version_number</string>
     <string name="whatsNewLatest">
         <![CDATA[
+        <h4>Version 9.3 (28 October 2017)</h4>
+        \u2022 Added clickable URls to details
         <h4>Version 9.2 (28 October 2017)</h4>
         \u2022 Images for albums and websites
         <h4>Version 9.1.1 (28 October 2017)</h4>

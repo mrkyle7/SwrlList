@@ -216,7 +216,7 @@ public class ListActivity extends AppCompatActivity {
                 int id = item.getItemId();
                 if (id == R.id.active_swrls) {
                     Log.d(LIST_ACTIVITY, "clicked active swrls");
-                    if (swrlListAdapter instanceof DiscoverSwrlListRecyclerAdapter){
+                    if (swrlListAdapter instanceof DiscoverSwrlListRecyclerAdapter) {
                         ((DiscoverSwrlListRecyclerAdapter) swrlListAdapter).cancelExistingSearches();
                     }
                     swrlListAdapter = activeSwrlListAdapter;
@@ -231,7 +231,7 @@ public class ListActivity extends AppCompatActivity {
                 }
                 if (id == R.id.done_swrls) {
                     Log.d(LIST_ACTIVITY, "clicked done swrls");
-                    if (swrlListAdapter instanceof DiscoverSwrlListRecyclerAdapter){
+                    if (swrlListAdapter instanceof DiscoverSwrlListRecyclerAdapter) {
                         ((DiscoverSwrlListRecyclerAdapter) swrlListAdapter).cancelExistingSearches();
                     }
                     swrlListAdapter = doneSwrlListAdapter;
@@ -437,6 +437,9 @@ public class ListActivity extends AppCompatActivity {
                 view.setVisibility(GONE);
                 FloatingActionsMenu addSwrlMenu = (FloatingActionsMenu) findViewById(R.id.addItemFAB);
                 addSwrlMenu.collapse();
+                if (swrlListAdapter instanceof DiscoverSwrlListRecyclerAdapter) {
+                    ((DiscoverSwrlListRecyclerAdapter) swrlListAdapter).cancelExistingSearches();
+                }
             }
         });
     }

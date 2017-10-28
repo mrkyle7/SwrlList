@@ -135,6 +135,7 @@ public class ViewPageDetails extends Fragment {
         addTextCard(inflater, detailsLayout, "Publication Date", details.getPublicationDate());
         addTextCard(inflater, detailsLayout, "Players", details.getMinToMaxPlayers());
         addTextCard(inflater, detailsLayout, "Playtime", details.getMinToMaxPlaytime());
+        addTextCard(inflater, detailsLayout, "URL", details.getUrl());
         addTextCard(inflater, detailsLayout, "Overview", details.getOverview());
 
         return rootView;
