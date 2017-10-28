@@ -384,7 +384,6 @@ public class ListActivity extends AppCompatActivity {
         final HashMap<Integer, Type> mainButtons = new HashMap<>();
 
         mainButtons.put(R.id.add_film, Type.FILM);
-        mainButtons.put(R.id.add_album, Type.ALBUM);
         mainButtons.put(R.id.add_board_game, Type.BOARD_GAME);
         mainButtons.put(R.id.add_tv, Type.TV);
         mainButtons.put(R.id.add_book, Type.BOOK);
@@ -392,6 +391,8 @@ public class ListActivity extends AppCompatActivity {
         otherButtons.put(R.id.add_podcast, Type.PODCAST);
         otherButtons.put(R.id.add_phone_app, Type.APP);
         otherButtons.put(R.id.add_video_game, Type.VIDEO_GAME);
+        otherButtons.put(R.id.add_album, Type.ALBUM);
+
 
         enableButtons(mainButtons);
         disableButtons(otherButtons);
