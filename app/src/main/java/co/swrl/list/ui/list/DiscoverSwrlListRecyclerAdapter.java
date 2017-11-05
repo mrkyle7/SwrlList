@@ -100,7 +100,7 @@ public class DiscoverSwrlListRecyclerAdapter extends RecyclerView.Adapter implem
 
             @Override
             protected List<Swrl> doInBackground(Void... voids) {
-                return new PublicSwrls().get();
+                return new PublicSwrls(collectionManager).get();
             }
 
             @Override
@@ -130,7 +130,7 @@ public class DiscoverSwrlListRecyclerAdapter extends RecyclerView.Adapter implem
 
                 @Override
                 protected List<Swrl> doInBackground(Void... voids) {
-                    return new PublicSwrls().get();
+                    return new PublicSwrls(collectionManager).get();
                 }
 
                 @Override

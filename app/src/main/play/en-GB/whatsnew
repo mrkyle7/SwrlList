@@ -1,3 +1,6 @@
+Version 9.4 (05 November 2017)
+- Filter discover results if already saved in your list
+
 Version 9.3.1 (29 October 2017)
 - Ui improvements and a link to this dialog from the menu
 
@@ -9,11 +12,3 @@ Version 9.2 (28 October 2017)
 
 Version 9.1.1 (28 October 2017)
 - UI Improvements
-
-Version 9.1 (27 October 2017)
-- Bug fix when opening swrl on discover feed
-
-Version 9.0 (25 October 2017)
-- Discover Swrls from swrl.co to add to your list!
-- New Icon!
-- Loads of UI fixes

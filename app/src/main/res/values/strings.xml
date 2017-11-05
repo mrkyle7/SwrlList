@@ -5,6 +5,8 @@
     <string name="pkey_version_number">version_number</string>
     <string name="whatsNewLatest">
         <![CDATA[
+        <h4>Version 9.4 (05 November 2017)</h4>
+        \u2022 Filter discover results if already saved in your list
         <h4>Version 9.3.1 (29 October 2017)</h4>
         \u2022 Ui improvements and a link to this dialog from the menu
         <h4>Version 9.3 (28 October 2017)</h4>
