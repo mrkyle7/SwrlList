@@ -48,6 +48,7 @@ class Helpers {
     static final Swrl THE_MATRIX_RELOADED = new Swrl("The Matrix Reloaded", Type.FILM);
     static final Swrl THE_MATRIX_REVOLUTIONS = new Swrl("The Matrix Revolutions", Type.FILM);
     static final Swrl BILLIONS = new Swrl("Billions", Type.TV);
+    static final Swrl HUNGER_GAMES_BOOK = new Swrl("Hunger Games", Type.BOOK);
     static final Details THE_MATRIX_DETAILS = new Gson().fromJson("{\"title\":\"The Matrix (1991)\",\"overview\":\"an overview\",\"tmdb-id\":\"403\"}", Details.class);
     static final Details THE_MATRIX_RELOADED_DETAILS = new Gson().fromJson("{\"title\":\"The Matrix Reloaded (1992)\",\"an overview\":\"overview\",\"tmdb-id\":\"404\"}", Details.class);
     static final Details THE_MATRIX_REVOLUTIONS_DETAILS = new Gson().fromJson("{\"title\":\"The Matrix Revolutions (1992)\",\"overview\":\"an overview\",\"tmdb-id\":\"405\"}", Details.class);
@@ -58,12 +59,18 @@ class Helpers {
         settings.edit().clear().apply();
     }
 
-    static Activity launchAndAvoidWhatsNewDialog(ActivityTestRule testRule, Swrl[] swrls) {
+    static Activity launchAndAvoidWhatsNewDialog(ActivityTestRule testRule, Swrl[] swrls, Swrl[] doneSwrls) {
         setSavedVersionToHugeNumber();
-        if (swrls != null){
-            SQLiteCollectionManager db = new SQLiteCollectionManager(InstrumentationRegistry.getTargetContext());
-            for (Swrl swrl: swrls){
+        SQLiteCollectionManager db = new SQLiteCollectionManager(InstrumentationRegistry.getTargetContext());
+        if (swrls != null) {
+            for (Swrl swrl : swrls) {
                 db.save(swrl);
+            }
+        }
+        if (doneSwrls != null) {
+            for (Swrl swrl : doneSwrls) {
+                db.save(swrl);
+                db.markAsDone(swrl);
             }
         }
         return launchAndWakeUpActivity(testRule);

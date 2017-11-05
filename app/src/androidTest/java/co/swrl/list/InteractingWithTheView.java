@@ -93,7 +93,7 @@ public class InteractingWithTheView {
     private void launchViewWithTheMatrixSelected() {
         THE_MATRIX.setDetails(THE_MATRIX_DETAILS);
         THE_MATRIX_RELOADED.setDetails(THE_MATRIX_RELOADED_DETAILS);
-        activity = launchAndAvoidWhatsNewDialog(listActivityActivityTestRule, new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED});
+        activity = launchAndAvoidWhatsNewDialog(listActivityActivityTestRule, new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED}, null);
 
         onView(withId(R.id.listView)).perform(RecyclerViewActions.actionOnItem(hasDescendant(withText("The Matrix")), click()));;
 

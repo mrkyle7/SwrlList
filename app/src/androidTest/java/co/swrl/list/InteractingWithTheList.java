@@ -32,6 +32,8 @@ import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static co.swrl.list.Helpers.BILLIONS;
+import static co.swrl.list.Helpers.GARDEN_STATE_RECOMMENDATION;
+import static co.swrl.list.Helpers.HUNGER_GAMES_BOOK;
 import static co.swrl.list.Helpers.THE_MATRIX;
 import static co.swrl.list.Helpers.THE_MATRIX_RELOADED;
 import static co.swrl.list.Helpers.THE_MATRIX_REVOLUTIONS;
@@ -95,7 +97,7 @@ public class InteractingWithTheList {
 
     @Test
     public void canDeleteAndReAddItemsOnTheList() throws Exception {
-        activity = launchAndAvoidWhatsNewDialog(listActivityActivityTestRule, new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED});
+        activity = launchAndAvoidWhatsNewDialog(listActivityActivityTestRule, new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED}, null);
 
         onView(withId(R.id.listView)).check(matches(atPosition(0, hasDescendant(withText("The Matrix Reloaded")))));
         onView(withId(R.id.listView)).check(matches(atPosition(1, hasDescendant(withText("The Matrix")))));
@@ -129,9 +131,35 @@ public class InteractingWithTheList {
 
 
     @Test
+    public void markingItemsAsDonePutsThemOnDoneList() throws Exception {
+        activity = launchAndAvoidWhatsNewDialog(listActivityActivityTestRule,
+                new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED, THE_MATRIX_REVOLUTIONS}, null);
+
+        onView(withId(R.id.listView)).check(matches(atPosition(0, hasDescendant(withText("The Matrix Revolutions")))));
+        onView(withId(R.id.listView)).check(matches(atPosition(1, hasDescendant(withText("The Matrix Reloaded")))));
+        onView(withId(R.id.listView)).check(matches(atPosition(2, hasDescendant(withText("The Matrix")))));
+
+        onView(withId(R.id.listView)).perform(RecyclerViewActions.actionOnItem(hasDescendant(withText("The Matrix")), swipeRight()));
+
+        onView(withId(R.id.listView)).perform(RecyclerViewActions.actionOnItem(hasDescendant(withText("The Matrix Reloaded")), swipeRight()));
+
+        onView(withId(R.id.snackbar_text)).check(matches(withText("\"The Matrix Reloaded\" marked as done")));
+        onView(withId(R.id.snackbar_action)).perform(click());
+
+        onView(withId(R.id.listView)).check(matches(atPosition(0, hasDescendant(withText("The Matrix Revolutions")))));
+        onView(withId(R.id.listView)).check(matches(atPosition(1, hasDescendant(withText("The Matrix Reloaded")))));
+        onView(withId(R.id.listView)).check(matches(numberOfChildren(is(2))));
+
+        onView(withId(R.id.done_swrls)).perform(click());
+
+        onView(withId(R.id.listView)).check(matches(atPosition(0, hasDescendant(withText("The Matrix")))));
+        onView(withId(R.id.listView)).check(matches(numberOfChildren(is(1))));
+    }
+
+    @Test
     public void canUndoMarkingItemsAsDone() throws Exception {
         activity = launchAndAvoidWhatsNewDialog(listActivityActivityTestRule,
-                new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED, THE_MATRIX_REVOLUTIONS});
+                new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED, THE_MATRIX_REVOLUTIONS}, null);
 
         onView(withId(R.id.listView)).check(matches(atPosition(0, hasDescendant(withText("The Matrix Revolutions")))));
         onView(withId(R.id.listView)).check(matches(atPosition(1, hasDescendant(withText("The Matrix Reloaded")))));
@@ -158,7 +186,8 @@ public class InteractingWithTheList {
     @Test
     public void canFilterTheList() throws Exception {
         activity = launchAndAvoidWhatsNewDialog(listActivityActivityTestRule,
-                new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED, BILLIONS});
+                new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED, BILLIONS},
+                new Swrl[]{GARDEN_STATE_RECOMMENDATION, HUNGER_GAMES_BOOK});
 
         onView(withId(R.id.listView)).check(matches(atPosition(0, hasDescendant(withText("Billions")))));
         onView(withId(R.id.listView)).check(matches(atPosition(1, hasDescendant(withText("The Matrix Reloaded")))));
@@ -189,12 +218,70 @@ public class InteractingWithTheList {
         onView(withId(R.id.listView)).check(matches(atPosition(1, hasDescendant(withText("The Matrix Reloaded")))));
         onView(withId(R.id.listView)).check(matches(atPosition(2, hasDescendant(withText("The Matrix")))));
         onView(withId(R.id.listView)).check(matches(numberOfChildren(is(3))));
+
+        onView(withId(R.id.done_swrls)).perform(click());
+
+        onView(withId(R.id.listView)).check(matches(atPosition(0, hasDescendant(withText("Hunger Games")))));
+        onView(withId(R.id.listView)).check(matches(atPosition(1, hasDescendant(withText("Garden State")))));
+        onView(withId(R.id.listView)).check(matches(numberOfChildren(is(2))));
+
+        onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
+
+        onView(withText("Books (1)")).check(matches(isCompletelyDisplayed()));
+        onView(withText("Podcasts (0)")).check(matches(isCompletelyDisplayed()));
+        onView(withText("Films (1)")).perform(click());
+
+        onView(withId(R.id.listView)).check(matches(atPosition(0, hasDescendant(withText("Garden State")))));
+        onView(withId(R.id.listView)).check(matches(numberOfChildren(is(1))));
+
+        onView(withId(R.id.active_swrls)).perform(click());
+
+        onView(withId(R.id.listView)).check(matches(atPosition(0, hasDescendant(withText("The Matrix Reloaded")))));
+        onView(withId(R.id.listView)).check(matches(atPosition(1, hasDescendant(withText("The Matrix")))));
+        onView(withId(R.id.listView)).check(matches(numberOfChildren(is(2))));
+
+        onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
+
+        onView(withText("TV Shows (1)")).check(matches(isCompletelyDisplayed()));
+        onView(withText("Films (2)")).check(matches(isCompletelyDisplayed()));
+        onView(withText("Books (0)")).check(matches(isCompletelyDisplayed()));
+
+        onView(withId(R.id.drawer_layout)).perform(DrawerActions.close());
+
+        onView(withId(R.id.listView)).perform(RecyclerViewActions.actionOnItem(hasDescendant(withText("The Matrix")), swipeRight()));
+        onView(withId(R.id.listView)).perform(RecyclerViewActions.actionOnItem(hasDescendant(withText("The Matrix Reloaded")), swipeRight()));
+
+        onView(withId(R.id.snackbar_text)).check(matches(withText("\"The Matrix Reloaded\" marked as done")));
+        onView(withId(R.id.snackbar_action)).perform(click());
+
+        onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
+
+        onView(withText("TV Shows (1)")).check(matches(isCompletelyDisplayed()));
+        onView(withText("Films (1)")).check(matches(isCompletelyDisplayed()));
+        onView(withText("Books (0)")).check(matches(isCompletelyDisplayed()));
+
+        onView(withId(R.id.drawer_layout)).perform(DrawerActions.close());
+
+        onView(withId(R.id.done_swrls)).perform(click());
+
+        onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
+
+        onView(withText("Books (1)")).check(matches(isCompletelyDisplayed()));
+        onView(withText("Podcasts (0)")).check(matches(isCompletelyDisplayed()));
+        onView(withText("Films (2)")).check(matches(isCompletelyDisplayed()));
+
+        onView(withId(R.id.drawer_layout)).perform(DrawerActions.close());
+
+        onView(withId(R.id.listView)).check(matches(atPosition(0, hasDescendant(withText("Garden State")))));
+        onView(withId(R.id.listView)).check(matches(atPosition(1, hasDescendant(withText("The Matrix")))));
+        onView(withId(R.id.listView)).check(matches(numberOfChildren(is(2))));
+
     }
 
     @Test
     public void refreshAllActionIsAvailable() throws Exception {
         activity = launchAndAvoidWhatsNewDialog(listActivityActivityTestRule,
-                new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED, BILLIONS});
+                new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED, BILLIONS}, null);
 
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
         onView(withText("Refresh All Details")).check(matches(isCompletelyDisplayed()));

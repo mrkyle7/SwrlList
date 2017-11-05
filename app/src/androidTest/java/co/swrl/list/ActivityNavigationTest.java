@@ -68,7 +68,7 @@ public class ActivityNavigationTest {
     public void canNavigateBetweenListAndView() throws Exception {
         THE_MATRIX.setDetails(THE_MATRIX_DETAILS);
         THE_MATRIX_RELOADED.setDetails(THE_MATRIX_RELOADED_DETAILS);
-        activity = launchAndAvoidWhatsNewDialog(listActivityIntents, new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED});
+        activity = launchAndAvoidWhatsNewDialog(listActivityIntents, new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED}, null);
 
         onView(withId(R.id.listView)).perform(RecyclerViewActions.actionOnItem(hasDescendant(withText("The Matrix")), click()));
 
@@ -102,7 +102,7 @@ public class ActivityNavigationTest {
     public void canNavigateBetweenListAndAddSwrlScreen() throws Exception {
         THE_MATRIX.setDetails(THE_MATRIX_DETAILS);
         THE_MATRIX_RELOADED.setDetails(THE_MATRIX_RELOADED_DETAILS);
-        activity = launchAndAvoidWhatsNewDialog(listActivityIntents, new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED});
+        activity = launchAndAvoidWhatsNewDialog(listActivityIntents, new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED}, null);
 
         onView(withId(R.id.listView))
                 .check(matches(atPosition(0, hasDescendant(withText("The Matrix Reloaded")))));
@@ -176,7 +176,7 @@ public class ActivityNavigationTest {
 
     @Test
     public void pressingCancelOnAddNewSwrlScreenTakesYouBackToList() throws Exception {
-        activity = launchAndAvoidWhatsNewDialog(listActivityIntents, new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED});
+        activity = launchAndAvoidWhatsNewDialog(listActivityIntents, new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED}, null);
 
         onView(withId(R.id.listView)).check(matches(atPosition(0, hasDescendant(withText("The Matrix Reloaded")))));
 
