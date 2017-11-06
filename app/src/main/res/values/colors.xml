@@ -20,4 +20,6 @@
     <color name="add">#4CAF50</color>
     <color name="add_pressed">#1B5E20</color>
     <color name="delete">#F44366</color>
+    <color name="video">#CE8BC9</color>
+    <color name="website">#71A8D6</color>
 </resources>

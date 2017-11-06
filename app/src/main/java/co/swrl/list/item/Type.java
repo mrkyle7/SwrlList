@@ -40,6 +40,14 @@ public enum Type {
     PODCAST("Podcast", "Podcasts",
             R.color.podcast, SwrlSearch.getPodcastSearch(), R.drawable.ic_podcast_icon, "From"),
 
+    @SerializedName(value = "WEBSITE", alternate = {"website"})
+    WEBSITE("Website", "Websites",
+            R.color.website, null, R.drawable.ic_website, "From"),
+
+    @SerializedName(value = "VIDEO", alternate = {"video"})
+    VIDEO("Video", "Videos",
+            R.color.video, null, R.drawable.ic_videocam_black_24dp, "From"),
+
     UNKNOWN("Swrl", "All Swrls",
             R.color.colorPrimary, new UnknownSearch(), R.drawable.ic_nut, "By");
 

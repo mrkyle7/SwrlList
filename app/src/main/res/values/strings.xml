@@ -5,6 +5,8 @@
     <string name="pkey_version_number">version_number</string>
     <string name="whatsNewLatest">
         <![CDATA[
+        <h4>Version 10.1 (06 November 2017)</h4>
+        \u2022 Can now identify and filter websites and videos
         <h4>Version 10.0 (06 November 2017)</h4>
         \u2022 You can now login to Swrl.co and see recommendations from users!<br/>
         \u2022 When logged in, the discover feed will be weighted to you

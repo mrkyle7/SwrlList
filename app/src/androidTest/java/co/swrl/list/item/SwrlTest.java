@@ -58,7 +58,9 @@ public class SwrlTest {
         checkIsType(Type.BOARD_GAME, "boardgame");
         checkIsType(Type.APP, "app");
         checkIsType(Type.PODCAST, "podcast");
-        checkIsType(Type.UNKNOWN, "website");
+        checkIsType(Type.WEBSITE, "website");
+        checkIsType(Type.VIDEO, "video");
+        checkIsType(Type.UNKNOWN, "blah");
     }
 
     private void checkIsType(Type expectedType, String typeInJson) {
