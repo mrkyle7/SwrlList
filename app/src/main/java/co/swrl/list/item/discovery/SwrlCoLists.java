@@ -2,13 +2,13 @@ package co.swrl.list.item.discovery;
 
 import com.google.gson.Gson;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import co.swrl.list.SwrlPreferences;
 import co.swrl.list.collection.CollectionManager;
 import co.swrl.list.item.Swrl;
 import okhttp3.HttpUrl;
@@ -16,25 +16,41 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class PublicSwrls {
+public class SwrlCoLists {
     private final HttpUrl url;
     private final CollectionManager db;
+    private final SwrlPreferences preferences;
 
-    public PublicSwrls(HttpUrl url, CollectionManager db) {
+    public SwrlCoLists(HttpUrl url, CollectionManager db, SwrlPreferences preferences) {
         this.url = url;
         this.db = db;
+        this.preferences = preferences;
     }
 
-    public PublicSwrls(CollectionManager db) {
-        this(HttpUrl.parse("https://www.swrl.co/api/v1/discover/public"), db);
+    public static SwrlCoLists publicSwrls(CollectionManager db){
+         return new SwrlCoLists(HttpUrl.parse("https://www.swrl.co/api/v1/discover/public"), db, null);
+    }
+
+    public static SwrlCoLists weightedSwrls(CollectionManager db, SwrlPreferences preferences){
+         return new SwrlCoLists(HttpUrl.parse("https://www.swrl.co/api/v1/discover/weighted"), db, preferences);
+    }
+
+    public static SwrlCoLists inboxSwrls(CollectionManager db, SwrlPreferences preferences){
+         return new SwrlCoLists(HttpUrl.parse("https://www.swrl.co/api/v1/discover/inbox"), db, preferences);
     }
 
     public List<Swrl> get() {
+        String authToken = preferences != null ? preferences.getAuthToken() : null;
+        String userID = preferences != null ? preferences.getUserID() : null;
+        HttpUrl urlWithAuth = url.newBuilder()
+                .addQueryParameter("auth_token", authToken)
+                .addQueryParameter("user_id", userID)
+                .build();
         OkHttpClient client =
                 new OkHttpClient.Builder()
                         .readTimeout(30, TimeUnit.SECONDS)
                         .build();
-        Request request = new Request.Builder().url(url).build();
+        Request request = new Request.Builder().url(urlWithAuth).build();
 
         Gson gson = new Gson();
 
@@ -47,7 +63,7 @@ public class PublicSwrls {
                 Swrl[] swrls = gson.fromJson(body, Swrl[].class);
                 publicSwrls.addAll(filterOutSavedSwrlsByExternalID(swrls));
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return publicSwrls;
@@ -75,4 +91,5 @@ public class PublicSwrls {
         }
         return filtered;
     }
+
 }

@@ -3,11 +3,13 @@
     <item android:id="@+id/active_swrls"
         android:title="@string/Swrl_List"
         android:icon="@drawable/ic_swrl_list_logo" />
-     <item android:id="@+id/discover"
+     <item android:id="@+id/inbox"
+        android:title="@string/inbox"
+        android:icon="@drawable/ic_inbox_black_24dp" />
+    <item android:id="@+id/discover_weighted"
         android:title="@string/discover"
         android:icon="@drawable/ic_rocket" />
     <item android:id="@+id/done_swrls"
         android:title="@string/Done"
         android:icon="@drawable/ic_done_black_24dp" />
-
 </menu>

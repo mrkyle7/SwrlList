@@ -42,10 +42,36 @@ public class SwrlPreferences {
         return preferences.getInt(String.valueOf(R.string.pkey_version_number), 0);
     }
 
+    public String getAuthToken() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(activity);
+
+        return preferences.getString(String.valueOf(R.string.pkey_auth_token), null);
+    }
+
+    public String getUserID() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(activity);
+
+        return preferences.getString(String.valueOf(R.string.pkey_user_id), null);
+    }
+
     private void savePackageVersion(int version) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(activity);
         Editor editor = preferences.edit();
         editor.putInt(String.valueOf(R.string.pkey_version_number), version);
+        editor.apply();
+    }
+
+    public void saveAuthToken(String token) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(activity);
+        Editor editor = preferences.edit();
+        editor.putString(String.valueOf(R.string.pkey_auth_token), token);
+        editor.apply();
+    }
+
+    public void saveUserID(String id) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(activity);
+        Editor editor = preferences.edit();
+        editor.putString(String.valueOf(R.string.pkey_user_id), id);
         editor.apply();
     }
 }

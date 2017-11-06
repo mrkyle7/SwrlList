@@ -1,7 +1,9 @@
 package co.swrl.list.ui.activity;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -57,12 +59,16 @@ import co.swrl.list.ui.list.SwrlListViewFactory;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
+import static co.swrl.list.ui.list.DiscoverSwrlListRecyclerAdapter.inboxDiscover;
+import static co.swrl.list.ui.list.DiscoverSwrlListRecyclerAdapter.publicDiscover;
+import static co.swrl.list.ui.list.DiscoverSwrlListRecyclerAdapter.weightedDiscover;
 
 public class ListActivity extends AppCompatActivity {
 
     private final int doneColor = R.color.add;
     private final int deleteColor = R.color.delete;
     private final int discoverColor = R.color.add;
+    private final SwrlPreferences preferences = new SwrlPreferences(this);
     private int swipeColor = doneColor;
 
     private final int doneIcon = R.drawable.ic_done_black_24dp;
@@ -73,18 +79,23 @@ public class ListActivity extends AppCompatActivity {
     private final int swrl_list_title = R.string.app_title;
     private final int done_title = R.string.done_title;
     private final int discover_title = R.string.discover_title;
+    private final int inbox_title = R.string.inbox_title;
     private int title = swrl_list_title;
 
     private final int listNoSwrlsText = R.string.listNoSwrlsText;
     private final int doneNoSwrlsText = R.string.doneNoSwrlsText;
     private final int discoverNoSwrlsText = R.string.discoverNoSwrlsText;
+    private final int inboxNoSwrlsText = R.string.inboxNoSwrlsText;
     private int noSwrlsText = listNoSwrlsText;
 
 
     private SwrlListRecyclerAdapter activeSwrlListAdapter;
     private SwrlListRecyclerAdapter doneSwrlListAdapter;
+    private SwrlListRecyclerAdapter weightedDiscoverSwrlListAdapter;
+    private SwrlListRecyclerAdapter inboxDiscoverSwrlListAdapter;
     private SwrlListRecyclerAdapter discoverSwrlListAdapter;
     private SwrlListRecyclerAdapter swrlListAdapter;
+
 
     private boolean showingMainButtons = true;
     private DrawerLayout mDrawerLayout;
@@ -100,7 +111,7 @@ public class ListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        showWhatsNewDialogIfNewVersion(new SwrlPreferences(this), new SwrlDialogs(this));
+        showWhatsNewDialogIfNewVersion(preferences, new SwrlDialogs(this));
         collectionManager = new SQLiteCollectionManager(this);
         setUpViewElements(collectionManager);
     }
@@ -108,6 +119,8 @@ public class ListActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        invalidateOptionsMenu();
+        setUpBottomNavigation();
         refreshList();
         navListAdapter.notifyDataSetChanged();
         setNoSwrlsText();
@@ -129,7 +142,11 @@ public class ListActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_list, menu);
+        if (loggedIn()) {
+            getMenuInflater().inflate(R.menu.menu_list_logged_in, menu);
+        } else {
+            getMenuInflater().inflate(R.menu.menu_list_logged_out, menu);
+        }
         return true;
     }
 
@@ -164,8 +181,31 @@ public class ListActivity extends AppCompatActivity {
                 }
             }.execute();
         }
-        if (id == R.id.actions_show_whats_new){
+        if (id == R.id.actions_show_whats_new) {
             new SwrlDialogs(this).buildAndShowWhatsNewDialog();
+        }
+        if (id == R.id.action_go_to_login) {
+            Intent loginActivity = new Intent(getApplicationContext(), LoginActivity.class);
+            startActivity(loginActivity, null);
+        }
+        if (id == R.id.action_logout) {
+            AlertDialog.Builder confirmDialog = new AlertDialog.Builder(this);
+            confirmDialog.setTitle("Do you really want to logout?");
+            confirmDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    preferences.saveUserID(null);
+                    preferences.saveAuthToken(null);
+                    onResume();
+                }
+            });
+            confirmDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            confirmDialog.show();
         }
 
         return super.onOptionsItemSelected(item);
@@ -203,7 +243,9 @@ public class ListActivity extends AppCompatActivity {
         }
         activeSwrlListAdapter = new ActiveSwrlListRecyclerAdapter(this, collectionManager, navListAdapter);
         doneSwrlListAdapter = new DoneSwrlListRecyclerAdapter(this, collectionManager, navListAdapter);
-        discoverSwrlListAdapter = new DiscoverSwrlListRecyclerAdapter(this, collectionManager, navListAdapter);
+        discoverSwrlListAdapter = publicDiscover(this, collectionManager, navListAdapter);
+        weightedDiscoverSwrlListAdapter = weightedDiscover(this, collectionManager, navListAdapter, preferences);
+        inboxDiscoverSwrlListAdapter = inboxDiscover(this, collectionManager, navListAdapter, preferences);
         swrlListAdapter = activeSwrlListAdapter;
         setUpList();
         setUpAddSwrlButtons();
@@ -213,6 +255,25 @@ public class ListActivity extends AppCompatActivity {
 
     private void setUpBottomNavigation() {
         BottomNavigationView navigationMenuView = (BottomNavigationView) findViewById(R.id.navigation);
+        int previousSelected = navigationMenuView.getSelectedItemId();
+        navigationMenuView.getMenu().clear();
+        if (loggedIn()) {
+            navigationMenuView.inflateMenu(R.menu.navigation_logged_in);
+            if (previousSelected == R.id.discover) {
+                navigationMenuView.setSelectedItemId(R.id.discover_weighted);
+            } else {
+                navigationMenuView.setSelectedItemId(previousSelected);
+            }
+        } else {
+            navigationMenuView.inflateMenu(R.menu.navigation_logged_out);
+            if (previousSelected == R.id.discover_weighted) {
+                navigationMenuView.setSelectedItemId(R.id.discover);
+            } else if (previousSelected == R.id.inbox) {
+                navigationMenuView.setSelectedItemId(R.id.active_swrls);
+            } else {
+                navigationMenuView.setSelectedItemId(previousSelected);
+            }
+        }
         navigationMenuView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -259,9 +320,37 @@ public class ListActivity extends AppCompatActivity {
                     noSwrlsText = discoverNoSwrlsText;
                     setNoSwrlsText();
                 }
+                if (id == R.id.discover_weighted) {
+                    Log.d(LIST_ACTIVITY, "clicked discover weighted");
+                    swrlListAdapter = weightedDiscoverSwrlListAdapter;
+                    swipeColor = discoverColor;
+                    swipeIcon = discoverIcon;
+                    setUpList();
+                    title = discover_title;
+                    resetTitle();
+                    navListAdapter.notifyDataSetChanged();
+                    noSwrlsText = discoverNoSwrlsText;
+                    setNoSwrlsText();
+                }
+                if (id == R.id.inbox) {
+                    Log.d(LIST_ACTIVITY, "clicked inbox");
+                    swrlListAdapter = inboxDiscoverSwrlListAdapter;
+                    swipeColor = discoverColor;
+                    swipeIcon = discoverIcon;
+                    setUpList();
+                    title = inbox_title;
+                    resetTitle();
+                    navListAdapter.notifyDataSetChanged();
+                    noSwrlsText = inboxNoSwrlsText;
+                    setNoSwrlsText();
+                }
                 return true;
             }
         });
+    }
+
+    private boolean loggedIn() {
+        return preferences.getUserID() != null && preferences.getAuthToken() != null;
     }
 
     private void setUpNavigationDrawer() {

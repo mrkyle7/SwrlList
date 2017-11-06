@@ -11,12 +11,16 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
+import co.swrl.list.SwrlPreferences;
 import co.swrl.list.collection.CollectionManager;
 import co.swrl.list.item.Swrl;
 import co.swrl.list.item.Type;
-import co.swrl.list.item.discovery.PublicSwrls;
+import co.swrl.list.item.discovery.SwrlCoLists;
 import co.swrl.list.ui.activity.ListActivity;
 
+import static co.swrl.list.item.discovery.SwrlCoLists.inboxSwrls;
+import static co.swrl.list.item.discovery.SwrlCoLists.publicSwrls;
+import static co.swrl.list.item.discovery.SwrlCoLists.weightedSwrls;
 import static co.swrl.list.ui.activity.ViewActivity.ViewType.ADD_DISCOVER;
 
 
@@ -27,15 +31,29 @@ public class DiscoverSwrlListRecyclerAdapter extends RecyclerView.Adapter implem
     private List<Swrl> cachedSwrls;
     private final ListActivity.DrawerListAdapter navListAdapter;
     private final ListActivity activity;
+    private final SwrlCoLists swrlGetter;
     private final CollectionManager collectionManager;
     private AsyncTask<Void, Void, List<Swrl>> backgroundSearch;
 
-    public DiscoverSwrlListRecyclerAdapter(ListActivity activity, CollectionManager collectionManager, ListActivity.DrawerListAdapter navListAdapter) {
+    public DiscoverSwrlListRecyclerAdapter(ListActivity activity, CollectionManager collectionManager, ListActivity.DrawerListAdapter navListAdapter, SwrlCoLists swrlGetter) {
         this.activity = activity;
+        this.swrlGetter = swrlGetter;
         this.context = this.activity.getApplicationContext();
         this.collectionManager = collectionManager;
         swrls = new ArrayList<>();
         this.navListAdapter = navListAdapter;
+    }
+
+    public static DiscoverSwrlListRecyclerAdapter publicDiscover(ListActivity activity, CollectionManager collectionManager, ListActivity.DrawerListAdapter navListAdapter) {
+        return new DiscoverSwrlListRecyclerAdapter(activity, collectionManager, navListAdapter, publicSwrls(collectionManager));
+    }
+
+    public static DiscoverSwrlListRecyclerAdapter weightedDiscover(ListActivity activity, CollectionManager collectionManager, ListActivity.DrawerListAdapter navListAdapter, SwrlPreferences preferences) {
+        return new DiscoverSwrlListRecyclerAdapter(activity, collectionManager, navListAdapter, weightedSwrls(collectionManager, preferences));
+    }
+
+    public static DiscoverSwrlListRecyclerAdapter inboxDiscover(ListActivity activity, CollectionManager collectionManager, ListActivity.DrawerListAdapter navListAdapter, SwrlPreferences preferences) {
+        return new DiscoverSwrlListRecyclerAdapter(activity, collectionManager, navListAdapter, inboxSwrls(collectionManager, preferences));
     }
 
     @Override
@@ -100,7 +118,7 @@ public class DiscoverSwrlListRecyclerAdapter extends RecyclerView.Adapter implem
 
             @Override
             protected List<Swrl> doInBackground(Void... voids) {
-                return new PublicSwrls(collectionManager).get();
+                return swrlGetter.get();
             }
 
             @Override
@@ -130,7 +148,7 @@ public class DiscoverSwrlListRecyclerAdapter extends RecyclerView.Adapter implem
 
                 @Override
                 protected List<Swrl> doInBackground(Void... voids) {
-                    return new PublicSwrls(collectionManager).get();
+                    return swrlGetter.get();
                 }
 
                 @Override
@@ -154,7 +172,7 @@ public class DiscoverSwrlListRecyclerAdapter extends RecyclerView.Adapter implem
     }
 
     public void cancelExistingSearches() {
-        if (backgroundSearch != null){
+        if (backgroundSearch != null) {
             backgroundSearch.cancel(true);
         }
     }

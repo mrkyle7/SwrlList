@@ -170,8 +170,7 @@
             android:layout_height="56dp"
             android:layout_gravity="start"
             android:layout_alignParentBottom="true"
-            android:background="@color/white"
-            app:menu="@menu/my_navigation_items" />
+            android:background="@color/white" />
     </RelativeLayout>
 
     <LinearLayout

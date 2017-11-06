@@ -6,7 +6,8 @@ def keystoreProperties = new Properties()
 
 try {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-} catch (Exception ignored){}
+} catch (Exception ignored) {
+}
 
 
 android {
@@ -24,8 +25,8 @@ android {
         applicationId "co.swrl.list"
         minSdkVersion 22
         targetSdkVersion 25
-        versionCode 48
-        versionName "9.4"
+        versionCode 50
+        versionName "10.0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -53,18 +54,18 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
         exclude module: 'recyclerview-v7'
     })
+    compile group: 'com.google.code.gson', name: 'gson', version: '2.8.0'
     compile 'com.android.support:appcompat-v7:25.3.1'
-    compile "com.android.support:recyclerview-v7:25.3.1"
+    compile 'com.android.support:recyclerview-v7:25.3.1'
     compile 'com.android.support:cardview-v7:25.3.1'
     compile 'com.android.support:design:25.3.1'
     compile 'com.android.support:support-annotations:25.3.1'
-    testCompile 'junit:junit:4.12'
-    testCompile "org.mockito:mockito-core:2.2.8"
-    testCompile 'com.squareup.okhttp3:mockwebserver:3.6.0'
     compile 'com.squareup.okhttp3:okhttp:3.6.0'
-    compile group: 'com.google.code.gson', name: 'gson', version: '2.8.0'
     compile 'com.getbase:floatingactionbutton:1.10.1'
     compile 'com.squareup.picasso:picasso:2.5.2'
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.mockito:mockito-core:2.2.8'
+    testCompile 'com.squareup.okhttp3:mockwebserver:3.6.0'
 }
 
 apply plugin: 'devicefarm'

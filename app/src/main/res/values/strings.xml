@@ -5,6 +5,9 @@
     <string name="pkey_version_number">version_number</string>
     <string name="whatsNewLatest">
         <![CDATA[
+        <h4>Version 10.0 (06 November 2017)</h4>
+        \u2022 You can now login to Swrl.co and see recommendations from users!<br/>
+        \u2022 When logged in, the discover feed will be weighted to you
         <h4>Version 9.4 (05 November 2017)</h4>
         \u2022 Filter discover results if already saved in your list
         <h4>Version 9.3.1 (29 October 2017)</h4>
@@ -124,4 +127,14 @@
     <string name="doneNoSwrlsText">Nothing here yet!</string>
     <string name="discoverNoSwrlsText">Nothing to Discover yet!</string>
     <string name="show_whats_new">What\'s new?</string>
+    <string name="login_user">Username or Email</string>
+    <string name="login">Login</string>
+    <string name="login_menu_link">Login to swrl.co</string>
+    <string name="password">Password</string>
+    <string name="pkey_auth_token">pkey_auth_token</string>
+    <string name="pkey_user_id">pkey_user_id</string>
+    <string name="logout">Logout</string>
+    <string name="inbox">Inbox</string>
+    <string name="inbox_title">Recommended to you</string>
+    <string name="inboxNoSwrlsText">Nothing recommended to you at the moment!</string>
 </resources>

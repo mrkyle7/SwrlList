@@ -27,8 +27,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="co.swrl.list.ui.activity.ListActivity" />
         </activity>
-        <activity android:name=".ui.activity.AddSwrlActivity"
-            android:windowSoftInputMode="adjustResize"></activity>
+        <activity
+            android:name=".ui.activity.AddSwrlActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".ui.activity.LoginActivity"></activity>
     </application>
 
 </manifest>

@@ -20,9 +20,12 @@ import co.swrl.list.item.Swrl;
 import co.swrl.list.item.Type;
 import co.swrl.list.ui.activity.AddSwrlActivity;
 import co.swrl.list.ui.activity.ListActivity;
+import co.swrl.list.ui.activity.LoginActivity;
 import co.swrl.list.ui.activity.ViewActivity;
 
+import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
@@ -32,6 +35,7 @@ import static android.support.test.espresso.intent.matcher.IntentMatchers.hasCom
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasExtras;
 import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom;
+import static android.support.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static co.swrl.list.Helpers.THE_MATRIX;
@@ -191,6 +195,18 @@ public class ActivityNavigationTest {
 
         onView(withId(R.id.listView)).check(matches(atPosition(0, hasDescendant(withText("The Matrix Reloaded")))));
 
+    }
+
+    @Test
+    public void canNavigateToTheLoginScreen() throws Exception {
+        activity = launchAndAvoidWhatsNewDialog(listActivityIntents, null, null);
+
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+        onView(withText(R.string.login_menu_link)).perform(click());
+
+        intended(hasComponent(LoginActivity.class.getName()));
+
+        onView(withId(R.id.login_username)).check(matches(isCompletelyDisplayed()));
     }
 
     private static Matcher<Object> withToolbarTitle(

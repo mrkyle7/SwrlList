@@ -12,4 +12,9 @@
         android:orderInCategory="100"
         android:title="@string/show_whats_new"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_logout"
+        android:orderInCategory="100"
+        android:title="@string/logout"
+        app:showAsAction="never" />
 </menu>
