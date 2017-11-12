@@ -16,10 +16,12 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -32,7 +34,6 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
@@ -63,7 +64,7 @@ import static co.swrl.list.ui.list.DiscoverSwrlListRecyclerAdapter.inboxDiscover
 import static co.swrl.list.ui.list.DiscoverSwrlListRecyclerAdapter.publicDiscover;
 import static co.swrl.list.ui.list.DiscoverSwrlListRecyclerAdapter.weightedDiscover;
 
-public class ListActivity extends AppCompatActivity {
+public class ListActivity extends AppCompatActivity  {
 
     private final int doneColor = R.color.add;
     private final int deleteColor = R.color.delete;
@@ -104,7 +105,7 @@ public class ListActivity extends AppCompatActivity {
     private LinearLayout nav_drawer;
     private SQLiteCollectionManager collectionManager;
     private DrawerListAdapter navListAdapter = new DrawerListAdapter(this, Type.values());
-    private static final String LIST_ACTIVITY = "LIST_ACTIVITY";
+    private static final String LOG_TAG = "LOG_TAG";
     private SwipeSimpleCallback swipeCallback;
     private final SwipeItemDecoration swipeItemDecoration = new SwipeItemDecoration();
 
@@ -121,22 +122,21 @@ public class ListActivity extends AppCompatActivity {
         super.onResume();
         invalidateOptionsMenu();
         setUpBottomNavigation();
-        refreshList();
-        navListAdapter.notifyDataSetChanged();
-        setNoSwrlsText();
-        FloatingActionsMenu addSwrlMenu = (FloatingActionsMenu) findViewById(R.id.addItemFAB);
-        addSwrlMenu.collapseImmediately();
+        collapseAddSwrlMenu();
     }
 
     @Override
     public void onBackPressed() {
+        super.onBackPressed();
+        collapseAddSwrlMenu();
+        setNoSwrlsText();
+    }
+
+    private void collapseAddSwrlMenu() {
         FloatingActionsMenu addSwrlMenu = (FloatingActionsMenu) findViewById(R.id.addItemFAB);
         if (addSwrlMenu.isExpanded()) {
             addSwrlMenu.collapse();
-        } else {
-            super.onBackPressed();
         }
-        setNoSwrlsText();
     }
 
     @Override
@@ -162,24 +162,7 @@ public class ListActivity extends AppCompatActivity {
         int id = item.getItemId();
         // Handle your other action bar items...
         if (id == R.id.action_refresh_all) {
-            new AsyncTask<Void, Void, Void>() {
-                @Override
-                protected Void doInBackground(Void... voids) {
-                    CollectionManager collectionManager = new SQLiteCollectionManager(getApplicationContext());
-                    ArrayList<?> swrls = (ArrayList<?>) collectionManager.getAll();
-                    for (Object swrl : swrls) {
-                        Swrl mSwrl = (Swrl) swrl;
-                        if (mSwrl.getDetails() != null && mSwrl.getDetails().getId() != null && !mSwrl.getDetails().getId().isEmpty()) {
-                            Search search = mSwrl.getType().getSearch();
-                            Details details = search.byID(mSwrl.getDetails().getId());
-                            if (details != null) {
-                                collectionManager.saveDetails(mSwrl, details);
-                            }
-                        }
-                    }
-                    return null;
-                }
-            }.execute();
+            refreshAction();
         }
         if (id == R.id.actions_show_whats_new) {
             new SwrlDialogs(this).buildAndShowWhatsNewDialog();
@@ -211,6 +194,29 @@ public class ListActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @NonNull
+    private AsyncTask<Void, Void, Void> getRefreshAllDetailsTask() {
+        return new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                Log.d(LOG_TAG, "Refreshing all details");
+                CollectionManager collectionManager = new SQLiteCollectionManager(getApplicationContext());
+                ArrayList<?> swrls = (ArrayList<?>) collectionManager.getAll();
+                for (Object swrl : swrls) {
+                    Swrl mSwrl = (Swrl) swrl;
+                    if (mSwrl.getDetails() != null && mSwrl.getDetails().getId() != null && !mSwrl.getDetails().getId().isEmpty()) {
+                        Search search = mSwrl.getType().getSearch();
+                        Details details = search.byID(mSwrl.getDetails().getId());
+                        if (details != null) {
+                            collectionManager.saveDetails(mSwrl, details);
+                        }
+                    }
+                }
+                return null;
+            }
+        };
+    }
+
     private void refreshList() {
         if (noTypeFilterSet()) {
             swrlListAdapter.refreshAll();
@@ -237,10 +243,9 @@ public class ListActivity extends AppCompatActivity {
 
     private void setUpViewElements(CollectionManager collectionManager) {
         setContentView(R.layout.activity_list);
-        ActionBar supportActionBar = getSupportActionBar();
-        if (supportActionBar != null) {
-            supportActionBar.setTitle(title);
-        }
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setTitle(title);
         activeSwrlListAdapter = new ActiveSwrlListRecyclerAdapter(this, collectionManager, navListAdapter);
         doneSwrlListAdapter = new DoneSwrlListRecyclerAdapter(this, collectionManager, navListAdapter);
         discoverSwrlListAdapter = publicDiscover(this, collectionManager, navListAdapter);
@@ -251,6 +256,28 @@ public class ListActivity extends AppCompatActivity {
         setUpAddSwrlButtons();
         setUpNavigationDrawer();
         setUpBottomNavigation();
+        setUpRefreshListener();
+    }
+
+    private void setUpRefreshListener() {
+        final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshAction();
+            }
+        });
+    }
+
+    private void refreshAction() {
+        Log.i(LOG_TAG, "onRefresh called from SwipeRefreshLayout");
+        collapseAddSwrlMenu();
+        refreshList();
+        navListAdapter.notifyDataSetChanged();
+        setNoSwrlsText();
+        if (swrlListAdapter instanceof ActiveSwrlListRecyclerAdapter) {
+            getRefreshAllDetailsTask().execute();
+        }
     }
 
     private void setUpBottomNavigation() {
@@ -279,7 +306,7 @@ public class ListActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id = item.getItemId();
                 if (id == R.id.active_swrls) {
-                    Log.d(LIST_ACTIVITY, "clicked active swrls");
+                    Log.d(LOG_TAG, "clicked active swrls");
                     if (swrlListAdapter instanceof DiscoverSwrlListRecyclerAdapter) {
                         ((DiscoverSwrlListRecyclerAdapter) swrlListAdapter).cancelExistingSearches();
                     }
@@ -294,7 +321,7 @@ public class ListActivity extends AppCompatActivity {
                     setNoSwrlsText();
                 }
                 if (id == R.id.done_swrls) {
-                    Log.d(LIST_ACTIVITY, "clicked done swrls");
+                    Log.d(LOG_TAG, "clicked done swrls");
                     if (swrlListAdapter instanceof DiscoverSwrlListRecyclerAdapter) {
                         ((DiscoverSwrlListRecyclerAdapter) swrlListAdapter).cancelExistingSearches();
                     }
@@ -309,7 +336,7 @@ public class ListActivity extends AppCompatActivity {
                     setNoSwrlsText();
                 }
                 if (id == R.id.discover) {
-                    Log.d(LIST_ACTIVITY, "clicked discover");
+                    Log.d(LOG_TAG, "clicked discover");
                     swrlListAdapter = discoverSwrlListAdapter;
                     swipeColor = discoverColor;
                     swipeIcon = discoverIcon;
@@ -321,7 +348,7 @@ public class ListActivity extends AppCompatActivity {
                     setNoSwrlsText();
                 }
                 if (id == R.id.discover_weighted) {
-                    Log.d(LIST_ACTIVITY, "clicked discover weighted");
+                    Log.d(LOG_TAG, "clicked discover weighted");
                     swrlListAdapter = weightedDiscoverSwrlListAdapter;
                     swipeColor = discoverColor;
                     swipeIcon = discoverIcon;
@@ -333,7 +360,7 @@ public class ListActivity extends AppCompatActivity {
                     setNoSwrlsText();
                 }
                 if (id == R.id.inbox) {
-                    Log.d(LIST_ACTIVITY, "clicked inbox");
+                    Log.d(LOG_TAG, "clicked inbox");
                     swrlListAdapter = inboxDiscoverSwrlListAdapter;
                     swipeColor = discoverColor;
                     swipeIcon = discoverIcon;
@@ -457,14 +484,8 @@ public class ListActivity extends AppCompatActivity {
     }
 
     public void showSpinner(boolean show) {
-        ProgressBar spinner = (ProgressBar) findViewById(R.id.progressBar);
-        if (spinner != null) {
-            if (show) {
-                spinner.setVisibility(VISIBLE);
-            } else {
-                spinner.setVisibility(GONE);
-            }
-        }
+        final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
+        swipeRefreshLayout.setRefreshing(show);
     }
 
     private void setUpAddSwrlButtons() {
@@ -632,7 +653,7 @@ public class ListActivity extends AppCompatActivity {
         }
 
         private void init() {
-            Log.d(LIST_ACTIVITY, "Initiating Item Touch Helper");
+            Log.d(LOG_TAG, "Initiating Item Touch Helper");
             //noinspection deprecation
             background = new ColorDrawable(getResources().getColor(swipeColor));
             xMark = ContextCompat.getDrawable(ListActivity.this, swipeIcon);
@@ -718,7 +739,7 @@ public class ListActivity extends AppCompatActivity {
         boolean initiated;
 
         private void init() {
-            Log.d(LIST_ACTIVITY, "Initiating Animation decoration Helper");
+            Log.d(LOG_TAG, "Initiating Animation decoration Helper");
             //noinspection deprecation
             background = new ColorDrawable(getResources().getColor(swipeColor));
             initiated = true;

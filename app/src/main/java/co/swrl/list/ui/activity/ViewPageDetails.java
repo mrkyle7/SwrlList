@@ -117,26 +117,28 @@ public class ViewPageDetails extends Fragment {
         LinearLayout detailsLayout = (LinearLayout) rootView.findViewById(R.id.details_layout);
         Type type = swrl.getType();
 
-        int color = getResources().getColor(R.color.colorPrimary);
+        int color = getResources().getColor(type.getColor());
         rootView.setBackgroundColor(color);
 
         setPoster(details, rootView, type);
         setTitleCard(swrl, details, rootView);
 
         if (swrl.getAuthor() != null) {
-            addTextCard(inflater, detailsLayout, "Review By " + swrl.getAuthor(), swrl.getReview());
+            addTextCard(inflater, detailsLayout, "Review By " + swrl.getAuthor(), swrl.getReview(), false);
+        } else {
+            addTextCard(inflater, detailsLayout, "Review", swrl.getReview(), false);
         }
-        addTextCard(inflater, detailsLayout, "Tagline", details.getTagline());
-        addTextCard(inflater, detailsLayout, "Ratings", details.getRatings());
-        addTextCard(inflater, detailsLayout, "Platform", details.getPlatform());
-        addTextCard(inflater, detailsLayout, "Genres", details.getCategories());
-        addTextCard(inflater, detailsLayout, "Actors", details.getActors());
-        addTextCard(inflater, detailsLayout, "Runtime", details.getRuntime());
-        addTextCard(inflater, detailsLayout, "Publication Date", details.getPublicationDate());
-        addTextCard(inflater, detailsLayout, "Players", details.getMinToMaxPlayers());
-        addTextCard(inflater, detailsLayout, "Playtime", details.getMinToMaxPlaytime());
-        addTextCard(inflater, detailsLayout, "URL", details.getUrl());
-        addTextCard(inflater, detailsLayout, "Overview", details.getOverview());
+        addTextCard(inflater, detailsLayout, "Tagline", details.getTagline(), false);
+        addTextCard(inflater, detailsLayout, "Ratings", details.getRatings(), false);
+        addTextCard(inflater, detailsLayout, "Platform", details.getPlatform(), false);
+        addTextCard(inflater, detailsLayout, "Genres", details.getCategories(), false);
+        addTextCard(inflater, detailsLayout, "Actors", details.getActors(), false);
+        addTextCard(inflater, detailsLayout, "Runtime", details.getRuntime(), false);
+        addTextCard(inflater, detailsLayout, "Publication Date", details.getPublicationDate(), false);
+        addTextCard(inflater, detailsLayout, "Players", details.getMinToMaxPlayers(), false);
+        addTextCard(inflater, detailsLayout, "Playtime", details.getMinToMaxPlaytime(), false);
+        addTextCard(inflater, detailsLayout, "URL", details.getUrl(), false);
+        addTextCard(inflater, detailsLayout, "Overview", details.getOverview(), true);
 
         return rootView;
     }
@@ -213,7 +215,7 @@ public class ViewPageDetails extends Fragment {
         });
     }
 
-    private void addTextCard(LayoutInflater inflater, LinearLayout detailsLayout, String title, String text) {
+    private void addTextCard(LayoutInflater inflater, LinearLayout detailsLayout, String title, String text, boolean isLast) {
         if (text != null && !text.isEmpty()) {
             View anotherSection = inflater.inflate(R.layout.details_card_text, detailsLayout, false);
             TextView titleView = (TextView) anotherSection.findViewById(R.id.card_title);
@@ -226,7 +228,12 @@ public class ViewPageDetails extends Fragment {
 
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             int margin = getDPI(5, detailsLayout);
-            params.setMargins(margin, margin, margin, margin);
+            int marginLast = getDPI(10, detailsLayout);
+            if (isLast) {
+                params.setMargins(0, margin, 0, marginLast);
+            } else {
+                params.setMargins(0, margin, 0, margin);
+            }
             detailsLayout.addView(anotherSection, params);
         }
     }

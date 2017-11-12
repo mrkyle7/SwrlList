@@ -1,3 +1,6 @@
+Version 10.2 (12 November 2017)
+- UI improvements including swipe to refresh, more color and better subtitles!
+
 Version 10.1 (07 November 2017)
 - Can now identify and filter websites and videos
 
@@ -7,9 +10,3 @@ Version 10.0 (06 November 2017)
 
 Version 9.4 (05 November 2017)
 - Filter discover results if already saved in your list
-
-Version 9.3.1 (29 October 2017)
-- Ui improvements and a link to this dialog from the menu
-
-Version 9.3 (28 October 2017)
-- Added clickable URls to details

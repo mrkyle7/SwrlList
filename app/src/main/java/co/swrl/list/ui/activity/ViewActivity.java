@@ -1,16 +1,18 @@
 package co.swrl.list.ui.activity;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -18,6 +20,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 
@@ -34,7 +38,7 @@ import static co.swrl.list.ui.activity.ViewActivity.ViewType.ADD;
 
 public class ViewActivity extends AppCompatActivity {
 
-    public static final String LOG_CONTEXT = "VIEW_ACTIVITY";
+    public static final String LOG_TAG = "VIEW_ACTIVITY";
     private ArrayList<?> swrls;
     private int firstSwrlIndex;
     private ViewType viewType;
@@ -63,7 +67,22 @@ public class ViewActivity extends AppCompatActivity {
         setFirstSwrlIndex();
         setViewType();
         setupView();
+
         db = new SQLiteCollectionManager(getApplicationContext());
+    }
+
+    private void setUpRefreshListener() {
+        final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Log.i(LOG_TAG, "onRefresh called from SwipeRefreshLayout");
+                if (currentSwrl.getDetails() != null && currentSwrl.getDetails().getId() != null
+                        && !currentSwrl.getDetails().getId().isEmpty()) {
+                    new GetSwrlDetails(swipeRefreshLayout).execute(currentSwrl.getDetails().getId());
+                }
+            }
+        });
     }
 
     @Override
@@ -91,14 +110,14 @@ public class ViewActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_refresh) {
-            Log.d(LOG_CONTEXT, "Current Swrl = " + currentSwrl);
+            Log.d(LOG_TAG, "Current Swrl = " + currentSwrl);
             if (currentSwrl.getDetails() != null && currentSwrl.getDetails().getId() != null
                     && !currentSwrl.getDetails().getId().isEmpty()) {
-                new GetSwrlDetails().execute(currentSwrl.getDetails().getId());
+                new GetSwrlDetails((SwipeRefreshLayout) findViewById(R.id.swiperefresh)).execute(currentSwrl.getDetails().getId());
             }
             return true;
         } else if (id == R.id.action_markAsDone) {
-            Log.d(LOG_CONTEXT, "Current Swrl = " + currentSwrl);
+            Log.d(LOG_TAG, "Current Swrl = " + currentSwrl);
             AlertDialog.Builder confirmDialog = new AlertDialog.Builder(this);
             confirmDialog.setTitle("Mark the Swrl as 'done' and remove from list?");
             confirmDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -117,7 +136,7 @@ public class ViewActivity extends AppCompatActivity {
             confirmDialog.show();
             return true;
         } else if (id == R.id.action_delete) {
-            Log.d(LOG_CONTEXT, "Current Swrl = " + currentSwrl);
+            Log.d(LOG_TAG, "Current Swrl = " + currentSwrl);
             AlertDialog.Builder confirmDialog = new AlertDialog.Builder(this);
             confirmDialog.setTitle("Delete the Swrl?");
             confirmDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -155,6 +174,7 @@ public class ViewActivity extends AppCompatActivity {
     private void setupView() {
         setUpToolbar();
         setupPager();
+        setUpRefreshListener();
     }
 
     private void setUpToolbar() {
@@ -186,7 +206,7 @@ public class ViewActivity extends AppCompatActivity {
         setButton(firstSwrlIndex);
         updateToolbar();
         if (viewType == ADD) {
-            new GetSwrlDetails().execute(currentSwrl.getDetails().getId());
+            new GetSwrlDetails((SwipeRefreshLayout) findViewById(R.id.swiperefresh)).execute(currentSwrl.getDetails().getId());
         }
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -201,7 +221,7 @@ public class ViewActivity extends AppCompatActivity {
                 currentSwrl = (Swrl) swrls.get(position);
                 updateToolbar();
                 if (viewType == ADD) {
-                    new GetSwrlDetails().execute(currentSwrl.getDetails().getId());
+                    new GetSwrlDetails((SwipeRefreshLayout) findViewById(R.id.swiperefresh)).execute(currentSwrl.getDetails().getId());
                 }
             }
 
@@ -214,9 +234,20 @@ public class ViewActivity extends AppCompatActivity {
 
     private void updateToolbar() {
         ActionBar actionBar = getSupportActionBar();
+        int typeColor = currentSwrl.getType().getColor();
+        int darkTypeColor = currentSwrl.getType().getDarkColor();
+        int titleColor = getResources().getColor(typeColor);
+        ColorDrawable drawable = new ColorDrawable(titleColor);
         if (actionBar != null) {
             actionBar.setTitle(currentSwrl.getTitle());
+            actionBar.setBackgroundDrawable(drawable);
         }
+        Window window = getWindow();
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+
+        window.setStatusBarColor(ContextCompat.getColor(this, darkTypeColor));
     }
 
     private void setButton(final int position) {
@@ -303,10 +334,8 @@ public class ViewActivity extends AppCompatActivity {
                 } else {
                     nextCurrent = (Swrl) swrls.get(position);
                 }
-                ActionBar actionBar = getSupportActionBar();
-                if (actionBar != null) {
-                    actionBar.setTitle(nextCurrent.getTitle());
-                }
+                currentSwrl = nextCurrent;
+                updateToolbar();
             }
         }
 
@@ -314,7 +343,11 @@ public class ViewActivity extends AppCompatActivity {
 
     private class GetSwrlDetails extends AsyncTask<String, Void, Details> {
 
-        private ProgressDialog progressDialog;
+        private SwipeRefreshLayout swipeRefreshLayout;
+
+        private GetSwrlDetails(SwipeRefreshLayout swipeRefreshLayout) {
+            this.swipeRefreshLayout = swipeRefreshLayout;
+        }
 
         @Override
         protected Details doInBackground(String... params) {
@@ -333,9 +366,8 @@ public class ViewActivity extends AppCompatActivity {
 
         @Override
         protected void onPreExecute() {
-            progressDialog = new ProgressDialog(ViewActivity.this);
-            progressDialog.setMessage("Updating Details...");
-            progressDialog.show();
+            super.onPreExecute();
+            swipeRefreshLayout.setRefreshing(true);
         }
 
         @Override
@@ -343,7 +375,7 @@ public class ViewActivity extends AppCompatActivity {
             if (details != null) {
                 Details originalDetails = currentSwrl.getDetails();
                 if (!originalDetails.equals(details)) {
-                    Log.d(LOG_CONTEXT, "Updating details for " + currentSwrl.toString());
+                    Log.d(LOG_TAG, "Updating details for " + currentSwrl.toString());
                     db.saveDetails(currentSwrl, details);
                     currentSwrl.setDetails(details);
                     if (mSectionsPagerAdapter != null) {
@@ -351,7 +383,9 @@ public class ViewActivity extends AppCompatActivity {
                     }
                 }
             }
-            progressDialog.hide();
+            if (swipeRefreshLayout != null) {
+                swipeRefreshLayout.setRefreshing(false);
+            }
         }
 
     }

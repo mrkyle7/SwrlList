@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -26,6 +27,7 @@ import static co.swrl.list.ui.activity.ViewActivity.ViewType.ADD_DISCOVER;
 
 public class DiscoverSwrlListRecyclerAdapter extends RecyclerView.Adapter implements SwrlListRecyclerAdapter {
 
+    private static final String LOG_TAG = "DISCOVER_ADAPTER";
     private final Context context;
     private final List<Swrl> swrls;
     private List<Swrl> cachedSwrls;
@@ -71,7 +73,7 @@ public class DiscoverSwrlListRecyclerAdapter extends RecyclerView.Adapter implem
         swrlRow.setSubtitle2(swrl);
         swrlRow.setImage(swrl, context);
         int firstPage = (position - 50 <= 0) ? 0 : position - 50;
-        int lastPage = firstPage + 100 >= swrls.size() - 1 ? swrls.size() - 1 : firstPage + 100;
+        int lastPage = firstPage + 100 >= swrls.size() ? swrls.size() : firstPage + 100;
         ArrayList<Swrl> swrlsToPage = new ArrayList<>();
         if (swrls.size() != 0) {
             swrlsToPage.addAll(swrls.subList(firstPage, lastPage));
@@ -109,6 +111,7 @@ public class DiscoverSwrlListRecyclerAdapter extends RecyclerView.Adapter implem
 
     @Override
     public void refreshAll() {
+        Log.d("DISCOVER_ADAPTER", "Refresh All");
         cancelExistingSearches();
         backgroundSearch = new AsyncTask<Void, Void, List<Swrl>>() {
             @Override
@@ -138,6 +141,7 @@ public class DiscoverSwrlListRecyclerAdapter extends RecyclerView.Adapter implem
 
     @Override
     public void refreshAllWithFilter(final Type type) {
+        Log.d("DISCOVER_ADAPTER", "Refresh All with filter: " + type.getFriendlyName());
         cancelExistingSearches();
         if (cachedSwrls == null) {
             backgroundSearch = new AsyncTask<Void, Void, List<Swrl>>() {

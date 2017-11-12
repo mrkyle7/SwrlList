@@ -28,7 +28,6 @@ import co.swrl.list.R;
 import co.swrl.list.collection.CollectionManager;
 import co.swrl.list.item.Details;
 import co.swrl.list.item.Swrl;
-import co.swrl.list.item.Type;
 import co.swrl.list.item.search.Search;
 import co.swrl.list.ui.activity.ViewActivity;
 
@@ -105,14 +104,18 @@ public class SwrlRow extends RecyclerView.ViewHolder {
     }
 
     public void setSubtitle2(Swrl swrl) {
-        String subtitle2Text = "No Details...";
-        if (swrl.getDetails() != null && swrl.getDetails().getCategories() != null
+        String subtitle2Text = "";
+        if (swrl.getDetails() == null) {
+            subtitle2Text = "No details, click to search";
+        } else if (swrl.getDetails().getCategories() != null
                 && !swrl.getDetails().getCategories().isEmpty()) {
             subtitle2Text = swrl.getDetails().getCategories();
-        }
-        if (swrl.getType() == Type.BOOK && swrl.getDetails() != null && swrl.getDetails().getPublicationDate() != null
+        } else if (swrl.getDetails().getPublicationDate() != null
                 && !swrl.getDetails().getPublicationDate().isEmpty()) {
             subtitle2Text = swrl.getDetails().getPublicationDate();
+        } else if (swrl.getDetails().getOverview() != null
+                && !swrl.getDetails().getOverview().isEmpty()) {
+            subtitle2Text = swrl.getDetails().getOverview();
         }
         subtitle2.setText(subtitle2Text);
     }

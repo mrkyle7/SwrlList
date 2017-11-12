@@ -42,7 +42,6 @@ public class ActiveSwrlListRecyclerAdapter extends RecyclerView.Adapter implemen
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         SwrlRow swrlRow = (SwrlRow) holder;
         Swrl swrl = swrls.get(position);
-
         swrlRow.setTitle(swrl);
         swrlRow.setSubTitle(swrl);
         swrlRow.setSubtitle2(swrl);
@@ -72,22 +71,30 @@ public class ActiveSwrlListRecyclerAdapter extends RecyclerView.Adapter implemen
 
     @Override
     public void refreshAll() {
+        activity.showSpinner(true);
+        activity.setBackgroundDimming(true);
         List<Swrl> active = collectionManager.getActive();
         swrls.clear();
         swrls.addAll(active);
         notifyDataSetChanged();
         navListAdapter.notifyDataSetChanged();
         activity.setNoSwrlsText();
+        activity.setBackgroundDimming(false);
+        activity.showSpinner(false);
     }
 
     @Override
     public void refreshAllWithFilter(Type type) {
+        activity.showSpinner(true);
+        activity.setBackgroundDimming(true);
         List<Swrl> filtered = collectionManager.getActive(type);
         swrls.clear();
         swrls.addAll(filtered);
         notifyDataSetChanged();
         navListAdapter.notifyDataSetChanged();
         activity.setNoSwrlsText();
+        activity.setBackgroundDimming(false);
+        activity.showSpinner(false);
     }
 
     @Override

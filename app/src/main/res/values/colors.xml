@@ -8,18 +8,29 @@
     <color name="white">#FFFFFF</color>
     <color name="black_semi_transparent">#B2000000</color>
     <color name="film">#3EB283</color>
+    <color name="film_dark">#0B7F50</color>
     <color name="album">#FF2E63</color>
+    <color name="album_dark">#CC0030</color>
     <color name="book">#F6A900</color>
+    <color name="book_dark">#C37600</color>
     <color name="app">#47d147</color>
+    <color name="app_dark">#149E14</color>
     <color name="board_game">#FFEA00</color>
+    <color name="board_game_dark">#CCB700</color>
     <color name="podcast">#cc33ff</color>
+    <color name="podcast_dark">#9900CC</color>
     <color name="tv">#4169e1</color>
+    <color name="tv_dark">#0E36AE</color>
     <color name="video_game">#663399</color>
+    <color name="video_game_dark">#330066</color>
+    <color name="video">#CE8BC9</color>
+    <color name="video_dark">#9B5896</color>
+    <color name="website">#71A8D6</color>
+    <color name="website_dark">#3E75A3</color>
     <color name="unknown">#FFFFFF</color>
+    <color name="unknown_dark">#FFFFFF</color>
 
     <color name="add">#4CAF50</color>
     <color name="add_pressed">#1B5E20</color>
     <color name="delete">#F44366</color>
-    <color name="video">#CE8BC9</color>
-    <color name="website">#71A8D6</color>
 </resources>

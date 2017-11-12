@@ -72,18 +72,28 @@ public class DoneSwrlListRecyclerAdapter extends RecyclerView.Adapter implements
 
     @Override
     public void refreshAll() {
+        activity.showSpinner(true);
+        activity.setBackgroundDimming(true);
         List<Swrl> done = collectionManager.getDone();
         swrls.clear();
         swrls.addAll(done);
         notifyDataSetChanged();
+        activity.setNoSwrlsText();
+        activity.setBackgroundDimming(false);
+        activity.showSpinner(false);
     }
 
     @Override
     public void refreshAllWithFilter(Type type) {
+        activity.showSpinner(true);
+        activity.setBackgroundDimming(true);
         List<Swrl> filtered = collectionManager.getDone(type);
         swrls.clear();
         swrls.addAll(filtered);
         notifyDataSetChanged();
+        activity.setNoSwrlsText();
+        activity.setBackgroundDimming(false);
+        activity.showSpinner(false);
     }
 
     @Override

@@ -5,6 +5,8 @@
     <string name="pkey_version_number">version_number</string>
     <string name="whatsNewLatest">
         <![CDATA[
+        <h4>Version 10.2 (12 November 2017)</h4>
+        \u2022 UI improvements including swipe to refresh, more color and better subtitles!
         <h4>Version 10.1 (06 November 2017)</h4>
         \u2022 Can now identify and filter websites and videos
         <h4>Version 10.0 (06 November 2017)</h4>
@@ -118,7 +120,7 @@
     <string name="drawer_open">Menu Open</string>
     <string name="drawer_closed">Menu Closed</string>
     <string name="app_menu_title">Swrl List Filters</string>
-    <string name="refresh_all_details">Refresh All Details</string>
+    <string name="refresh_all_details">Refresh</string>
     <string name="Swrl_List">Swrl List</string>
     <string name="Done">Done</string>
     <string name="discover">Discover</string>
