@@ -227,11 +227,17 @@ public class ViewActivity extends AppCompatActivity {
 
             @Override
             public void onPageScrollStateChanged(int state) {
-
+                enableDisableSwipeRefresh( state == ViewPager.SCROLL_STATE_IDLE );
             }
         });
     }
 
+    private void enableDisableSwipeRefresh(boolean enable) {
+        final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
+        if (swipeRefreshLayout != null) {
+            swipeRefreshLayout.setEnabled(enable);
+        }
+    }
     private void updateToolbar() {
         ActionBar actionBar = getSupportActionBar();
         int typeColor = currentSwrl.getType().getColor();
