@@ -1,3 +1,6 @@
+Version 10.3 (20 November 2017)
+- UI improvements and fixes
+
 Version 10.2 (12 November 2017)
 - UI improvements including swipe to refresh, more color and better subtitles!
 
@@ -7,6 +10,3 @@ Version 10.1 (07 November 2017)
 Version 10.0 (06 November 2017)
 - You can now login to Swrl.co and see recommendations from users!
 - When logged in, the discover feed will be weighted to you
-
-Version 9.4 (05 November 2017)
-- Filter discover results if already saved in your list

@@ -64,7 +64,7 @@ import static co.swrl.list.ui.list.DiscoverSwrlListRecyclerAdapter.inboxDiscover
 import static co.swrl.list.ui.list.DiscoverSwrlListRecyclerAdapter.publicDiscover;
 import static co.swrl.list.ui.list.DiscoverSwrlListRecyclerAdapter.weightedDiscover;
 
-public class ListActivity extends AppCompatActivity  {
+public class ListActivity extends AppCompatActivity {
 
     private final int doneColor = R.color.add;
     private final int deleteColor = R.color.delete;
@@ -267,6 +267,18 @@ public class ListActivity extends AppCompatActivity  {
                 refreshAction();
             }
         });
+        swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.video),
+                getResources().getColor(R.color.website),
+                getResources().getColor(R.color.film),
+                getResources().getColor(R.color.book),
+                getResources().getColor(R.color.album));
+    }
+
+    private void enableDisableSwipeRefresh(boolean enable) {
+        final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
+        if (swipeRefreshLayout != null) {
+            swipeRefreshLayout.setEnabled(enable);
+        }
     }
 
     private void refreshAction() {
@@ -682,6 +694,12 @@ public class ListActivity extends AppCompatActivity  {
             int swipedPosition = viewHolder.getAdapterPosition();
             SwrlListRecyclerAdapter adapter = (SwrlListRecyclerAdapter) recyclerView.getAdapter();
             adapter.swipeAction(viewHolder, swipedPosition);
+        }
+
+        @Override
+        public void onSelectedChanged(RecyclerView.ViewHolder viewHolder, int actionState) {
+            super.onSelectedChanged(viewHolder, actionState);
+            enableDisableSwipeRefresh(actionState == ItemTouchHelper.ACTION_STATE_IDLE);
         }
 
         @Override

@@ -83,6 +83,11 @@ public class ViewActivity extends AppCompatActivity {
                 }
             }
         });
+        swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.video),
+                getResources().getColor(R.color.website),
+                getResources().getColor(R.color.film),
+                getResources().getColor(R.color.book),
+                getResources().getColor(R.color.album));
     }
 
     @Override
@@ -227,7 +232,7 @@ public class ViewActivity extends AppCompatActivity {
 
             @Override
             public void onPageScrollStateChanged(int state) {
-                enableDisableSwipeRefresh( state == ViewPager.SCROLL_STATE_IDLE );
+                enableDisableSwipeRefresh(state == ViewPager.SCROLL_STATE_IDLE);
             }
         });
     }
@@ -238,6 +243,7 @@ public class ViewActivity extends AppCompatActivity {
             swipeRefreshLayout.setEnabled(enable);
         }
     }
+
     private void updateToolbar() {
         ActionBar actionBar = getSupportActionBar();
         int typeColor = currentSwrl.getType().getColor();
