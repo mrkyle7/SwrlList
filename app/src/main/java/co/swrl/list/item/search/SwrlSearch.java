@@ -19,7 +19,6 @@ public class SwrlSearch implements Search {
     private final HttpUrl SEARCH_BASE_URL;
     private final HttpUrl DETAILS_BASE_URL;
     private final Type type;
-    private final String LOG_NAME = "Swrl_Search";
 
     public static SwrlSearch getFilmSearch() {
         return new SwrlSearch(HttpUrl.parse("https://www.swrl.co/api/v1/search/film"), HttpUrl.parse("https://www.swrl.co/api/v1/details/film"), Type.FILM);
@@ -91,6 +90,7 @@ public class SwrlSearch implements Search {
     }
 
     private class SearchResponse {
+        @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
         private List<Details> results;
 
         SearchResponse() {

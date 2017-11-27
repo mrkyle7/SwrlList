@@ -13,6 +13,7 @@
         android:paddingRight="24dp">
 
         <ImageView android:src="@drawable/ic_swrl_list_logo"
+            android:contentDescription="@string/Swrl_List"
             android:scaleType="fitCenter"
             android:layout_width="72dp"
             android:layout_height="72dp"
@@ -57,9 +58,9 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
-            android:text="No account yet? Create one"
+            android:text="@string/signUpText"
             android:gravity="center"
-            android:textSize="16dip"/>
+            android:textSize="16sp"/>
 
     </LinearLayout>
 </ScrollView>

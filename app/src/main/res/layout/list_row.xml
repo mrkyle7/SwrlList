@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/list_row"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@drawable/row_background"
@@ -13,6 +12,7 @@
         android:layout_height="80dp">
 
         <ImageView
+            android:contentDescription="@string/colorbar"
             android:id="@+id/row_left_border"
             android:layout_width="5dp"
             android:layout_height="match_parent"
@@ -20,7 +20,6 @@
             android:background="@drawable/image_block_color"
             android:color="@color/album"/>
         <RelativeLayout
-            android:id="@+id/icon_layout"
             android:layout_width="65dp"
             android:layout_height="match_parent"
             android:layout_toEndOf="@+id/row_left_border"
@@ -41,7 +40,6 @@
     </RelativeLayout>
 
     <LinearLayout
-        android:id="@+id/titleLayout"
         android:layout_width="match_parent"
         android:layout_height="80dp"
 
@@ -59,7 +57,7 @@
             android:ellipsize="end"
             android:gravity="bottom"
             android:maxLines="1"
-            android:text="A swrl"
+            android:text="@string/exampleTitle"
             android:textColor="#000000"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -67,11 +65,6 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_alignParentBottom="true"
-
-            android:layout_alignParentTop="false"
-            android:layout_toEndOf="@+id/image_layout"
-            android:layout_toStartOf="@+id/list_item_button"
             android:gravity="bottom"
             android:orientation="vertical">
 
@@ -85,7 +78,7 @@
                 android:ellipsize="end"
                 android:gravity="bottom"
                 android:maxLines="1"
-                android:text="billy boy"
+                android:text="@string/exampleText"
                 android:textColor="#000000"
                 android:textSize="12sp"
                 android:textStyle="normal" />
@@ -100,7 +93,7 @@
                 android:ellipsize="end"
                 android:gravity="bottom"
                 android:maxLines="1"
-                android:text="comedy, action"
+                android:text="@string/exampleText"
                 android:textColor="#000000"
                 android:textSize="12sp"
                 android:textStyle="normal" />

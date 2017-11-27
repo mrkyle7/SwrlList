@@ -65,11 +65,6 @@ public class ActiveSwrlListRecyclerAdapter extends RecyclerView.Adapter implemen
     }
 
     @Override
-    public List<Swrl> getSwrls() {
-        return swrls;
-    }
-
-    @Override
     public void refreshAll() {
         activity.showSpinner(true);
         activity.setBackgroundDimming(true);

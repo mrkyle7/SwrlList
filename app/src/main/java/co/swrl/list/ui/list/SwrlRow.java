@@ -36,7 +36,7 @@ import static co.swrl.list.R.drawable.ic_add_black_24dp;
 import static co.swrl.list.ui.activity.ViewActivity.ViewType.VIEW;
 
 
-public class SwrlRow extends RecyclerView.ViewHolder {
+class SwrlRow extends RecyclerView.ViewHolder {
 
     private final TextView title;
     private final TextView subtitle;
@@ -198,7 +198,6 @@ public class SwrlRow extends RecyclerView.ViewHolder {
             private AsyncTask<Swrl, Void, Details> getSwrlDetailsAsyncTask() {
                 return new AsyncTask<Swrl, Void, Details>() {
                     private ProgressDialog addingDialog;
-                    public Swrl mSwrl;
 
                     @Override
                     protected void onPreExecute() {
@@ -229,7 +228,6 @@ public class SwrlRow extends RecyclerView.ViewHolder {
                     @Override
                     protected Details doInBackground(Swrl... params) {
                         Swrl swrl = params[0];
-                        mSwrl = swrl;
                         Details details = null;
 
                         try {
@@ -259,7 +257,6 @@ public class SwrlRow extends RecyclerView.ViewHolder {
             private AsyncTask<Swrl, Void, Details> getSwrlDetailsAsyncTask() {
                 return new AsyncTask<Swrl, Void, Details>() {
                     private ProgressDialog addingDialog;
-                    public Swrl mSwrl;
 
                     @Override
                     protected void onPreExecute() {
@@ -306,7 +303,6 @@ public class SwrlRow extends RecyclerView.ViewHolder {
                     @Override
                     protected Details doInBackground(Swrl... params) {
                         Swrl swrl = params[0];
-                        mSwrl = swrl;
                         Details details = null;
 
                         try {

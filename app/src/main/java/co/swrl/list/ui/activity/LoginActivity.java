@@ -30,10 +30,9 @@ public class LoginActivity extends AppCompatActivity {
     private EditText emailText;
     private EditText passwordText;
     private Button loginButton;
-    private TextView signupLink;
     private SwrlPreferences preferences;
 
-    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+    private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +41,7 @@ public class LoginActivity extends AppCompatActivity {
         emailText = (EditText) findViewById(R.id.login_username);
         passwordText = (EditText) findViewById(R.id.login_password);
         loginButton = (Button) findViewById(R.id.btn_login);
-        signupLink = (TextView) findViewById(R.id.link_signup);
+        TextView signupLink = (TextView) findViewById(R.id.link_signup);
 
         preferences = new SwrlPreferences(this);
 
@@ -107,7 +106,7 @@ public class LoginActivity extends AppCompatActivity {
                     if (response.code() == 200){
                         LoginAuthResponse authResponseFromSwrl = gson.fromJson(body, LoginAuthResponse.class);
                         Log.d(LOG_TAG, authResponseFromSwrl.auth_token + " " + authResponseFromSwrl.user_id);
-                        if (authResponseFromSwrl.user_id != null && authResponseFromSwrl.auth_token != null) {
+                        if (authResponseFromSwrl.user_id != -1 && authResponseFromSwrl.auth_token != null) {
                             loginStatus.success = true;
                             loginStatus.loginAuthResponse = authResponseFromSwrl;
                         } else {
@@ -147,7 +146,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private class LoginAuthResponse {
         String auth_token;
-        String user_id;
+        int user_id;
     }
     private class LoginFailResponse {
         String message;

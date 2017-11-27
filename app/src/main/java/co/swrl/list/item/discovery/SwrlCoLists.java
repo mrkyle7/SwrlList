@@ -41,10 +41,10 @@ public class SwrlCoLists {
 
     public List<Swrl> get() {
         String authToken = preferences != null ? preferences.getAuthToken() : null;
-        String userID = preferences != null ? preferences.getUserID() : null;
+        int userID = preferences != null ? preferences.getUserID() : -1;
         HttpUrl urlWithAuth = url.newBuilder()
                 .addQueryParameter("auth_token", authToken)
-                .addQueryParameter("user_id", userID)
+                .addQueryParameter("user_id", String.valueOf(userID))
                 .build();
         OkHttpClient client =
                 new OkHttpClient.Builder()

@@ -103,8 +103,7 @@ public class ListActivity extends AppCompatActivity {
     private ActionBarDrawerToggle mDrawerToggle;
     private Type typeFilter;
     private LinearLayout nav_drawer;
-    private SQLiteCollectionManager collectionManager;
-    private DrawerListAdapter navListAdapter = new DrawerListAdapter(this, Type.values());
+    private final DrawerListAdapter navListAdapter = new DrawerListAdapter(this, Type.values());
     private static final String LOG_TAG = "LOG_TAG";
     private SwipeSimpleCallback swipeCallback;
     private final SwipeItemDecoration swipeItemDecoration = new SwipeItemDecoration();
@@ -113,7 +112,7 @@ public class ListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         showWhatsNewDialogIfNewVersion(preferences, new SwrlDialogs(this));
-        collectionManager = new SQLiteCollectionManager(this);
+        SQLiteCollectionManager collectionManager = new SQLiteCollectionManager(this);
         setUpViewElements(collectionManager);
     }
 
@@ -177,7 +176,7 @@ public class ListActivity extends AppCompatActivity {
             confirmDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    preferences.saveUserID(null);
+                    preferences.saveUserID(-1);
                     preferences.saveAuthToken(null);
                     onResume();
                 }
@@ -389,7 +388,7 @@ public class ListActivity extends AppCompatActivity {
     }
 
     private boolean loggedIn() {
-        return preferences.getUserID() != null && preferences.getAuthToken() != null;
+        return preferences.getUserID() != -1 && preferences.getAuthToken() != null;
     }
 
     private void setUpNavigationDrawer() {
@@ -682,11 +681,6 @@ public class ListActivity extends AppCompatActivity {
         @Override
         public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
             return false;
-        }
-
-        @Override
-        public int getSwipeDirs(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-            return super.getSwipeDirs(recyclerView, viewHolder);
         }
 
         @Override

@@ -7,7 +7,7 @@
     <TextView
         android:layout_width="match_parent"
         android:id="@+id/whatsNewMessage"
-        android:padding="@dimen/abc_dialog_padding_material"
+        android:padding="24dp"
         android:layout_height="0dp">
     </TextView>
 </ScrollView>

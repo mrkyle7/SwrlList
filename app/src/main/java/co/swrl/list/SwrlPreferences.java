@@ -48,10 +48,10 @@ public class SwrlPreferences {
         return preferences.getString(String.valueOf(R.string.pkey_auth_token), null);
     }
 
-    public String getUserID() {
+    public int getUserID() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(activity);
 
-        return preferences.getString(String.valueOf(R.string.pkey_user_id), null);
+        return preferences.getInt(String.valueOf(R.string.pkey_user_id), -1);
     }
 
     private void savePackageVersion(int version) {
@@ -68,10 +68,10 @@ public class SwrlPreferences {
         editor.apply();
     }
 
-    public void saveUserID(String id) {
+    public void saveUserID(int id) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(activity);
         Editor editor = preferences.edit();
-        editor.putString(String.valueOf(R.string.pkey_user_id), id);
+        editor.putInt(String.valueOf(R.string.pkey_user_id), id);
         editor.apply();
     }
 }

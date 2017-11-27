@@ -38,7 +38,7 @@ import static co.swrl.list.ui.activity.ViewActivity.ViewType.ADD;
 
 public class ViewActivity extends AppCompatActivity {
 
-    public static final String LOG_TAG = "VIEW_ACTIVITY";
+    private static final String LOG_TAG = "VIEW_ACTIVITY";
     private ArrayList<?> swrls;
     private int firstSwrlIndex;
     private ViewType viewType;
@@ -355,7 +355,7 @@ public class ViewActivity extends AppCompatActivity {
 
     private class GetSwrlDetails extends AsyncTask<String, Void, Details> {
 
-        private SwipeRefreshLayout swipeRefreshLayout;
+        private final SwipeRefreshLayout swipeRefreshLayout;
 
         private GetSwrlDetails(SwipeRefreshLayout swipeRefreshLayout) {
             this.swipeRefreshLayout = swipeRefreshLayout;

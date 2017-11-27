@@ -18,11 +18,11 @@ import static android.view.View.VISIBLE;
 
 public class GetSearchResults extends AsyncTask<String, Void, ArrayList<Swrl>> {
 
-    private SwrlResultsRecyclerAdapter recyclerAdapter;
+    private final SwrlResultsRecyclerAdapter recyclerAdapter;
     private final ProgressBar progressSpinner;
     private final TextView progressText;
-    private Type swrlType;
-    private View noSearchResultsText;
+    private final Type swrlType;
+    private final View noSearchResultsText;
     private final String LOG_NAME = "GET_SEARCH_RESULTS";
 
     public GetSearchResults(SwrlResultsRecyclerAdapter resultsAdapter, ProgressBar progressSpinner, TextView progressText, Type swrlType, View noSearchResultsText) {

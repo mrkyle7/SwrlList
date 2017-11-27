@@ -239,16 +239,8 @@ public class Details implements Serializable {
         return url;
     }
 
-    public String getReleaseYear() {
-        return releaseYear;
-    }
-
     public String getPublicationDate() {
         return publicationDate;
-    }
-
-    public String getImdbID() {
-        return imdbID;
     }
 
     public String getRatings() {
@@ -279,28 +271,12 @@ public class Details implements Serializable {
         return actors;
     }
 
-    public String getMinPlayers() {
-        return minPlayers;
-    }
-
-    public String getMaxPlayers() {
-        return maxPlayers;
-    }
-
     public String getMinToMaxPlayers() {
         if (minPlayers == null && maxPlayers == null) return null;
         if (Objects.equals(minPlayers, maxPlayers)) return minPlayers;
         if (minPlayers == null || maxPlayers == null)
             return minPlayers == null ? maxPlayers : minPlayers;
         return minPlayers + " - " + maxPlayers;
-    }
-
-    public String getMinPlaytime() {
-        return minPlaytime;
-    }
-
-    public String getMaxPlaytime() {
-        return maxPlaytime;
     }
 
     public String getMinToMaxPlaytime() {

@@ -20,6 +20,7 @@
                 android:layout_height="@dimen/viewImageHeight">
 
                 <ImageView
+                    android:contentDescription="@string/backgroundFade"
                     android:id="@+id/imageView2"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -30,6 +31,7 @@
                     android:src="@drawable/ic_boardgame_icon" />
 
                 <ImageView
+                    android:contentDescription="@string/itemImage"
                     android:id="@+id/imageView"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
@@ -48,7 +50,6 @@
                 android:orientation="vertical">
 
                 <android.support.v7.widget.CardView
-                    android:id="@+id/titleSection"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -70,7 +71,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:padding="0dp"
-                            android:text="Title"
+                            android:text="@string/exampleTitle"
                             android:textColor="#000000"
                             android:textIsSelectable="true"
                             android:textSize="22sp"
@@ -81,7 +82,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:padding="5dp"
-                            android:text="tagline of the film for example"
+                            android:text="@string/exampleText"
                             android:textColor="#000000"
                             android:textIsSelectable="true"
                             android:textSize="18sp" />

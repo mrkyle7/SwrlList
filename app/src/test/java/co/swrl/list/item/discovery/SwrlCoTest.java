@@ -60,7 +60,7 @@ public class SwrlCoTest {
         when(mockCollectionManager.getAll()).thenReturn(mockedAllFromDB);
 
         SwrlPreferences mockPreferences = mock(SwrlPreferences.class);
-        when(mockPreferences.getUserID()).thenReturn("123");
+        when(mockPreferences.getUserID()).thenReturn(123);
         when(mockPreferences.getAuthToken()).thenReturn("222ddd");
 
         SwrlCoLists swrlCoLists = new SwrlCoLists(mockUrl, mockCollectionManager, mockPreferences);

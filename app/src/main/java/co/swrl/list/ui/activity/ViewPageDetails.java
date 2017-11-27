@@ -105,11 +105,6 @@ public class ViewPageDetails extends Fragment {
         }
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-    }
-
     @NonNull
     private View showSwrlDetails(LayoutInflater inflater, ViewGroup container, Swrl swrl, Details details) {
         final View rootView;
@@ -184,7 +179,7 @@ public class ViewPageDetails extends Fragment {
 
                         @Override
                         public void onError() {
-                            resizeView(poster, 150, rootView);
+                            resizeView(poster, rootView);
                         }
                     });
         } else {
@@ -204,7 +199,7 @@ public class ViewPageDetails extends Fragment {
                     poster.setAdjustViewBounds(true);
                 } else {
                     isImageFitToScreen = true;
-                    imageContainer.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.FILL_PARENT));
+                    imageContainer.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
 
                     RelativeLayout.LayoutParams posterLayout = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
                     poster.setLayoutParams(posterLayout);
@@ -317,9 +312,9 @@ public class ViewPageDetails extends Fragment {
         return (actionId == EditorInfo.IME_ACTION_SEARCH) || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN);
     }
 
-    private void resizeView(ImageView view, int size, View rootView) {
-        view.getLayoutParams().height = getDPI(size, rootView);
-        view.getLayoutParams().width = getDPI(size, rootView);
+    private void resizeView(ImageView view, View rootView) {
+        view.getLayoutParams().height = getDPI(150, rootView);
+        view.getLayoutParams().width = getDPI(150, rootView);
     }
 
     private int getDPI(int i, View rootView) {

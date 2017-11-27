@@ -27,7 +27,6 @@ import static co.swrl.list.ui.activity.ViewActivity.ViewType.ADD_DISCOVER;
 
 public class DiscoverSwrlListRecyclerAdapter extends RecyclerView.Adapter implements SwrlListRecyclerAdapter {
 
-    private static final String LOG_TAG = "DISCOVER_ADAPTER";
     private final Context context;
     private final List<Swrl> swrls;
     private List<Swrl> cachedSwrls;
@@ -37,7 +36,7 @@ public class DiscoverSwrlListRecyclerAdapter extends RecyclerView.Adapter implem
     private final CollectionManager collectionManager;
     private AsyncTask<Void, Void, List<Swrl>> backgroundSearch;
 
-    public DiscoverSwrlListRecyclerAdapter(ListActivity activity, CollectionManager collectionManager, ListActivity.DrawerListAdapter navListAdapter, SwrlCoLists swrlGetter) {
+    private DiscoverSwrlListRecyclerAdapter(ListActivity activity, CollectionManager collectionManager, ListActivity.DrawerListAdapter navListAdapter, SwrlCoLists swrlGetter) {
         this.activity = activity;
         this.swrlGetter = swrlGetter;
         this.context = this.activity.getApplicationContext();
@@ -102,11 +101,6 @@ public class DiscoverSwrlListRecyclerAdapter extends RecyclerView.Adapter implem
             }
         }
         return i;
-    }
-
-    @Override
-    public List<Swrl> getSwrls() {
-        return swrls;
     }
 
     @Override

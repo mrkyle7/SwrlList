@@ -20,7 +20,7 @@ import static co.swrl.list.ui.activity.ViewActivity.ViewType.DONE;
 public class DoneSwrlListRecyclerAdapter extends RecyclerView.Adapter implements SwrlListRecyclerAdapter {
 
     private final Context context;
-    private List<Swrl> swrls;
+    private final List<Swrl> swrls;
     private final ListActivity.DrawerListAdapter navListAdapter;
     private final ListActivity activity;
     private final CollectionManager collectionManager;
@@ -63,11 +63,6 @@ public class DoneSwrlListRecyclerAdapter extends RecyclerView.Adapter implements
     @Override
     public int getSwrlCount(Type type) {
         return collectionManager.countDone(type);
-    }
-
-    @Override
-    public List<Swrl> getSwrls() {
-        return swrls;
     }
 
     @Override
