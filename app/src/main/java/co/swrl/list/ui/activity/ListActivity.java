@@ -268,9 +268,10 @@ public class ListActivity extends AppCompatActivity {
             }
 
             private void setAuthorIdToSelfIfLoggedIn(CollectionManager collectionManager, Swrl mSwrl) {
-                if (mSwrl.getAuthorId() == 0 && preferences.getUserID() != 0) {
+                if (((mSwrl.getAuthorId() == -1) || (mSwrl.getAuthorId() == 0)) && (preferences.getUserID() != 0)
+                        && (preferences.getUserID() != -1)) {
                     mSwrl.setAuthorId(preferences.getUserID());
-                    collectionManager.save(mSwrl);
+                    collectionManager.updateAuthorID(mSwrl, preferences.getUserID());
                 }
             }
 

@@ -383,6 +383,29 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
     }
 
     @Override
+    public void updateAuthorID(Swrl swrl, int authorID) {
+        SQLiteDatabase dbWriter = db.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(Swrls.COLUMN_NAME_AUTHOR_ID, authorID);
+
+        String oldTitle = swrl.getTitle();
+        String type = swrl.getType().toString();
+        String whereClause = Swrls.COLUMN_NAME_TITLE + " = ? AND " +
+                Swrls.COLUMN_NAME_TYPE + " = ?";
+        String[] whereArgs = {oldTitle, type};
+
+        dbWriter.updateWithOnConflict(
+                Swrls.TABLE_NAME,
+                values,
+                whereClause,
+                whereArgs,
+                SQLiteDatabase.CONFLICT_REPLACE
+        );
+        dbWriter.close();
+    }
+
+    @Override
     public void updateAuthorAvatarURL(Swrl swrl, String authorAvatarURL) {
         SQLiteDatabase dbWriter = db.getWritableDatabase();
 

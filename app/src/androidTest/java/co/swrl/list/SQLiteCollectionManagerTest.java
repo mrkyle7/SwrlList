@@ -337,6 +337,21 @@ public class SQLiteCollectionManagerTest {
     }
 
     @Test
+    public void canUpdateAuthorId() throws Exception {
+        db.save(THE_MATRIX);
+        db.save(GARDEN_STATE_RECOMMENDATION);
+
+        Swrl gardenStateFromDB = db.getActive().get(0);
+
+        assertEquals(GARDEN_STATE_RECOMMENDATION.getAuthorId(), gardenStateFromDB.getAuthorId());
+
+        db.updateAuthorID(GARDEN_STATE_RECOMMENDATION, 10304);
+
+        Swrl gardenStateFromDBUpdated = db.getActive().get(0);
+        assertEquals(10304, gardenStateFromDBUpdated.getAuthorId());
+    }
+
+    @Test
     public void countSwrls() throws Exception {
         Swrl film = new Swrl("The Matrix", Type.FILM);
         db.save(film);

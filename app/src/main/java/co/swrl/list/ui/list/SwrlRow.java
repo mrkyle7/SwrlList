@@ -371,7 +371,7 @@ class SwrlRow extends RecyclerView.ViewHolder {
         SwrlPreferences preferences = new SwrlPreferences(activity);
 
         int userID = preferences.getUserID();
-        if (userID != 0){
+        if (userID != 0 && userID != -1){
             swrl.setAuthorId(userID);
             collectionManager.save(swrl);
             String avatarURL = SwrlUserHelpers.getUserAvatarURL(userID);
