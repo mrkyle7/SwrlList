@@ -17,6 +17,7 @@ import co.swrl.list.ui.activity.ListActivity;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.action.ViewActions.swipeDown;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
@@ -84,6 +85,8 @@ public class AddingSwrls {
         onView(withId(R.id.addSwrlText))
                 .perform(typeText("The Matrix"));
         onView(withId(R.id.add_swrl_button)).perform(click());
+
+        onView(withId(R.id.swiperefresh)).perform(swipeDown());
 
         onView(withId(R.id.listView)).check(matches(atPosition(0, hasDescendant(withText("The Matrix")))));
         onView(withId(R.id.listView)).check(matches(atPosition(1, hasDescendant(withText("The Matrix Reloaded")))));

@@ -106,7 +106,7 @@ public class LoginActivity extends AppCompatActivity {
                     if (response.code() == 200){
                         LoginAuthResponse authResponseFromSwrl = gson.fromJson(body, LoginAuthResponse.class);
                         Log.d(LOG_TAG, authResponseFromSwrl.auth_token + " " + authResponseFromSwrl.user_id);
-                        if (authResponseFromSwrl.user_id != -1 && authResponseFromSwrl.auth_token != null) {
+                        if (authResponseFromSwrl.user_id != 0 && authResponseFromSwrl.auth_token != null) {
                             loginStatus.success = true;
                             loginStatus.loginAuthResponse = authResponseFromSwrl;
                         } else {

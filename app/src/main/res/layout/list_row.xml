@@ -44,7 +44,7 @@
         android:layout_height="80dp"
 
         android:layout_toEndOf="@+id/image_layout"
-        android:layout_toStartOf="@+id/list_item_button"
+        android:layout_toStartOf="@+id/profile_image"
         android:orientation="vertical">
 
         <TextView
@@ -101,6 +101,19 @@
 
     </LinearLayout>
 
+
+    <ImageView
+        android:id="@+id/profile_image"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="5dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="10dp"
+        android:contentDescription="@string/profile_image"
+        android:scaleType="centerInside" />
 
     <ImageButton
         android:id="@+id/list_item_button"

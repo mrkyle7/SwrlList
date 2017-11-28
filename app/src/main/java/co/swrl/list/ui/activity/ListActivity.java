@@ -2,6 +2,7 @@ package co.swrl.list.ui.activity;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -57,6 +58,7 @@ import co.swrl.list.ui.list.DiscoverSwrlListRecyclerAdapter;
 import co.swrl.list.ui.list.DoneSwrlListRecyclerAdapter;
 import co.swrl.list.ui.list.SwrlListRecyclerAdapter;
 import co.swrl.list.ui.list.SwrlListViewFactory;
+import co.swrl.list.users.SwrlUserHelpers;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -104,7 +106,7 @@ public class ListActivity extends AppCompatActivity {
     private Type typeFilter;
     private LinearLayout nav_drawer;
     private final DrawerListAdapter navListAdapter = new DrawerListAdapter(this, Type.values());
-    private static final String LOG_TAG = "LOG_TAG";
+    private static final String LOG_TAG = "ListActivity";
     private SwipeSimpleCallback swipeCallback;
     private final SwipeItemDecoration swipeItemDecoration = new SwipeItemDecoration();
 
@@ -140,7 +142,6 @@ public class ListActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         if (loggedIn()) {
             getMenuInflater().inflate(R.menu.menu_list_logged_in, menu);
         } else {
@@ -160,8 +161,11 @@ public class ListActivity extends AppCompatActivity {
 
         int id = item.getItemId();
         // Handle your other action bar items...
-        if (id == R.id.action_refresh_all) {
+        if (id == R.id.action_refresh) {
             refreshAction();
+        }
+        if (id == R.id.action_refresh_all_details) {
+            getRefreshAllDetailsTask(this).execute();
         }
         if (id == R.id.actions_show_whats_new) {
             new SwrlDialogs(this).buildAndShowWhatsNewDialog();
@@ -176,7 +180,7 @@ public class ListActivity extends AppCompatActivity {
             confirmDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    preferences.saveUserID(-1);
+                    preferences.saveUserID(0);
                     preferences.saveAuthToken(null);
                     onResume();
                 }
@@ -194,35 +198,99 @@ public class ListActivity extends AppCompatActivity {
     }
 
     @NonNull
-    private AsyncTask<Void, Void, Void> getRefreshAllDetailsTask() {
+    private AsyncTask<Void, Void, Void> getRefreshAllDetailsTask(final Context context) {
         return new AsyncTask<Void, Void, Void>() {
+
+            final ProgressDialog dialog = new ProgressDialog(context);
+            final AsyncTask mTask = this;
+
+            @Override
+            protected void onPreExecute() {
+                dialog.setMessage("Refreshing all Details.\n\nThis may take a few minutes!");
+                dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        mTask.cancel(true);
+                        dialog.dismiss();
+                    }
+                });
+                dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Run in Background", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
+            }
+
             @Override
             protected Void doInBackground(Void... voids) {
                 Log.d(LOG_TAG, "Refreshing all details");
                 CollectionManager collectionManager = new SQLiteCollectionManager(getApplicationContext());
                 ArrayList<?> swrls = (ArrayList<?>) collectionManager.getAll();
+                @SuppressLint("UseSparseArrays")
+                Map<Integer, String> avatarCache = new HashMap<>();
                 for (Object swrl : swrls) {
                     Swrl mSwrl = (Swrl) swrl;
-                    if (mSwrl.getDetails() != null && mSwrl.getDetails().getId() != null && !mSwrl.getDetails().getId().isEmpty()) {
-                        Search search = mSwrl.getType().getSearch();
-                        Details details = search.byID(mSwrl.getDetails().getId());
-                        if (details != null) {
-                            collectionManager.saveDetails(mSwrl, details);
-                        }
-                    }
+                    setAuthorIdToSelfIfLoggedIn(collectionManager, mSwrl);
+                    updateAvatarURL(collectionManager, avatarCache, mSwrl);
+                    updateSwrlDetails(collectionManager, mSwrl);
                 }
                 return null;
+            }
+
+            private void updateSwrlDetails(CollectionManager collectionManager, Swrl mSwrl) {
+                if (mSwrl.getDetails() != null && mSwrl.getDetails().getId() != null && !mSwrl.getDetails().getId().isEmpty()) {
+                    Search search = mSwrl.getType().getSearch();
+                    Details details = search.byID(mSwrl.getDetails().getId());
+                    if (details != null) {
+                        collectionManager.saveDetails(mSwrl, details);
+                    }
+                }
+            }
+
+            private void updateAvatarURL(CollectionManager collectionManager, Map<Integer, String> avatarCache, Swrl mSwrl) {
+                int authorId = mSwrl.getAuthorId();
+                Log.d(LOG_TAG, "Author ID: " + authorId);
+                if (authorId != 0) {
+                    String newAvatarURL;
+                    if (avatarCache.containsKey(authorId)) {
+                        newAvatarURL = avatarCache.get(authorId);
+                    } else {
+                        newAvatarURL = SwrlUserHelpers.getUserAvatarURL(authorId);
+                        avatarCache.put(authorId, newAvatarURL);
+                    }
+                    Log.d(LOG_TAG, "AvatarURL: " + newAvatarURL);
+                    if (newAvatarURL != null) {
+                        collectionManager.updateAuthorAvatarURL(mSwrl, newAvatarURL);
+                    }
+                }
+            }
+
+            private void setAuthorIdToSelfIfLoggedIn(CollectionManager collectionManager, Swrl mSwrl) {
+                if (mSwrl.getAuthorId() == 0 && preferences.getUserID() != 0) {
+                    mSwrl.setAuthorId(preferences.getUserID());
+                    collectionManager.save(mSwrl);
+                }
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                Log.d(LOG_TAG, "Refreshing all details - finished");
+                dialog.dismiss();
+                refreshList(true);
+            }
+
+            @Override
+            protected void onCancelled() {
+                Log.d(LOG_TAG, "Refreshing all details - cancelled");
+                dialog.dismiss();
             }
         };
     }
 
-    private void refreshList() {
-        if (noTypeFilterSet()) {
-            swrlListAdapter.refreshAll();
-
-        } else {
-            swrlListAdapter.refreshAllWithFilter(typeFilter);
-        }
+    private void refreshList(boolean updateFromSource) {
+        swrlListAdapter.refreshList(typeFilter, updateFromSource);
         navListAdapter.notifyDataSetChanged();
         setNoSwrlsText();
     }
@@ -283,12 +351,7 @@ public class ListActivity extends AppCompatActivity {
     private void refreshAction() {
         Log.i(LOG_TAG, "onRefresh called from SwipeRefreshLayout");
         collapseAddSwrlMenu();
-        refreshList();
-        navListAdapter.notifyDataSetChanged();
-        setNoSwrlsText();
-        if (swrlListAdapter instanceof ActiveSwrlListRecyclerAdapter) {
-            getRefreshAllDetailsTask().execute();
-        }
+        refreshList(true);
     }
 
     private void setUpBottomNavigation() {
@@ -388,7 +451,7 @@ public class ListActivity extends AppCompatActivity {
     }
 
     private boolean loggedIn() {
-        return preferences.getUserID() != -1 && preferences.getAuthToken() != null;
+        return preferences.getUserID() != 0 && preferences.getAuthToken() != null;
     }
 
     private void setUpNavigationDrawer() {
@@ -401,7 +464,7 @@ public class ListActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 typeFilter = (Type) drawerList.getAdapter().getItem(position);
                 mDrawerLayout.closeDrawer(nav_drawer);
-                refreshList();
+                refreshList(false);
                 navListAdapter.notifyDataSetChanged();
                 setNoSwrlsText();
             }
@@ -441,7 +504,7 @@ public class ListActivity extends AppCompatActivity {
 
     private void setUpList() {
         RecyclerView list = SwrlListViewFactory.setUpListView(this, (RecyclerView) findViewById(R.id.listView), (RecyclerView.Adapter) swrlListAdapter);
-        refreshList();
+        refreshList(false);
         if (swipeCallback != null) {
             swipeCallback.forceReDraw();
         }

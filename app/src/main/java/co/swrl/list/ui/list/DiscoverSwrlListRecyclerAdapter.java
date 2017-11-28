@@ -27,6 +27,7 @@ import static co.swrl.list.ui.activity.ViewActivity.ViewType.ADD_DISCOVER;
 
 public class DiscoverSwrlListRecyclerAdapter extends RecyclerView.Adapter implements SwrlListRecyclerAdapter {
 
+    private static final String LOG_TAG = "DISCOVER_ADAPTER";
     private final Context context;
     private final List<Swrl> swrls;
     private List<Swrl> cachedSwrls;
@@ -71,6 +72,7 @@ public class DiscoverSwrlListRecyclerAdapter extends RecyclerView.Adapter implem
         swrlRow.setSubTitle(swrl);
         swrlRow.setSubtitle2(swrl);
         swrlRow.setImage(swrl, context);
+        swrlRow.setProfileImage(swrl, context);
         int firstPage = (position - 50 <= 0) ? 0 : position - 50;
         int lastPage = firstPage + 100 >= swrls.size() ? swrls.size() : firstPage + 100;
         ArrayList<Swrl> swrlsToPage = new ArrayList<>();
@@ -104,44 +106,18 @@ public class DiscoverSwrlListRecyclerAdapter extends RecyclerView.Adapter implem
     }
 
     @Override
-    public void refreshAll() {
-        Log.d("DISCOVER_ADAPTER", "Refresh All");
+    public void refreshList(final Type type, boolean updateFromSource) {
+        if (type == null) {
+            Log.d(LOG_TAG, "Refresh All with no filter");
+        } else {
+            Log.d(LOG_TAG, "Refresh All with filter: " + type.getFriendlyName());
+        }
         cancelExistingSearches();
-        backgroundSearch = new AsyncTask<Void, Void, List<Swrl>>() {
-            @Override
-            protected void onPreExecute() {
-                spinWhenGettingSwrls();
-            }
-
-            @Override
-            protected List<Swrl> doInBackground(Void... voids) {
-                return swrlGetter.get();
-            }
-
-            @Override
-            protected void onPostExecute(List<Swrl> discoveredSwrls) {
-                cachedSwrls = discoveredSwrls;
-                removeSpinner();
-                updateList(discoveredSwrls);
-            }
-
-            @Override
-            protected void onCancelled() {
-                if (backgroundSearch == null || backgroundSearch.isCancelled()) removeSpinner();
-            }
-        };
-        backgroundSearch.execute();
-    }
-
-    @Override
-    public void refreshAllWithFilter(final Type type) {
-        Log.d("DISCOVER_ADAPTER", "Refresh All with filter: " + type.getFriendlyName());
-        cancelExistingSearches();
-        if (cachedSwrls == null) {
+        if (cachedSwrls == null || updateFromSource) {
             backgroundSearch = new AsyncTask<Void, Void, List<Swrl>>() {
                 @Override
                 protected void onPreExecute() {
-                    spinWhenGettingSwrls();
+                    setSpinner(true);
                 }
 
                 @Override
@@ -152,21 +128,35 @@ public class DiscoverSwrlListRecyclerAdapter extends RecyclerView.Adapter implem
                 @Override
                 protected void onPostExecute(List<Swrl> discoveredSwrls) {
                     cachedSwrls = discoveredSwrls;
-                    List<Swrl> filtered = getFilteredSwrls(type);
-                    removeSpinner();
-                    updateList(filtered);
+                    updateAdapter(type);
                 }
 
                 @Override
                 protected void onCancelled() {
-                    if (backgroundSearch == null || backgroundSearch.isCancelled()) removeSpinner();
+                    if (backgroundSearch == null || backgroundSearch.isCancelled()) setSpinner(false);
                 }
             };
             backgroundSearch.execute();
         } else {
-            List<Swrl> filtered = getFilteredSwrls(type);
-            updateList(filtered);
+            updateAdapter(type);
         }
+    }
+
+    private void updateAdapter(Type type) {
+        List<Swrl> newSwrls = cachedSwrls;
+        if (typeFilterSet(type)) {
+            newSwrls = getFilteredSwrls(type);
+        }
+        setSpinner(false);
+        swrls.clear();
+        swrls.addAll(newSwrls);
+        notifyDataSetChanged();
+        navListAdapter.notifyDataSetChanged();
+        activity.setNoSwrlsText();
+    }
+
+    private boolean typeFilterSet(Type type) {
+        return type != null && type != Type.UNKNOWN;
     }
 
     public void cancelExistingSearches() {
@@ -186,23 +176,9 @@ public class DiscoverSwrlListRecyclerAdapter extends RecyclerView.Adapter implem
         return filtered;
     }
 
-
-    private void removeSpinner() {
-        activity.setBackgroundDimming(false);
-        activity.showSpinner(false);
-    }
-
-    private void updateList(List<Swrl> updatedSwrls) {
-        swrls.clear();
-        swrls.addAll(updatedSwrls);
-        notifyDataSetChanged();
-        navListAdapter.notifyDataSetChanged();
-        activity.setNoSwrlsText();
-    }
-
-    private void spinWhenGettingSwrls() {
-        activity.setBackgroundDimming(true);
-        activity.showSpinner(true);
+    private void setSpinner(boolean spinning){
+        activity.setBackgroundDimming(spinning);
+        activity.showSpinner(spinning);
     }
 
     @Override

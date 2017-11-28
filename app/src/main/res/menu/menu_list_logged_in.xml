@@ -3,7 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="co.swrl.list.ui.activity.ListActivity">
     <item
-        android:id="@+id/action_refresh_all"
+        android:id="@+id/action_refresh"
+        android:orderInCategory="100"
+        android:title="@string/refresh"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_refresh_all_details"
         android:orderInCategory="100"
         android:title="@string/refresh_all_details"
         app:showAsAction="never" />

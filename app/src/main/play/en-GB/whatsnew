@@ -1,3 +1,7 @@
+Version 11 (28 November 2017)
+- Added User Profile image of the author of the Swrl
+- Avoid refreshing the lists all the time with caching improvements
+
 Version 10.3 (20 November 2017)
 - UI improvements and fixes
 
@@ -6,7 +10,3 @@ Version 10.2 (12 November 2017)
 
 Version 10.1 (07 November 2017)
 - Can now identify and filter websites and videos
-
-Version 10.0 (06 November 2017)
-- You can now login to Swrl.co and see recommendations from users!
-- When logged in, the discover feed will be weighted to you

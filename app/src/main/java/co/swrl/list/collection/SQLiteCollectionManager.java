@@ -31,6 +31,7 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
             Swrls.COLUMN_NAME_DETAILS,
             Swrls.COLUMN_NAME_AUTHOR,
             Swrls.COLUMN_NAME_AUTHOR_ID,
+            Swrls.COLUMN_NAME_AUTHOR_AVATAR_URL,
             Swrls.COLUMN_NAME_REVIEW,
             Swrls.COLUMN_NAME_SWRL_ID
     };
@@ -222,12 +223,13 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
             String title = row.getString(row.getColumnIndexOrThrow(Swrls.COLUMN_NAME_TITLE));
             Type type = getTypeFromRow(row);
             String author = row.getString(row.getColumnIndexOrThrow(Swrls.COLUMN_NAME_AUTHOR));
+            String authorAvatarURL = row.getString(row.getColumnIndexOrThrow(Swrls.COLUMN_NAME_AUTHOR_AVATAR_URL));
             int authorId = row.getInt(row.getColumnIndexOrThrow(Swrls.COLUMN_NAME_AUTHOR_ID));
             int id = row.getInt(row.getColumnIndexOrThrow(Swrls.COLUMN_NAME_SWRL_ID));
             String review = row.getString(row.getColumnIndexOrThrow(Swrls.COLUMN_NAME_REVIEW));
             String storedDetailsJSON = row.getString(row.getColumnIndexOrThrow(Swrls.COLUMN_NAME_DETAILS));
 
-            Swrl swrl = new Swrl(title, type, review, author, authorId, id);
+            Swrl swrl = new Swrl(title, type, review, author, authorId, authorAvatarURL, id);
 
             Details details = new Gson().fromJson(storedDetailsJSON, Details.class);
             swrl.setDetails(details);
@@ -263,6 +265,7 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
         values.put(Swrls.COLUMN_NAME_REVIEW, swrl.getReview());
         values.put(Swrls.COLUMN_NAME_AUTHOR, swrl.getAuthor());
         values.put(Swrls.COLUMN_NAME_AUTHOR_ID, swrl.getAuthorId());
+        values.put(Swrls.COLUMN_NAME_AUTHOR_AVATAR_URL, swrl.getAuthorAvatarURL());
         values.put(Swrls.COLUMN_NAME_SWRL_ID, swrl.getId());
 
         dbWriter.replace(Swrls.TABLE_NAME, null, values);
@@ -379,10 +382,33 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
         dbWriter.close();
     }
 
+    @Override
+    public void updateAuthorAvatarURL(Swrl swrl, String authorAvatarURL) {
+        SQLiteDatabase dbWriter = db.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(Swrls.COLUMN_NAME_AUTHOR_AVATAR_URL, authorAvatarURL);
+
+        String oldTitle = swrl.getTitle();
+        String type = swrl.getType().toString();
+        String whereClause = Swrls.COLUMN_NAME_TITLE + " = ? AND " +
+                Swrls.COLUMN_NAME_TYPE + " = ?";
+        String[] whereArgs = {oldTitle, type};
+
+        dbWriter.updateWithOnConflict(
+                Swrls.TABLE_NAME,
+                values,
+                whereClause,
+                whereArgs,
+                SQLiteDatabase.CONFLICT_REPLACE
+        );
+        dbWriter.close();
+    }
+
     private class DBHelper extends SQLiteOpenHelper {
 
         private static final String DATABASE_NAME = "swrlList.db";
-        private static final int DATABASE_VERSION = 4;
+        private static final int DATABASE_VERSION = 5;
 
         private static final String TEXT_TYPE = " TEXT";
         private static final String INTEGER_TYPE = " INTEGER";
@@ -399,6 +425,7 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
                         Swrls.COLUMN_NAME_REVIEW + TEXT_TYPE + COMMA_SEP +
                         Swrls.COLUMN_NAME_AUTHOR + TEXT_TYPE + COMMA_SEP +
                         Swrls.COLUMN_NAME_AUTHOR_ID + INTEGER_TYPE + COMMA_SEP +
+                        Swrls.COLUMN_NAME_AUTHOR_AVATAR_URL + TEXT_TYPE + COMMA_SEP +
                         Swrls.COLUMN_NAME_SWRL_ID + INTEGER_TYPE +
                         " )";
 
@@ -428,6 +455,10 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
                 "ALTER TABLE " + Swrls.TABLE_NAME +
                         " ADD COLUMN " + Swrls.COLUMN_NAME_AUTHOR_ID + INTEGER_TYPE;
 
+        private static final String SQL_ADD_AUTHOR_AVATAR_URL_COLUMN =
+                "ALTER TABLE " + Swrls.TABLE_NAME +
+                        " ADD COLUMN " + Swrls.COLUMN_NAME_AUTHOR_AVATAR_URL + TEXT_TYPE;
+
         private static final String SQL_ADD_SWRL_ID_COLUMN =
                 "ALTER TABLE " + Swrls.TABLE_NAME +
                         " ADD COLUMN " + Swrls.COLUMN_NAME_SWRL_ID + INTEGER_TYPE;
@@ -456,6 +487,9 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
                 db.execSQL(SQL_ADD_AUTHOR_COLUMN);
                 db.execSQL(SQL_ADD_AUTHOR_ID_COLUMN);
                 db.execSQL(SQL_ADD_SWRL_ID_COLUMN);
+            }
+            if (oldVersion < 5) {
+                db.execSQL(SQL_ADD_AUTHOR_AVATAR_URL_COLUMN);
             }
         }
     }

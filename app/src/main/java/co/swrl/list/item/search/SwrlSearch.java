@@ -121,12 +121,12 @@ public class SwrlSearch implements Search {
             e.printStackTrace();
         }
 
-        List<Details> filmDetails = new ArrayList<>();
+        List<Details> details = new ArrayList<>();
         if (searchResponse != null && searchResponse.results != null) {
-            for (Details details : searchResponse.results) {
-                filmDetails.add(details.setType(type));
+            for (Details response : searchResponse.results) {
+                details.add(response.setType(type));
             }
         }
-        return filmDetails;
+        return details;
     }
 }

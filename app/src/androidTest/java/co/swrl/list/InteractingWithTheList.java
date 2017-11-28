@@ -284,7 +284,7 @@ public class InteractingWithTheList {
                 new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED, BILLIONS}, null);
 
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
-        onView(withText(R.string.refresh_all_details)).check(matches(isCompletelyDisplayed()));
+        onView(withText(R.string.refresh)).check(matches(isCompletelyDisplayed()));
     }
 }
 

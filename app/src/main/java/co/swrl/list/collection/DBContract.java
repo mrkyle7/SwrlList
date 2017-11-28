@@ -17,6 +17,7 @@ final class DBContract {
         static final String COLUMN_NAME_REVIEW = "review";
         static final String COLUMN_NAME_AUTHOR = "author";
         static final String COLUMN_NAME_AUTHOR_ID = "author_id";
+        static final String COLUMN_NAME_AUTHOR_AVATAR_URL = "author_avatar_url";
         static final String COLUMN_NAME_SWRL_ID = "swrl_id";
 
         static final int STATUS_ACTIVE = 0;

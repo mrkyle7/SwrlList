@@ -23,4 +23,5 @@ public interface CollectionManager {
     void permanentlyDeleteAll();
     void saveDetails(Swrl swrl, Details details);
     void updateTitle(Swrl swrl, String title);
+    void updateAuthorAvatarURL(Swrl swrl, String authorAvatarURL);
 }

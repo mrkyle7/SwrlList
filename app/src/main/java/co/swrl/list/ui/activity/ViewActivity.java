@@ -1,5 +1,6 @@
 package co.swrl.list.ui.activity;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -28,11 +29,13 @@ import com.getbase.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 
 import co.swrl.list.R;
+import co.swrl.list.SwrlPreferences;
 import co.swrl.list.collection.CollectionManager;
 import co.swrl.list.collection.SQLiteCollectionManager;
 import co.swrl.list.item.Details;
 import co.swrl.list.item.Swrl;
 import co.swrl.list.item.search.Search;
+import co.swrl.list.users.SwrlUserHelpers;
 
 import static co.swrl.list.ui.activity.ViewActivity.ViewType.ADD;
 
@@ -72,6 +75,7 @@ public class ViewActivity extends AppCompatActivity {
     }
 
     private void setUpRefreshListener() {
+        final Activity activity = this;
         final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -79,7 +83,7 @@ public class ViewActivity extends AppCompatActivity {
                 Log.i(LOG_TAG, "onRefresh called from SwipeRefreshLayout");
                 if (currentSwrl.getDetails() != null && currentSwrl.getDetails().getId() != null
                         && !currentSwrl.getDetails().getId().isEmpty()) {
-                    new GetSwrlDetails(swipeRefreshLayout).execute(currentSwrl.getDetails().getId());
+                    new GetSwrlDetails(swipeRefreshLayout, activity).execute(currentSwrl.getDetails().getId());
                 }
             }
         });
@@ -118,7 +122,7 @@ public class ViewActivity extends AppCompatActivity {
             Log.d(LOG_TAG, "Current Swrl = " + currentSwrl);
             if (currentSwrl.getDetails() != null && currentSwrl.getDetails().getId() != null
                     && !currentSwrl.getDetails().getId().isEmpty()) {
-                new GetSwrlDetails((SwipeRefreshLayout) findViewById(R.id.swiperefresh)).execute(currentSwrl.getDetails().getId());
+                new GetSwrlDetails((SwipeRefreshLayout) findViewById(R.id.swiperefresh), this).execute(currentSwrl.getDetails().getId());
             }
             return true;
         } else if (id == R.id.action_markAsDone) {
@@ -203,6 +207,7 @@ public class ViewActivity extends AppCompatActivity {
     }
 
     private void setupViewPager(final SectionsPagerAdapter mSectionsPagerAdapter) {
+        final Activity activity = this;
         ViewPager mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.setCurrentItem(firstSwrlIndex);
@@ -211,7 +216,7 @@ public class ViewActivity extends AppCompatActivity {
         setButton(firstSwrlIndex);
         updateToolbar();
         if (viewType == ADD) {
-            new GetSwrlDetails((SwipeRefreshLayout) findViewById(R.id.swiperefresh)).execute(currentSwrl.getDetails().getId());
+            new GetSwrlDetails((SwipeRefreshLayout) findViewById(R.id.swiperefresh), this).execute(currentSwrl.getDetails().getId());
         }
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -226,7 +231,7 @@ public class ViewActivity extends AppCompatActivity {
                 currentSwrl = (Swrl) swrls.get(position);
                 updateToolbar();
                 if (viewType == ADD) {
-                    new GetSwrlDetails((SwipeRefreshLayout) findViewById(R.id.swiperefresh)).execute(currentSwrl.getDetails().getId());
+                    new GetSwrlDetails((SwipeRefreshLayout) findViewById(R.id.swiperefresh), activity).execute(currentSwrl.getDetails().getId());
                 }
             }
 
@@ -356,14 +361,28 @@ public class ViewActivity extends AppCompatActivity {
     private class GetSwrlDetails extends AsyncTask<String, Void, Details> {
 
         private final SwipeRefreshLayout swipeRefreshLayout;
+        private final Activity activity;
 
-        private GetSwrlDetails(SwipeRefreshLayout swipeRefreshLayout) {
+        private GetSwrlDetails(SwipeRefreshLayout swipeRefreshLayout, Activity activity) {
             this.swipeRefreshLayout = swipeRefreshLayout;
+            this.activity = activity;
         }
 
         @Override
         protected Details doInBackground(String... params) {
             String id = params[0];
+
+            SwrlPreferences preferences = new SwrlPreferences(activity);
+
+            int userID = preferences.getUserID();
+            if (userID != 0){
+                currentSwrl.setAuthorId(userID);
+                String avatarURL = SwrlUserHelpers.getUserAvatarURL(userID);
+                Log.d(LOG_TAG, "Avatar URL: " + avatarURL);
+                if (avatarURL != null){
+                    currentSwrl.setAuthorAvatarURL(avatarURL);
+                }
+            }
             Details details = null;
 
             try {

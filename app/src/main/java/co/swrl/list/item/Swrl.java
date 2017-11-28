@@ -17,25 +17,30 @@ public class Swrl implements Serializable {
     private final String author;
 
     @SerializedName(value = "authorId", alternate = {"author_id"})
-    private final int authorId;
+    private int authorId;
+
+    @SerializedName(value = "authorAvatarUrl", alternate = {"author_avatar_url"})
+    private String authorAvatarUrl;
+
     private final int id;
     private Details details;
 
-    public Swrl(@NonNull String title, @NonNull Type type, String review, String author, int authorId, int id) {
+    public Swrl(@NonNull String title, @NonNull Type type, String review, String author, int authorId, String authorAvatarUrl, int id) {
         this.title = (String) assertNonNull(title, "title");
         this.type = (Type) assertNonNull(type, "type");
         this.review = review;
         this.author = author;
         this.authorId = authorId;
+        this.authorAvatarUrl = authorAvatarUrl;
         this.id = id;
     }
 
     public Swrl(@NonNull String title, @NonNull Type type){
-        this(title, type, null, null, -1, -1);
+        this(title, type, null, null, 0, null, 0);
     }
 
     public Swrl(String title) {
-        this(title, Type.UNKNOWN, null, null, -1, -1);
+        this(title, Type.UNKNOWN, null, null, 0, null, 0);
     }
 
     public String getTitle() {
@@ -103,7 +108,19 @@ public class Swrl implements Serializable {
         return authorId;
     }
 
+    public String getAuthorAvatarURL(){
+        return authorAvatarUrl;
+    }
+
     public int getId() {
         return id;
+    }
+
+    public void setAuthorId(int authorId) {
+        this.authorId = authorId;
+    }
+
+    public void setAuthorAvatarURL(String avatarURL) {
+        this.authorAvatarUrl = avatarURL;
     }
 }

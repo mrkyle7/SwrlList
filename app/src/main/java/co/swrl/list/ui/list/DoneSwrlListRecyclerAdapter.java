@@ -1,6 +1,7 @@
 package co.swrl.list.ui.list;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -21,6 +22,7 @@ public class DoneSwrlListRecyclerAdapter extends RecyclerView.Adapter implements
 
     private final Context context;
     private final List<Swrl> swrls;
+    private List<Swrl> cachedSwrls;
     private final ListActivity.DrawerListAdapter navListAdapter;
     private final ListActivity activity;
     private final CollectionManager collectionManager;
@@ -47,6 +49,7 @@ public class DoneSwrlListRecyclerAdapter extends RecyclerView.Adapter implements
         swrlRow.setSubTitle(swrl);
         swrlRow.setSubtitle2(swrl);
         swrlRow.setImage(swrl, context);
+        swrlRow.setProfileImage(swrl, context);
         swrlRow.setRowClickToOpenViewByType(position, swrls, context, DONE);
     }
 
@@ -66,29 +69,34 @@ public class DoneSwrlListRecyclerAdapter extends RecyclerView.Adapter implements
     }
 
     @Override
-    public void refreshAll() {
-        activity.showSpinner(true);
-        activity.setBackgroundDimming(true);
-        List<Swrl> done = collectionManager.getDone();
+    public void refreshList(Type type, boolean updateFromSource) {
+        if (cachedSwrls == null || updateFromSource || cachedSwrls.size() != collectionManager.countDone()) {
+            activity.showSpinner(true);
+            activity.setBackgroundDimming(true);
+            cachedSwrls = collectionManager.getDone();
+        }
+        List<Swrl> newSwrls = cachedSwrls;
+        if (type != null && type != Type.UNKNOWN) {
+            newSwrls = getFilteredSwrls(type);
+        }
         swrls.clear();
-        swrls.addAll(done);
+        swrls.addAll(newSwrls);
         notifyDataSetChanged();
+        navListAdapter.notifyDataSetChanged();
         activity.setNoSwrlsText();
         activity.setBackgroundDimming(false);
         activity.showSpinner(false);
     }
 
-    @Override
-    public void refreshAllWithFilter(Type type) {
-        activity.showSpinner(true);
-        activity.setBackgroundDimming(true);
-        List<Swrl> filtered = collectionManager.getDone(type);
-        swrls.clear();
-        swrls.addAll(filtered);
-        notifyDataSetChanged();
-        activity.setNoSwrlsText();
-        activity.setBackgroundDimming(false);
-        activity.showSpinner(false);
+    @NonNull
+    private List<Swrl> getFilteredSwrls(Type type) {
+        List<Swrl> filtered = new ArrayList<>();
+        for (Swrl swrl : cachedSwrls) {
+            if (swrl.getType() == type) {
+                filtered.add(swrl);
+            }
+        }
+        return filtered;
     }
 
     @Override
@@ -96,28 +104,31 @@ public class DoneSwrlListRecyclerAdapter extends RecyclerView.Adapter implements
         Swrl swrlToRemove = swrls.get(position);
         if (swrls.contains(swrlToRemove)) {
             swrls.remove(position);
+            int cachePosition = cachedSwrls.indexOf(swrlToRemove);
+            cachedSwrls.remove(swrlToRemove);
             collectionManager.permanentlyDelete(swrlToRemove);
             notifyItemRemoved(position);
             navListAdapter.notifyDataSetChanged();
             activity.setNoSwrlsText();
-            showUndoSnackbar(swrlToRemove, viewHolder.itemView, position);
+            showUndoSnackbar(swrlToRemove, viewHolder.itemView, position, cachePosition);
         }
     }
 
-    private void showUndoSnackbar(final Swrl swrl, View row, final int position) {
+    private void showUndoSnackbar(final Swrl swrl, View row, final int position, final int cachePosition) {
         String undoTitle = "\"" + swrl.getTitle() + "\" " + "deleted";
         Snackbar.make(row, undoTitle, Snackbar.LENGTH_LONG)
                 .setAction("Undo", new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         v.clearAnimation();
-                        reAddSwrl(position, swrl);
+                        reAddSwrl(position, swrl, cachePosition);
                     }
                 }).show();
     }
 
-    private void reAddSwrl(int position, Swrl swrl) {
+    private void reAddSwrl(int position, Swrl swrl, int cachePosition) {
         swrls.add(position, swrl);
+        cachedSwrls.add(cachePosition, swrl);
         collectionManager.save(swrl);
         collectionManager.markAsDone(swrl);
         notifyItemInserted(position);

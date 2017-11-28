@@ -1,6 +1,7 @@
 package co.swrl.list.ui.list;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -21,6 +22,7 @@ public class ActiveSwrlListRecyclerAdapter extends RecyclerView.Adapter implemen
 
     private final Context context;
     private final List<Swrl> swrls;
+    private List<Swrl> cachedSwrls;
     private final ListActivity.DrawerListAdapter navListAdapter;
     private final ListActivity activity;
     private final CollectionManager collectionManager;
@@ -46,6 +48,7 @@ public class ActiveSwrlListRecyclerAdapter extends RecyclerView.Adapter implemen
         swrlRow.setSubTitle(swrl);
         swrlRow.setSubtitle2(swrl);
         swrlRow.setImage(swrl, context);
+        swrlRow.setProfileImage(swrl, context);
         swrlRow.setRowClickToOpenViewByType(position, swrls, context, VIEW);
     }
 
@@ -65,12 +68,18 @@ public class ActiveSwrlListRecyclerAdapter extends RecyclerView.Adapter implemen
     }
 
     @Override
-    public void refreshAll() {
-        activity.showSpinner(true);
-        activity.setBackgroundDimming(true);
-        List<Swrl> active = collectionManager.getActive();
+    public void refreshList(Type type, boolean updateFromSource) {
+        if (cachedSwrls == null || updateFromSource || cachedSwrls.size() != collectionManager.countActive()) {
+            activity.showSpinner(true);
+            activity.setBackgroundDimming(true);
+            cachedSwrls = collectionManager.getActive();
+        }
+        List<Swrl> newSwrls = cachedSwrls;
+        if (type != null && type != Type.UNKNOWN) {
+            newSwrls = getFilteredSwrls(type);
+        }
         swrls.clear();
-        swrls.addAll(active);
+        swrls.addAll(newSwrls);
         notifyDataSetChanged();
         navListAdapter.notifyDataSetChanged();
         activity.setNoSwrlsText();
@@ -78,18 +87,15 @@ public class ActiveSwrlListRecyclerAdapter extends RecyclerView.Adapter implemen
         activity.showSpinner(false);
     }
 
-    @Override
-    public void refreshAllWithFilter(Type type) {
-        activity.showSpinner(true);
-        activity.setBackgroundDimming(true);
-        List<Swrl> filtered = collectionManager.getActive(type);
-        swrls.clear();
-        swrls.addAll(filtered);
-        notifyDataSetChanged();
-        navListAdapter.notifyDataSetChanged();
-        activity.setNoSwrlsText();
-        activity.setBackgroundDimming(false);
-        activity.showSpinner(false);
+    @NonNull
+    private List<Swrl> getFilteredSwrls(Type type) {
+        List<Swrl> filtered = new ArrayList<>();
+        for (Swrl swrl : cachedSwrls) {
+            if (swrl.getType() == type) {
+                filtered.add(swrl);
+            }
+        }
+        return filtered;
     }
 
     @Override
@@ -97,28 +103,31 @@ public class ActiveSwrlListRecyclerAdapter extends RecyclerView.Adapter implemen
         Swrl swrlToRemove = swrls.get(position);
         if (swrls.contains(swrlToRemove)) {
             swrls.remove(position);
+            int cachePosition = cachedSwrls.indexOf(swrlToRemove);
+            cachedSwrls.remove(swrlToRemove);
             collectionManager.markAsDone(swrlToRemove);
             notifyItemRemoved(position);
             navListAdapter.notifyDataSetChanged();
             activity.setNoSwrlsText();
-            showUndoSnackbar(swrlToRemove, viewHolder.itemView, position);
+            showUndoSnackbar(swrlToRemove, viewHolder.itemView, position, cachePosition);
         }
     }
 
-    private void showUndoSnackbar(final Swrl swrl, View row, final int position) {
+    private void showUndoSnackbar(final Swrl swrl, View row, final int position, final int cachePosition) {
         String undoTitle = "\"" + swrl.getTitle() + "\" " + "marked as done";
         Snackbar.make(row, undoTitle, Snackbar.LENGTH_LONG)
                 .setAction("Undo", new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         v.clearAnimation();
-                        reAddSwrl(position, swrl);
+                        reAddSwrl(position, swrl, cachePosition);
                     }
                 }).show();
     }
 
-    private void reAddSwrl(int position, Swrl swrl) {
+    private void reAddSwrl(int position, Swrl swrl, int cachePosition) {
         swrls.add(position, swrl);
+        cachedSwrls.add(cachePosition, swrl);
         collectionManager.markAsActive(swrl);
         notifyItemInserted(position);
         navListAdapter.notifyDataSetChanged();

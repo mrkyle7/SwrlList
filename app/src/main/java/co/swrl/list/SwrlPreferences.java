@@ -51,7 +51,7 @@ public class SwrlPreferences {
     public int getUserID() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(activity);
 
-        return preferences.getInt(String.valueOf(R.string.pkey_user_id), -1);
+        return preferences.getInt(String.valueOf(R.string.pkey_user_id), 0);
     }
 
     private void savePackageVersion(int version) {

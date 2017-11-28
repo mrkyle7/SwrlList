@@ -41,7 +41,7 @@ public class SwrlCoLists {
 
     public List<Swrl> get() {
         String authToken = preferences != null ? preferences.getAuthToken() : null;
-        int userID = preferences != null ? preferences.getUserID() : -1;
+        int userID = preferences != null ? preferences.getUserID() : 0;
         HttpUrl urlWithAuth = url.newBuilder()
                 .addQueryParameter("auth_token", authToken)
                 .addQueryParameter("user_id", String.valueOf(userID))

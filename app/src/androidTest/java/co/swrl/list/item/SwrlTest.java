@@ -19,7 +19,7 @@ public class SwrlTest {
         Swrl sameSwrl = new Swrl("Swrl");
         Swrl unknownSwrl = new Swrl("Swrl", Type.UNKNOWN);
         Swrl albumSwrl = new Swrl("Swrl", Type.ALBUM);
-        Swrl swrlRecommendation = new Swrl("Swrl", Type.UNKNOWN, "review", "author", 1, 1);
+        Swrl swrlRecommendation = new Swrl("Swrl", Type.UNKNOWN, "review", "author", 1, null, 1);
 
         assertTrue(swrl.equals(swrl));
         assertTrue(swrl.equals(sameSwrl));

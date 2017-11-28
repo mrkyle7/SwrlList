@@ -4,9 +4,13 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -25,13 +29,17 @@ import java.util.List;
 import java.util.Objects;
 
 import co.swrl.list.R;
+import co.swrl.list.SwrlPreferences;
 import co.swrl.list.collection.CollectionManager;
 import co.swrl.list.item.Details;
 import co.swrl.list.item.Swrl;
 import co.swrl.list.item.search.Search;
 import co.swrl.list.ui.activity.ViewActivity;
+import co.swrl.list.users.SwrlUserHelpers;
 
 import static android.support.v4.content.ContextCompat.startActivity;
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 import static co.swrl.list.R.drawable.ic_add_black_24dp;
 import static co.swrl.list.ui.activity.ViewActivity.ViewType.VIEW;
 
@@ -44,6 +52,7 @@ class SwrlRow extends RecyclerView.ViewHolder {
     private final ImageView thumbnail;
     private final View imageBackground;
     private final ImageButton addButton;
+    private final ImageView profileImage;
 
     SwrlRow(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.list_row, parent, false));
@@ -53,6 +62,39 @@ class SwrlRow extends RecyclerView.ViewHolder {
         thumbnail = (ImageView) itemView.findViewById(R.id.list_image);
         imageBackground = itemView.findViewById(R.id.row_left_border);
         addButton = (ImageButton) itemView.findViewById(R.id.list_item_button);
+        profileImage = (ImageView) itemView.findViewById(R.id.profile_image);
+    }
+
+    public void setProfileImage(Swrl swrl, final Context context) {
+        if (swrl.getAuthorAvatarURL() != null && !swrl.getAuthorAvatarURL().isEmpty()) {
+            profileImage.setVisibility(VISIBLE);
+            Picasso picasso = Picasso.with(context);
+            picasso.setIndicatorsEnabled(true);
+            picasso.setLoggingEnabled(true);
+            picasso.load(swrl.getAuthorAvatarURL())
+                    .placeholder(R.drawable.progress_spinner)
+                    .error(R.drawable.ic_person_black_24dp)
+                    .resize(150, 150)
+                    .centerInside()
+                    .noFade()
+                    .into(profileImage, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            Bitmap imageBitmap = ((BitmapDrawable) profileImage.getDrawable()).getBitmap();
+                            RoundedBitmapDrawable imageDrawable = RoundedBitmapDrawableFactory.create(context.getResources(), imageBitmap);
+                            imageDrawable.setCircular(true);
+                            imageDrawable.setCornerRadius(Math.max(imageBitmap.getWidth(), imageBitmap.getHeight()) / 2.0f);
+                            profileImage.setImageDrawable(imageDrawable);
+                        }
+
+                        @Override
+                        public void onError() {
+                            profileImage.setImageResource(R.drawable.ic_person_black_24dp);
+                        }
+                    });
+        } else {
+            profileImage.setVisibility(GONE);
+        }
     }
 
     public void setTitle(final Swrl swrl) {
@@ -228,6 +270,9 @@ class SwrlRow extends RecyclerView.ViewHolder {
                     @Override
                     protected Details doInBackground(Swrl... params) {
                         Swrl swrl = params[0];
+
+                        updateUserAvatarURL(swrl, activity, collectionManager);
+
                         Details details = null;
 
                         try {
@@ -303,6 +348,9 @@ class SwrlRow extends RecyclerView.ViewHolder {
                     @Override
                     protected Details doInBackground(Swrl... params) {
                         Swrl swrl = params[0];
+
+                        updateUserAvatarURL(swrl, activity, collectionManager);
+
                         Details details = null;
 
                         try {
@@ -317,6 +365,20 @@ class SwrlRow extends RecyclerView.ViewHolder {
                 };
             }
         });
+    }
+
+    private void updateUserAvatarURL(Swrl swrl, Activity activity, CollectionManager collectionManager) {
+        SwrlPreferences preferences = new SwrlPreferences(activity);
+
+        int userID = preferences.getUserID();
+        if (userID != 0){
+            swrl.setAuthorId(userID);
+            collectionManager.save(swrl);
+            String avatarURL = SwrlUserHelpers.getUserAvatarURL(userID);
+            if (avatarURL != null){
+                collectionManager.updateAuthorAvatarURL(swrl, avatarURL);
+            }
+        }
     }
 }
 

@@ -78,6 +78,7 @@ public class SQLiteCollectionManagerTest {
         assertEquals(GARDEN_STATE_RECOMMENDATION.getReview(), gardenStateFromDB.getReview());
         assertEquals(GARDEN_STATE_RECOMMENDATION.getAuthor(), gardenStateFromDB.getAuthor());
         assertEquals(GARDEN_STATE_RECOMMENDATION.getAuthorId(), gardenStateFromDB.getAuthorId());
+
         assertEquals(GARDEN_STATE_RECOMMENDATION.getId(), gardenStateFromDB.getId());
 
 
@@ -85,12 +86,14 @@ public class SQLiteCollectionManagerTest {
         assertEquals(GARDEN_STATE_RECOMMENDATION.getReview(), gardenStateFromDBFilmFilter.getReview());
         assertEquals(GARDEN_STATE_RECOMMENDATION.getAuthor(), gardenStateFromDBFilmFilter.getAuthor());
         assertEquals(GARDEN_STATE_RECOMMENDATION.getAuthorId(), gardenStateFromDBFilmFilter.getAuthorId());
+        assertEquals(GARDEN_STATE_RECOMMENDATION.getAuthorAvatarURL(), gardenStateFromDBFilmFilter.getAuthorAvatarURL());
         assertEquals(GARDEN_STATE_RECOMMENDATION.getId(), gardenStateFromDBFilmFilter.getId());
 
         assertEquals(GARDEN_STATE_RECOMMENDATION, gardenStateFromAll);
         assertEquals(GARDEN_STATE_RECOMMENDATION.getReview(), gardenStateFromAll.getReview());
         assertEquals(GARDEN_STATE_RECOMMENDATION.getAuthor(), gardenStateFromAll.getAuthor());
         assertEquals(GARDEN_STATE_RECOMMENDATION.getAuthorId(), gardenStateFromAll.getAuthorId());
+        assertEquals(GARDEN_STATE_RECOMMENDATION.getAuthorAvatarURL(), gardenStateFromAll.getAuthorAvatarURL());
         assertEquals(GARDEN_STATE_RECOMMENDATION.getId(), gardenStateFromAll.getId());
 
     }
@@ -316,6 +319,21 @@ public class SQLiteCollectionManagerTest {
 
         assertEquals("The Matrix", db.getActive().get(0).getTitle());
         assertThat(db.getDone(), is(emptyCollectionOf(Swrl.class)));
+    }
+
+    @Test
+    public void canUpdateAvatarURL() throws Exception {
+        db.save(THE_MATRIX);
+        db.save(GARDEN_STATE_RECOMMENDATION);
+
+        Swrl gardenStateFromDB = db.getActive().get(0);
+
+        assertEquals(GARDEN_STATE_RECOMMENDATION.getAuthorAvatarURL(), gardenStateFromDB.getAuthorAvatarURL());
+
+        db.updateAuthorAvatarURL(GARDEN_STATE_RECOMMENDATION, "newURL");
+
+        Swrl gardenStateFromDBUpdated = db.getActive().get(0);
+        assertEquals("newURL", gardenStateFromDBUpdated.getAuthorAvatarURL());
     }
 
     @Test

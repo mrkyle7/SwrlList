@@ -5,6 +5,9 @@
     <string name="pkey_version_number">version_number</string>
     <string name="whatsNewLatest">
         <![CDATA[
+        <h4>Version 11 (28 November 2017)</h4>
+        \u2022 Added User Profile image of the author of the Swrl<br/>
+        \u2022 Avoid refreshing the lists all the time with caching improvements
         <h4>Version 10.3 (20 November 2017)</h4>
         \u2022 UI improvements and fixes
         <h4>Version 10.2 (12 November 2017)</h4>
@@ -114,7 +117,7 @@
     <string name="no_search_results">No Search Results.</string>
     <string name="drawer_open">Menu Open</string>
     <string name="drawer_closed">Menu Closed</string>
-    <string name="refresh_all_details">Refresh</string>
+    <string name="refresh">Refresh</string>
     <string name="Swrl_List">Swrl List</string>
     <string name="Done">Done</string>
     <string name="discover">Discover</string>
@@ -143,4 +146,6 @@
     <string name="signUpText">No account yet? Create one</string>
     <string name="exampleTitle">Title</string>
     <string name="exampleText">text</string>
+    <string name="profile_image">profile image</string>
+    <string name="refresh_all_details">Refresh Details</string>
 </resources>

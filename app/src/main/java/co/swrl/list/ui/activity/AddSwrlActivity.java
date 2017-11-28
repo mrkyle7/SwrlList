@@ -16,6 +16,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import co.swrl.list.R;
+import co.swrl.list.SwrlPreferences;
 import co.swrl.list.collection.CollectionManager;
 import co.swrl.list.collection.SQLiteCollectionManager;
 import co.swrl.list.item.Swrl;
@@ -34,6 +35,7 @@ public class AddSwrlActivity extends AppCompatActivity {
     private CollectionManager db;
     private AddSwrlResultsRecyclerAdapter resultsAdapter;
     private View noSearchResultsText;
+    private SwrlPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +43,7 @@ public class AddSwrlActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_swrl);
         resultsAdapter = new AddSwrlResultsRecyclerAdapter(this, db);
+        preferences = new SwrlPreferences(this);
         setType();
         setTitle();
         setSearchTextView();
