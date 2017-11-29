@@ -375,12 +375,18 @@ public class ViewActivity extends AppCompatActivity {
             SwrlPreferences preferences = new SwrlPreferences(activity);
 
             int userID = preferences.getUserID();
-            if (userID != 0){
+            if (userID != 0 && userID != -1) {
                 currentSwrl.setAuthorId(userID);
+                if (viewType != ViewType.ADD && viewType != ViewType.ADD_DISCOVER) {
+                    db.updateAuthorID(currentSwrl, userID);
+                }
                 String avatarURL = SwrlUserHelpers.getUserAvatarURL(userID);
                 Log.d(LOG_TAG, "Avatar URL: " + avatarURL);
-                if (avatarURL != null){
+                if (avatarURL != null) {
                     currentSwrl.setAuthorAvatarURL(avatarURL);
+                    if (viewType != ViewType.ADD && viewType != ViewType.ADD_DISCOVER) {
+                        db.updateAuthorAvatarURL(currentSwrl, avatarURL);
+                    }
                 }
             }
             Details details = null;

@@ -73,7 +73,7 @@ public class ViewPageDetails extends Fragment {
         assert swrl != null;
         Details details = swrl.getDetails();
         final View rootView;
-        if (hasNoDetails(details) && swrl.getType() != Type.UNKNOWN) {
+        if (hasNoDetails(details)) {
             rootView = showSearchByTitle(inflater, container, swrl);
         } else {
             rootView = showSwrlDetails(inflater, container, swrl, details);

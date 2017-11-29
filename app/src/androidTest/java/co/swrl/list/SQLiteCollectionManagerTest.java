@@ -253,6 +253,9 @@ public class SQLiteCollectionManagerTest {
     @Test
     public void doesNotExplodeIfUpdatingDetailsForASwrlThatDoesNotExist() throws Exception {
         db.saveDetails(THE_MATRIX, THE_MATRIX_DETAILS);
+        db.updateAuthorAvatarURL(THE_MATRIX, "URL");
+        db.updateAuthorID(THE_MATRIX, 1);
+        db.updateTitle(THE_MATRIX, "title");
         assertEquals(Collections.EMPTY_LIST, db.getAll());
     }
 

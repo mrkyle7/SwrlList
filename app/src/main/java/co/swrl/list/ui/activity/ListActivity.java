@@ -198,15 +198,17 @@ public class ListActivity extends AppCompatActivity {
     }
 
     @NonNull
-    private AsyncTask<Void, Void, Void> getRefreshAllDetailsTask(final Context context) {
-        return new AsyncTask<Void, Void, Void>() {
+    private AsyncTask<Void, String, Void> getRefreshAllDetailsTask(final Context context) {
+        return new AsyncTask<Void, String, Void>() {
 
+            private String updateMessage = "Refreshing all Details." +
+                            "\nThis may take a few minutes!";
             final ProgressDialog dialog = new ProgressDialog(context);
             final AsyncTask mTask = this;
 
             @Override
             protected void onPreExecute() {
-                dialog.setMessage("Refreshing all Details.\n\nThis may take a few minutes!");
+                dialog.setMessage(updateMessage);
                 dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -232,7 +234,14 @@ public class ListActivity extends AppCompatActivity {
                 Map<Integer, String> avatarCache = new HashMap<>();
                 for (Object swrl : swrls) {
                     Swrl mSwrl = (Swrl) swrl;
-                    setAuthorIdToSelfIfLoggedIn(collectionManager, mSwrl);
+                    publishProgress("Updating "
+                            + mSwrl.getTitle()
+                            + " ("
+                            + String.valueOf(swrls.indexOf(swrl) + 1)
+                            + " of "
+                            + String.valueOf(swrls.size())
+                            + "...)");
+                    setEmptyAuthorIdToSelfIfLoggedIn(collectionManager, mSwrl);
                     updateAvatarURL(collectionManager, avatarCache, mSwrl);
                     updateSwrlDetails(collectionManager, mSwrl);
                 }
@@ -252,7 +261,7 @@ public class ListActivity extends AppCompatActivity {
             private void updateAvatarURL(CollectionManager collectionManager, Map<Integer, String> avatarCache, Swrl mSwrl) {
                 int authorId = mSwrl.getAuthorId();
                 Log.d(LOG_TAG, "Author ID: " + authorId);
-                if (authorId != 0) {
+                if (authorId != 0 && authorId != -1) {
                     String newAvatarURL;
                     if (avatarCache.containsKey(authorId)) {
                         newAvatarURL = avatarCache.get(authorId);
@@ -267,11 +276,13 @@ public class ListActivity extends AppCompatActivity {
                 }
             }
 
-            private void setAuthorIdToSelfIfLoggedIn(CollectionManager collectionManager, Swrl mSwrl) {
-                if (((mSwrl.getAuthorId() == -1) || (mSwrl.getAuthorId() == 0)) && (preferences.getUserID() != 0)
-                        && (preferences.getUserID() != -1)) {
-                    mSwrl.setAuthorId(preferences.getUserID());
-                    collectionManager.updateAuthorID(mSwrl, preferences.getUserID());
+            private void setEmptyAuthorIdToSelfIfLoggedIn(CollectionManager collectionManager, Swrl mSwrl) {
+                int userID = preferences.getUserID();
+                if ((mSwrl.getAuthorId() == -1 || mSwrl.getAuthorId() == 0 || mSwrl.getAuthor() == null)
+                        && userID != 0
+                        && userID != -1) {
+                    mSwrl.setAuthorId(userID);
+                    collectionManager.updateAuthorID(mSwrl, userID);
                 }
             }
 
@@ -280,6 +291,11 @@ public class ListActivity extends AppCompatActivity {
                 Log.d(LOG_TAG, "Refreshing all details - finished");
                 dialog.dismiss();
                 refreshList(true);
+            }
+
+            @Override
+            protected void onProgressUpdate(String... values) {
+                dialog.setMessage(updateMessage + "\n\n" + values[0]);
             }
 
             @Override
