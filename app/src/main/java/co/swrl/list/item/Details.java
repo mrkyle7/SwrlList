@@ -19,26 +19,26 @@ public class Details implements Serializable {
     @SerializedName(value = "id", alternate = {"tmdb-id", "asin-id", "itunes-id", "bgg-id", "book-id", "game-id"})
     private final String id;
 
-    @SerializedName(value = "posterURL", alternate = {"large-image-url", "big-img-url", "thumbnail-url", "image-url"})
+    @SerializedName(value = "large-image-url", alternate = {"posterURL", "big-img-url", "thumbnail-url", "image-url"})
     private final String posterURL;
 
     private final Type type;
 
-    @SerializedName(value = "categories", alternate = {"genres"})
+    @SerializedName(value = "genres", alternate = {"categories"})
     private final ArrayList<String> categories;
 
     private final String tagline;
 
-    @SerializedName(value = "releaseYear", alternate = {"release-year"})
+    @SerializedName(value = "release-year", alternate = {"releaseYear"})
     private final String releaseYear;
 
-    @SerializedName(value = "publicationDate", alternate = {"publication-date"})
+    @SerializedName(value = "publication-date", alternate = {"publicationDate"})
     private final String publicationDate;
 
-    @SerializedName(value = "url", alternate = {"website-url"})
+    @SerializedName(value = "website-url", alternate = {"url"})
     private final String url;
 
-    @SerializedName(value = "imdbID", alternate = {"imdb-id"})
+    @SerializedName(value = "imdb-id", alternate = {"imdbID"})
     private final String imdbID;
 
     @SerializedName(value = "creator", alternate = {"artist-name", "artist", "author", "director", "designer", "publisher"})
@@ -50,16 +50,16 @@ public class Details implements Serializable {
 
     private final ArrayList<Ratings> ratings;
 
-    @SerializedName(value = "minPlayers", alternate = {"min-players"})
+    @SerializedName(value = "min-players", alternate = {"minPlayers"})
     private final String minPlayers;
 
-    @SerializedName(value = "maxPlayers", alternate = {"max-players"})
+    @SerializedName(value = "max-players", alternate = {"maxPlayers"})
     private final String maxPlayers;
 
-    @SerializedName(value = "minPlaytime", alternate = {"min-playtime"})
+    @SerializedName(value = "min-playtime", alternate = {"minPlaytime"})
     private final String minPlaytime;
 
-    @SerializedName(value = "maxPlaytime", alternate = {"max-playtime"})
+    @SerializedName(value = "max-playtime", alternate = {"maxPlaytime"})
     private final String maxPlaytime;
 
     private final String platform;
@@ -219,7 +219,7 @@ public class Details implements Serializable {
     public String getCategories() {
         if (categories == null || categories.isEmpty()) return null;
         ArrayList<String> formattedCategories = new ArrayList<>();
-        for (String category : categories){
+        for (String category : categories) {
             category = category.replace("-game-genre", "");
             formattedCategories.add(category);
         }

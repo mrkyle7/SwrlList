@@ -39,7 +39,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 
-class Helpers {
+public class Helpers {
     private Helpers() {
     }
 
@@ -49,9 +49,20 @@ class Helpers {
     static final Swrl THE_MATRIX_REVOLUTIONS = new Swrl("The Matrix Revolutions", Type.FILM);
     static final Swrl BILLIONS = new Swrl("Billions", Type.TV);
     static final Swrl HUNGER_GAMES_BOOK = new Swrl("Hunger Games", Type.BOOK);
+    public static final Swrl BLACK_MIRROR_TV = new Swrl("Black Mirror", Type.TV);
     static final Details THE_MATRIX_DETAILS = new Gson().fromJson("{\"title\":\"The Matrix (1991)\",\"overview\":\"an overview\",\"tmdb-id\":\"403\"}", Details.class);
     static final Details THE_MATRIX_RELOADED_DETAILS = new Gson().fromJson("{\"title\":\"The Matrix Reloaded (1992)\",\"an overview\":\"overview\",\"tmdb-id\":\"404\"}", Details.class);
     static final Details THE_MATRIX_REVOLUTIONS_DETAILS = new Gson().fromJson("{\"title\":\"The Matrix Revolutions (1992)\",\"overview\":\"an overview\",\"tmdb-id\":\"405\"}", Details.class);
+    public static final Details BLACK_MIRROR_DETAILS = new Gson().fromJson(
+            "{\"large-image-url\":\"https://image.tmdb.org/t/p/original/djUxgzSIdfS5vNP2EHIBDIz9I8A.jpg\"," +
+            "\"creator\":\"Charlie Brooker, Another Creator\"," +
+            "\"genres\":[\"Drama\",\"Sci-Fi & Fantasy\"]," +
+            "\"tmdb-id\":42009," +
+            "\"thumbnail-url\":\"https://image.tmdb.org/t/p/original/djUxgzSIdfS5vNP2EHIBDIz9I8A.jpg\"," +
+            "\"overview\":\"Black Mirror is a British television drama series created by Charlie Brooker\"," +
+            "\"title\":\"Black Mirror\"," +
+            "\"runtime\":60," +
+            "\"url\":\"http://www.channel4.com/programmes/black-mirror/\"}", Details.class);
 
     static void clearAllSettings() {
         Context applicationContext = InstrumentationRegistry.getTargetContext();

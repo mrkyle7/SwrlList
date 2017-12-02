@@ -51,6 +51,7 @@ import co.swrl.list.collection.SQLiteCollectionManager;
 import co.swrl.list.item.Details;
 import co.swrl.list.item.Swrl;
 import co.swrl.list.item.Type;
+import co.swrl.list.item.actions.SwrlCoActions;
 import co.swrl.list.item.search.Search;
 import co.swrl.list.ui.SwrlDialogs;
 import co.swrl.list.ui.list.ActiveSwrlListRecyclerAdapter;
@@ -166,6 +167,9 @@ public class ListActivity extends AppCompatActivity {
         }
         if (id == R.id.action_refresh_all_details) {
             getRefreshAllDetailsTask(this).execute();
+        }
+        if (id == R.id.action_sync_swrls) {
+            getSyncAllSwrlsTask(this).execute();
         }
         if (id == R.id.actions_show_whats_new) {
             new SwrlDialogs(this).buildAndShowWhatsNewDialog();
@@ -301,6 +305,82 @@ public class ListActivity extends AppCompatActivity {
             @Override
             protected void onCancelled() {
                 Log.d(LOG_TAG, "Refreshing all details - cancelled");
+                dialog.dismiss();
+            }
+        };
+    }
+    @NonNull
+    private AsyncTask<Void, String, Void> getSyncAllSwrlsTask(final Context context) {
+        return new AsyncTask<Void, String, Void>() {
+
+            private String updateMessage = "Syncing all Swrls." +
+                            "\nThis may take a few minutes!";
+            final ProgressDialog dialog = new ProgressDialog(context);
+            final AsyncTask mTask = this;
+
+            @Override
+            protected void onPreExecute() {
+                dialog.setMessage(updateMessage);
+                dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        mTask.cancel(true);
+                        dialog.dismiss();
+                    }
+                });
+                dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Run in Background", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
+            }
+
+            @Override
+            protected Void doInBackground(Void... voids) {
+                Log.d(LOG_TAG, "Syncing all swrls");
+                CollectionManager collectionManager = new SQLiteCollectionManager(getApplicationContext());
+                backUpSwrls((ArrayList<?>) collectionManager.getActive(), "Backing up Active swrls", "Later", collectionManager);
+                backUpSwrls((ArrayList<?>) collectionManager.getDone(), "Backing up Done swrls", "Done", collectionManager);
+                return null;
+            }
+
+            private void backUpSwrls(ArrayList<?> swrlsFromDB, String publishMessage, String response, CollectionManager collectionManager) {
+                ArrayList<Swrl> swrlsToProcess = new ArrayList<>();
+                for (Object swrl: swrlsFromDB){
+                    Swrl mSwrl = (Swrl) swrl;
+                    Log.d(LOG_TAG, mSwrl.toString() + " id: " + mSwrl.getId());
+                    if (mSwrl.getId() == 0) swrlsToProcess.add(mSwrl);
+                }
+                int totalToProcess = swrlsToProcess.size();
+                for (Swrl swrl: swrlsToProcess){
+                    publishProgress(publishMessage
+                            + "\n"
+                            + " ("
+                            + String.valueOf(swrlsToProcess.indexOf(swrl) + 1)
+                            + " of "
+                            + String.valueOf(totalToProcess)
+                            + ")...");
+                    SwrlCoActions.create(swrl, response, preferences, collectionManager);
+                }
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                Log.d(LOG_TAG, "Syncing all Swrls - finished");
+                dialog.dismiss();
+                refreshList(true);
+            }
+
+            @Override
+            protected void onProgressUpdate(String... values) {
+                dialog.setMessage(updateMessage + "\n\n" + values[0]);
+            }
+
+            @Override
+            protected void onCancelled() {
+                Log.d(LOG_TAG, "Syncing all Swrls - cancelled");
                 dialog.dismiss();
             }
         };

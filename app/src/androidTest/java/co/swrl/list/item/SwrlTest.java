@@ -63,6 +63,13 @@ public class SwrlTest {
         checkIsType(Type.UNKNOWN, "blah");
     }
 
+    @Test
+    public void canParseUnknownFields() throws Exception {
+        String json = "{\"title\":\"A title\",\"unknownField\":\"blah\"}";
+        Swrl swrl = new Gson().fromJson(json, Swrl.class);
+        assertEquals("A title", swrl.getTitle());
+    }
+
     private void checkIsType(Type expectedType, String typeInJson) {
         String json = String.format("{\"title\":\"A title\",\"type\":\"%s\"}", typeInJson);
         Swrl swrl = new Gson().fromJson(json, Swrl.class);

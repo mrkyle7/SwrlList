@@ -337,80 +337,47 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
 
     @Override
     public void saveDetails(Swrl swrl, Details details) {
-        SQLiteDatabase dbWriter = db.getWritableDatabase();
+        updateValue(swrl, Swrls.COLUMN_NAME_DETAILS, details);
+    }
 
-        String detailsJSONString = new Gson().toJson(details);
-
-        ContentValues values = new ContentValues();
-        values.put(Swrls.COLUMN_NAME_DETAILS, detailsJSONString);
-
-        String title = swrl.getTitle();
-        String type = swrl.getType().toString();
-        String whereClause = Swrls.COLUMN_NAME_TITLE + " = ? AND " +
-                Swrls.COLUMN_NAME_TYPE + " = ?";
-        String[] whereArgs = {title, type};
-
-        dbWriter.update(
-                Swrls.TABLE_NAME,
-                values,
-                whereClause,
-                whereArgs
-        );
-        dbWriter.close();
+    @Override
+    public void updateSwrlID(Swrl swrl, int swrlID) {
+        updateValue(swrl, Swrls.COLUMN_NAME_SWRL_ID, swrlID);
     }
 
     @Override
     public void updateTitle(Swrl swrl, String title) {
-        SQLiteDatabase dbWriter = db.getWritableDatabase();
-
-        ContentValues values = new ContentValues();
-        values.put(Swrls.COLUMN_NAME_TITLE, title);
-
-        String oldTitle = swrl.getTitle();
-        String type = swrl.getType().toString();
-        String whereClause = Swrls.COLUMN_NAME_TITLE + " = ? AND " +
-                Swrls.COLUMN_NAME_TYPE + " = ?";
-        String[] whereArgs = {oldTitle, type};
-
-        dbWriter.updateWithOnConflict(
-                Swrls.TABLE_NAME,
-                values,
-                whereClause,
-                whereArgs,
-                SQLiteDatabase.CONFLICT_REPLACE
-        );
-        dbWriter.close();
+        updateValue(swrl, Swrls.COLUMN_NAME_TITLE, title);
     }
 
     @Override
     public void updateAuthorID(Swrl swrl, int authorID) {
-        SQLiteDatabase dbWriter = db.getWritableDatabase();
-
-        ContentValues values = new ContentValues();
-        values.put(Swrls.COLUMN_NAME_AUTHOR_ID, authorID);
-
-        String oldTitle = swrl.getTitle();
-        String type = swrl.getType().toString();
-        String whereClause = Swrls.COLUMN_NAME_TITLE + " = ? AND " +
-                Swrls.COLUMN_NAME_TYPE + " = ?";
-        String[] whereArgs = {oldTitle, type};
-
-        dbWriter.updateWithOnConflict(
-                Swrls.TABLE_NAME,
-                values,
-                whereClause,
-                whereArgs,
-                SQLiteDatabase.CONFLICT_REPLACE
-        );
-        dbWriter.close();
+        updateValue(swrl, Swrls.COLUMN_NAME_AUTHOR_ID, authorID);
     }
 
     @Override
     public void updateAuthorAvatarURL(Swrl swrl, String authorAvatarURL) {
+        updateValue(swrl, Swrls.COLUMN_NAME_AUTHOR_AVATAR_URL, authorAvatarURL);
+    }
+
+    private void updateValue(Swrl swrl, String column, Object value){
         SQLiteDatabase dbWriter = db.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(Swrls.COLUMN_NAME_AUTHOR_AVATAR_URL, authorAvatarURL);
+
+        if (value instanceof String){
+            String valueToUpdate = (String) value;
+            values.put(column, valueToUpdate);
+        } else if (value instanceof Integer){
+            int valueToUpdate = (int) value;
+            values.put(column, valueToUpdate);
+        } else if (value instanceof Details){
+            String valueToUpdate = new Gson().toJson(value, Details.class);
+            values.put(column, valueToUpdate);
+        } else {
+            dbWriter.close();
+            return;
+        }
 
         String oldTitle = swrl.getTitle();
         String type = swrl.getType().toString();
