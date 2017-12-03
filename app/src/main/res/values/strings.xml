@@ -5,6 +5,8 @@
     <string name="pkey_version_number">version_number</string>
     <string name="whatsNewLatest">
         <![CDATA[
+        <h4>Version 13 (03 December 2017)</h4>
+        \u2022 Added IMDB URL to details for films
         <h4>Version 12 (02 December 2017)</h4>
         \u2022 Syncing all swrls with swrl.co backs up active and done swrls
         <h4>Version 11.1.1 (29 November 2017)</h4>

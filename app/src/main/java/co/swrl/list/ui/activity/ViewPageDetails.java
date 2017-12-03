@@ -133,6 +133,7 @@ public class ViewPageDetails extends Fragment {
         addTextCard(inflater, detailsLayout, "Players", details.getMinToMaxPlayers(), false);
         addTextCard(inflater, detailsLayout, "Playtime", details.getMinToMaxPlaytime(), false);
         addTextCard(inflater, detailsLayout, "URL", details.getUrl(), false);
+        addTextCard(inflater, detailsLayout, "IMDB URL", details.getIMDBURL(), false);
         addTextCard(inflater, detailsLayout, "Overview", details.getOverview(), true);
 
         return rootView;

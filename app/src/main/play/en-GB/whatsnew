@@ -1,3 +1,6 @@
+Version 13 (03 December 2017)
+- Added IMDB URL to details for films
+
 Version 12 (02 December 2017)
 - Syncing all swrls with swrl.co backs up active and done swrls
 
@@ -10,6 +13,3 @@ Version 11 (28 November 2017)
 
 Version 10.3 (20 November 2017)
 - UI improvements and fixes
-
-Version 10.2 (12 November 2017)
-- UI improvements including swipe to refresh, more color and better subtitles!

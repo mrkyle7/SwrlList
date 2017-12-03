@@ -178,4 +178,16 @@ public class DetailsTest {
         assertEquals("1 - 4 min", details.getMinToMaxPlaytime());
     }
 
+    @Test
+    public void getIMDBURL() throws Exception {
+        Details details = new Details(null, null, null, null, null, null, null, null, null, null, "tt4555364", null, null, null, null, null, null, null, null, null);
+        assertEquals("http://m.imdb.com/title/tt4555364", details.getIMDBURL());
+    }
+
+    @Test
+    public void getIMDBURLisNullWhenNoIMDBID() throws Exception {
+        Details details = getNullDetails();
+        assertNull(details.getIMDBURL());
+    }
+
 }

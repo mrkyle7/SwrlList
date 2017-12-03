@@ -132,6 +132,11 @@ public class Details implements Serializable {
         return result;
     }
 
+    public String getIMDBURL() {
+        if (imdbID == null) return null;
+        return "http://m.imdb.com/title/" + imdbID;
+    }
+
     public static class Ratings implements Serializable {
         private final String Source;
         private final String Value;
