@@ -14,16 +14,19 @@ public interface CollectionManager {
     int countActive(Type typeFilter);
     List<Swrl> getDone();
     List<Swrl> getDone(Type typeFilter);
+    List<Swrl> getDismissed();
     int countDone();
     int countDone(Type typeFilter);
     void save(Swrl swrl);
     void markAsDone(Swrl swrl);
     void markAsActive(Swrl swrl);
+    void markAsDismissed(Swrl swrl);
     void permanentlyDelete(Swrl swrl);
     void permanentlyDeleteAll();
     void saveDetails(Swrl swrl, Details details);
     void updateSwrlID(Swrl swrl, int ID);
     void updateTitle(Swrl swrl, String title);
     void updateAuthorID(Swrl swrl, int authorID);
+
     void updateAuthorAvatarURL(Swrl swrl, String authorAvatarURL);
 }

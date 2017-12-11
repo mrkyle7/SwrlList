@@ -163,6 +163,23 @@ public class SQLiteCollectionManagerTest {
     }
 
     @Test
+    public void canMarkSwrlAsDismissed() throws Exception {
+        db.save(THE_MATRIX);
+        db.save(THE_MATRIX_RELOADED);
+        db.markAsDismissed(THE_MATRIX);
+
+        List<Swrl> active = db.getActive();
+        List<Swrl> done = db.getDone();
+        List<Swrl> dismissed = db.getDismissed();
+        List<Swrl> all = db.getAll();
+
+        assertThat(active, contains(THE_MATRIX_RELOADED));
+        assertThat(dismissed, contains(THE_MATRIX));
+        assertThat(done, is(emptyCollectionOf(Swrl.class)));
+        assertThat(all, containsInAnyOrder(THE_MATRIX_RELOADED, THE_MATRIX));
+    }
+
+    @Test
     public void canMarkDoneSwrlsAsActive() throws Exception {
         db.save(THE_MATRIX);
         db.save(THE_MATRIX_RELOADED);

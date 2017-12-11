@@ -1,3 +1,6 @@
+Version 13.1 (11 December 2017)
+- Keep up to date with swrl.co with all your actions!
+
 Version 13 (03 December 2017)
 - Added IMDB URL to details for films
 
@@ -10,6 +13,3 @@ Version 11.1.1 (29 November 2017)
 Version 11 (28 November 2017)
 - Added User Profile image of the author of the Swrl
 - Avoid refreshing the lists all the time with caching improvements
-
-Version 10.3 (20 November 2017)
-- UI improvements and fixes

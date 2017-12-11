@@ -143,7 +143,7 @@ public class ListActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (loggedIn()) {
+        if (preferences.loggedIn()) {
             getMenuInflater().inflate(R.menu.menu_list_logged_in, menu);
         } else {
             getMenuInflater().inflate(R.menu.menu_list_logged_out, menu);
@@ -206,7 +206,7 @@ public class ListActivity extends AppCompatActivity {
         return new AsyncTask<Void, String, Void>() {
 
             private String updateMessage = "Refreshing all Details." +
-                            "\nThis may take a few minutes!";
+                    "\nThis may take a few minutes!";
             final ProgressDialog dialog = new ProgressDialog(context);
             final AsyncTask mTask = this;
 
@@ -238,13 +238,12 @@ public class ListActivity extends AppCompatActivity {
                 Map<Integer, String> avatarCache = new HashMap<>();
                 for (Object swrl : swrls) {
                     Swrl mSwrl = (Swrl) swrl;
-                    publishProgress("Updating "
-                            + mSwrl.getTitle()
-                            + " ("
-                            + String.valueOf(swrls.indexOf(swrl) + 1)
+                    publishProgress(String.valueOf(swrls.indexOf(swrl) + 1)
                             + " of "
                             + String.valueOf(swrls.size())
-                            + "...)");
+                            + "...\n"
+                            + "Updating "
+                            + mSwrl.getTitle());
                     setEmptyAuthorIdToSelfIfLoggedIn(collectionManager, mSwrl);
                     updateAvatarURL(collectionManager, avatarCache, mSwrl);
                     updateSwrlDetails(collectionManager, mSwrl);
@@ -309,12 +308,13 @@ public class ListActivity extends AppCompatActivity {
             }
         };
     }
+
     @NonNull
     private AsyncTask<Void, String, Void> getSyncAllSwrlsTask(final Context context) {
         return new AsyncTask<Void, String, Void>() {
 
             private String updateMessage = "Syncing all Swrls." +
-                            "\nThis may take a few minutes!";
+                    "\nThis may take a few minutes!";
             final ProgressDialog dialog = new ProgressDialog(context);
             final AsyncTask mTask = this;
 
@@ -341,27 +341,26 @@ public class ListActivity extends AppCompatActivity {
             protected Void doInBackground(Void... voids) {
                 Log.d(LOG_TAG, "Syncing all swrls");
                 CollectionManager collectionManager = new SQLiteCollectionManager(getApplicationContext());
-                backUpSwrls((ArrayList<?>) collectionManager.getActive(), "Backing up Active swrls", "Later", collectionManager);
-                backUpSwrls((ArrayList<?>) collectionManager.getDone(), "Backing up Done swrls", "Done", collectionManager);
+                backUpSwrls((ArrayList<?>) collectionManager.getActive(), "Backing up Active swrls", SwrlCoActions.LATER, collectionManager);
+                backUpSwrls((ArrayList<?>) collectionManager.getDone(), "Backing up Done swrls", SwrlCoActions.DONE, collectionManager);
                 return null;
             }
 
             private void backUpSwrls(ArrayList<?> swrlsFromDB, String publishMessage, String response, CollectionManager collectionManager) {
                 ArrayList<Swrl> swrlsToProcess = new ArrayList<>();
-                for (Object swrl: swrlsFromDB){
+                for (Object swrl : swrlsFromDB) {
                     Swrl mSwrl = (Swrl) swrl;
                     Log.d(LOG_TAG, mSwrl.toString() + " id: " + mSwrl.getId());
                     if (mSwrl.getId() == 0) swrlsToProcess.add(mSwrl);
                 }
                 int totalToProcess = swrlsToProcess.size();
-                for (Swrl swrl: swrlsToProcess){
+                for (Swrl swrl : swrlsToProcess) {
                     publishProgress(publishMessage
                             + "\n"
-                            + " ("
                             + String.valueOf(swrlsToProcess.indexOf(swrl) + 1)
                             + " of "
                             + String.valueOf(totalToProcess)
-                            + ")...");
+                            + "...");
                     SwrlCoActions.create(swrl, response, preferences, collectionManager);
                 }
             }
@@ -455,7 +454,7 @@ public class ListActivity extends AppCompatActivity {
         BottomNavigationView navigationMenuView = (BottomNavigationView) findViewById(R.id.navigation);
         int previousSelected = navigationMenuView.getSelectedItemId();
         navigationMenuView.getMenu().clear();
-        if (loggedIn()) {
+        if (preferences.loggedIn()) {
             navigationMenuView.inflateMenu(R.menu.navigation_logged_in);
             if (previousSelected == R.id.discover) {
                 navigationMenuView.setSelectedItemId(R.id.discover_weighted);
@@ -545,10 +544,6 @@ public class ListActivity extends AppCompatActivity {
                 return true;
             }
         });
-    }
-
-    private boolean loggedIn() {
-        return preferences.getUserID() != 0 && preferences.getAuthToken() != null;
     }
 
     private void setUpNavigationDrawer() {

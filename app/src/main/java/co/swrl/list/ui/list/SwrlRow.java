@@ -33,6 +33,7 @@ import co.swrl.list.SwrlPreferences;
 import co.swrl.list.collection.CollectionManager;
 import co.swrl.list.item.Details;
 import co.swrl.list.item.Swrl;
+import co.swrl.list.item.actions.SwrlCoActions;
 import co.swrl.list.item.search.Search;
 import co.swrl.list.ui.activity.ViewActivity;
 import co.swrl.list.users.SwrlUserHelpers;
@@ -66,10 +67,10 @@ class SwrlRow extends RecyclerView.ViewHolder {
     }
 
     public void setProfileImage(Swrl swrl, final Context context) {
-        if (swrl.getAuthorAvatarURL() != null && !swrl.getAuthorAvatarURL().isEmpty()) {
+        if (authorURLExists(swrl)) {
             profileImage.setVisibility(VISIBLE);
             Picasso picasso = Picasso.with(context);
-            picasso.setIndicatorsEnabled(true);
+//            picasso.setIndicatorsEnabled(true);
             picasso.setLoggingEnabled(true);
             picasso.load(swrl.getAuthorAvatarURL())
                     .placeholder(R.drawable.progress_spinner)
@@ -95,6 +96,10 @@ class SwrlRow extends RecyclerView.ViewHolder {
         } else {
             profileImage.setVisibility(GONE);
         }
+    }
+
+    private boolean authorURLExists(Swrl swrl) {
+        return swrl.getAuthorAvatarURL() != null && !swrl.getAuthorAvatarURL().isEmpty();
     }
 
     public void setTitle(final Swrl swrl) {
@@ -169,7 +174,7 @@ class SwrlRow extends RecyclerView.ViewHolder {
         imageBackground.setBackgroundColor(color);
         Details details = swrl.getDetails();
 
-        if (details != null && details.getPosterURL() != null && !Objects.equals(details.getPosterURL(), "")) {
+        if (posterURLexists(details)) {
             resizeThumbnailForIcon(thumbnail, context);
             Picasso picasso = Picasso.with(context);
 //            picasso.setIndicatorsEnabled(true);
@@ -196,6 +201,10 @@ class SwrlRow extends RecyclerView.ViewHolder {
             thumbnail.setImageResource(iconResource);
             resizeThumbnailForIcon(thumbnail, context);
         }
+    }
+
+    private boolean posterURLexists(Details details) {
+        return details != null && details.getPosterURL() != null && !Objects.equals(details.getPosterURL(), "");
     }
 
     private void resizeThumbnailForIcon(ImageView thumbnail, Context context) {
@@ -232,13 +241,13 @@ class SwrlRow extends RecyclerView.ViewHolder {
             @Override
             public void onClick(View v) {
                 collectionManager.save(swrl);
-                final AsyncTask<Swrl, Void, Details> getSwrlDetails = getSwrlDetailsAsyncTask();
+                final AsyncTask<Swrl, Void, Void> getSwrlDetails = getSwrlDetailsAsyncTask();
                 getSwrlDetails.execute(swrl);
             }
 
             @NonNull
-            private AsyncTask<Swrl, Void, Details> getSwrlDetailsAsyncTask() {
-                return new AsyncTask<Swrl, Void, Details>() {
+            private AsyncTask<Swrl, Void, Void> getSwrlDetailsAsyncTask() {
+                return new AsyncTask<Swrl, Void, Void>() {
                     private ProgressDialog addingDialog;
 
                     @Override
@@ -249,26 +258,19 @@ class SwrlRow extends RecyclerView.ViewHolder {
                     }
 
                     @Override
-                    protected void onPostExecute(Details details) {
-                        updateSwrlWithDetailsAndCloseActivity(details);
-                    }
-
-
-                    @Override
-                    protected void onCancelled(Details details) {
-                        updateSwrlWithDetailsAndCloseActivity(details);
-                    }
-
-                    private void updateSwrlWithDetailsAndCloseActivity(Details details) {
+                    protected void onPostExecute(Void voids) {
                         addingDialog.hide();
-                        if (details != null) {
-                            collectionManager.saveDetails(swrl, details);
-                        }
                         activity.finish();
                     }
 
                     @Override
-                    protected Details doInBackground(Swrl... params) {
+                    protected void onCancelled(Void voids) {
+                        addingDialog.hide();
+                        activity.finish();
+                    }
+
+                    @Override
+                    protected Void doInBackground(Swrl... params) {
                         Swrl swrl = params[0];
 
                         updateUserAvatarURL(swrl, activity, collectionManager);
@@ -282,7 +284,17 @@ class SwrlRow extends RecyclerView.ViewHolder {
                             e.printStackTrace();
                         }
 
-                        return details;
+                        if (details != null) {
+                            swrl.setDetails(details);
+                            collectionManager.saveDetails(swrl, details);
+                        }
+
+                        SwrlPreferences preferences = new SwrlPreferences(activity);
+
+                        if(preferences.loggedIn()) {
+                            SwrlCoActions.create(swrl, SwrlCoActions.LATER, preferences, collectionManager);
+                        }
+                        return null;
                     }
                 };
             }
@@ -371,11 +383,11 @@ class SwrlRow extends RecyclerView.ViewHolder {
         SwrlPreferences preferences = new SwrlPreferences(activity);
 
         int userID = preferences.getUserID();
-        if (userID != 0 && userID != -1){
+        if (userID != 0 && userID != -1) {
             swrl.setAuthorId(userID);
             collectionManager.save(swrl);
             String avatarURL = SwrlUserHelpers.getUserAvatarURL(userID);
-            if (avatarURL != null){
+            if (avatarURL != null) {
                 collectionManager.updateAuthorAvatarURL(swrl, avatarURL);
             }
         }

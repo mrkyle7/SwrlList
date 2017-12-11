@@ -152,6 +152,11 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
     }
 
     @Override
+    public List<Swrl> getDismissed() {
+        return getSwrlsByStatus(Swrls.STATUS_DISMISSED);
+    }
+
+    @Override
     public int countDone() {
         return countByStatus(Swrls.STATUS_DONE);
     }
@@ -284,6 +289,11 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
     @Override
     public void markAsActive(Swrl swrl) {
         markAs(swrl, Swrls.STATUS_ACTIVE);
+    }
+
+    @Override
+    public void markAsDismissed(Swrl swrl) {
+        markAs(swrl, Swrls.STATUS_DISMISSED);
     }
 
     private void markAs(Swrl swrl, int status) {

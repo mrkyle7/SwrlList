@@ -34,6 +34,7 @@ import co.swrl.list.collection.CollectionManager;
 import co.swrl.list.collection.SQLiteCollectionManager;
 import co.swrl.list.item.Details;
 import co.swrl.list.item.Swrl;
+import co.swrl.list.item.actions.SwrlCoActions;
 import co.swrl.list.item.search.Search;
 import co.swrl.list.users.SwrlUserHelpers;
 
@@ -47,6 +48,7 @@ public class ViewActivity extends AppCompatActivity {
     private ViewType viewType;
     private CollectionManager db;
     private Swrl currentSwrl;
+    private final Activity mActivity = this;
 
 
     public static final String EXTRAS_SWRLS = "swrls";
@@ -126,13 +128,25 @@ public class ViewActivity extends AppCompatActivity {
             }
             return true;
         } else if (id == R.id.action_markAsDone) {
+            final SwrlPreferences preferences = new SwrlPreferences(this);
             Log.d(LOG_TAG, "Current Swrl = " + currentSwrl);
             AlertDialog.Builder confirmDialog = new AlertDialog.Builder(this);
             confirmDialog.setTitle("Mark the Swrl as 'done' and remove from list?");
             confirmDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    db.markAsDone((Swrl) swrls.get(position));
+                    Swrl swrl = (Swrl) swrls.get(position);
+                    db.markAsDone(swrl);
+                    if (preferences.loggedIn()) {
+                        new AsyncTask<Swrl, Void, Void>() {
+                            @Override
+                            protected Void doInBackground(Swrl... swrls) {
+                                Swrl mSwrl = swrls[0];
+                                SwrlCoActions.respond(mSwrl, SwrlCoActions.DONE, preferences, null);
+                                return null;
+                            }
+                        }.execute(swrl);
+                    }
                     mSectionsPagerAdapter.deletePage(position);
                 }
             });
@@ -286,7 +300,18 @@ public class ViewActivity extends AppCompatActivity {
                     button.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            db.save((Swrl) swrls.get(position));
+                            final Swrl swrl = (Swrl) swrls.get(position);
+                            db.save(swrl);
+                            final SwrlPreferences preferences = new SwrlPreferences(mActivity);
+                            if (preferences.loggedIn()) {
+                                new AsyncTask<Void, Void, Void>() {
+                                    @Override
+                                    protected Void doInBackground(Void... voids) {
+                                        SwrlCoActions.create(swrl, SwrlCoActions.LATER, preferences, db);
+                                        return null;
+                                    }
+                                }.execute();
+                            }
                             Intent homeScreen = new Intent(getApplicationContext(), ListActivity.class);
                             homeScreen.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(homeScreen);
@@ -302,7 +327,19 @@ public class ViewActivity extends AppCompatActivity {
                     button.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            db.save((Swrl) swrls.get(position));
+                            final SwrlPreferences preferences = new SwrlPreferences(mActivity);
+                            Swrl swrl = (Swrl) swrls.get(position);
+                            db.save(swrl);
+                            if (preferences.loggedIn()) {
+                                new AsyncTask<Swrl, Void, Void>() {
+                                    @Override
+                                    protected Void doInBackground(Swrl... swrls) {
+                                        Swrl mSwrl = swrls[0];
+                                        SwrlCoActions.respond(mSwrl, SwrlCoActions.LATER, preferences, null);
+                                        return null;
+                                    }
+                                }.execute(swrl);
+                            }
                             mSectionsPagerAdapter.deletePage(position);
                         }
                     });

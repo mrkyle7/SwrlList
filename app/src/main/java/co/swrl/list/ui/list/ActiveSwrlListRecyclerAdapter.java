@@ -1,6 +1,7 @@
 package co.swrl.list.ui.list;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
@@ -10,9 +11,11 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
+import co.swrl.list.SwrlPreferences;
 import co.swrl.list.collection.CollectionManager;
 import co.swrl.list.item.Swrl;
 import co.swrl.list.item.Type;
+import co.swrl.list.item.actions.SwrlCoActions;
 import co.swrl.list.ui.activity.ListActivity;
 
 import static co.swrl.list.ui.activity.ViewActivity.ViewType.VIEW;
@@ -101,11 +104,22 @@ public class ActiveSwrlListRecyclerAdapter extends RecyclerView.Adapter implemen
     @Override
     public void swipeAction(RecyclerView.ViewHolder viewHolder, int position) {
         Swrl swrlToRemove = swrls.get(position);
+        final SwrlPreferences preferences = new SwrlPreferences(activity);
         if (swrls.contains(swrlToRemove)) {
             swrls.remove(position);
             int cachePosition = cachedSwrls.indexOf(swrlToRemove);
             cachedSwrls.remove(swrlToRemove);
             collectionManager.markAsDone(swrlToRemove);
+            if (preferences.loggedIn()) {
+                new AsyncTask<Swrl, Void, Void>() {
+                    @Override
+                    protected Void doInBackground(Swrl... swrls) {
+                        Swrl mSwrl = swrls[0];
+                        SwrlCoActions.respond(mSwrl, SwrlCoActions.DONE, preferences, null);
+                        return null;
+                    }
+                }.execute(swrlToRemove);
+            }
             notifyItemRemoved(position);
             navListAdapter.notifyDataSetChanged();
             activity.setNoSwrlsText();
@@ -129,6 +143,17 @@ public class ActiveSwrlListRecyclerAdapter extends RecyclerView.Adapter implemen
         swrls.add(position, swrl);
         cachedSwrls.add(cachePosition, swrl);
         collectionManager.markAsActive(swrl);
+        final SwrlPreferences preferences = new SwrlPreferences(activity);
+        if (preferences.loggedIn()) {
+            new AsyncTask<Swrl, Void, Void>() {
+                @Override
+                protected Void doInBackground(Swrl... swrls) {
+                    Swrl mSwrl = swrls[0];
+                    SwrlCoActions.respond(mSwrl, SwrlCoActions.LATER, preferences, null);
+                    return null;
+                }
+            }.execute(swrl);
+        }
         notifyItemInserted(position);
         navListAdapter.notifyDataSetChanged();
         activity.setNoSwrlsText();

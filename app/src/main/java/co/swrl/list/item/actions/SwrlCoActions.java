@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import co.swrl.list.SwrlPreferences;
@@ -20,12 +21,25 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import static java.net.HttpURLConnection.HTTP_OK;
+
 public class SwrlCoActions {
 
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private static final String LOG_TAG = "SwrlCoActions";
+    public static final String LATER = "Later";
+    public static final String DONE = "Done";
+    public static final String DISMISSED = "Dismissed";
 
-    public static void respond(Swrl swrl, String response, SwrlPreferences preferences) {
+    private static class RespondBody {
+        String auth_token;
+        String user_id;
+
+        @SerializedName(value = "response-summary")
+        String responseSummary;
+    }
+
+    public static void respond(Swrl swrl, String response, SwrlPreferences preferences, CollectionManager collectionManager) {
         OkHttpClient client =
                 new OkHttpClient.Builder()
                         .readTimeout(30, TimeUnit.SECONDS)
@@ -38,16 +52,22 @@ public class SwrlCoActions {
         if (swrlId == 0 || swrlId == -1 ||
                 userId == 0 || userId == -1 ||
                 authToken == null || authToken.isEmpty()) {
+            Log.i(LOG_TAG, String.format("No Swrl ID or not logged in. swrlId=%s, userId=%s, authtoken=%s",
+                    swrlId, userId, authToken));
             return;
         }
 
         HttpUrl respondURL = HttpUrl.parse("https://www.swrl.co/api/v1/swrl-actions/" + swrlId + "/respond");
 
-        String json = "{" +
-                "\"user_id\":\"" + userId + "\"," +
-                "\"auth_token\":\"" + authToken + "\"," +
-                "\"response-summary\":\"" + response + "\"" +
-                "\"}";
+        RespondBody respondBody = new RespondBody();
+        respondBody.auth_token = authToken;
+        respondBody.user_id = String.valueOf(userId);
+        respondBody.responseSummary = response;
+
+        String json = new Gson().toJson(respondBody);
+
+        Log.d(LOG_TAG, String.format("Responding %s to swrl ID %s with URL %s and body %s",
+                response, swrlId, respondURL, json));
 
         RequestBody postBody = RequestBody.create(JSON, json);
         Request request = new Request.Builder()
@@ -55,7 +75,12 @@ public class SwrlCoActions {
                 .post(postBody)
                 .build();
         try {
-            client.newCall(request).execute();
+            Response swrlResponse = client.newCall(request).execute();
+            Log.d(LOG_TAG, "response: " + swrlResponse.body().string());
+            if (Objects.equals(response, DISMISSED) && swrlResponse.code() == HTTP_OK && collectionManager != null){
+                Log.i(LOG_TAG, "Deleting Swrl: " + swrl.toString());
+                collectionManager.permanentlyDelete(swrl);
+            }
         } catch (IOException e) {
             Log.i(LOG_TAG, "Response Failed.");
             e.printStackTrace();
@@ -116,7 +141,7 @@ public class SwrlCoActions {
     }
 
     public static void create(Swrl swrl, String response, SwrlPreferences preferences,
-                              CollectionManager collectionManager){
+                              CollectionManager collectionManager) {
         HttpUrl url = HttpUrl.parse("https://www.swrl.co/api/v1/swrl-actions/create-swrl");
         create(url, swrl, response, preferences, collectionManager);
     }
@@ -140,6 +165,8 @@ public class SwrlCoActions {
         createBody.details = swrl.getDetails();
 
         String json = new Gson().toJson(createBody);
+
+        Log.d(LOG_TAG, "Creating swrl with json: " + json);
 
         RequestBody postBody = RequestBody.create(JSON, json);
         Request request = new Request.Builder()

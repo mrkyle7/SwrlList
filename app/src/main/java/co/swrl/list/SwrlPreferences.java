@@ -54,6 +54,10 @@ public class SwrlPreferences {
         return preferences.getInt(String.valueOf(R.string.pkey_user_id), 0);
     }
 
+    public boolean loggedIn(){
+        return getUserID() != 0 && getAuthToken() != null;
+    }
+
     private void savePackageVersion(int version) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         Editor editor = preferences.edit();

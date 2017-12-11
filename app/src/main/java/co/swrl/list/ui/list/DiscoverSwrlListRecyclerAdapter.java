@@ -16,6 +16,7 @@ import co.swrl.list.SwrlPreferences;
 import co.swrl.list.collection.CollectionManager;
 import co.swrl.list.item.Swrl;
 import co.swrl.list.item.Type;
+import co.swrl.list.item.actions.SwrlCoActions;
 import co.swrl.list.item.discovery.SwrlCoLists;
 import co.swrl.list.ui.activity.ListActivity;
 
@@ -184,9 +185,20 @@ public class DiscoverSwrlListRecyclerAdapter extends RecyclerView.Adapter implem
     @Override
     public void swipeAction(RecyclerView.ViewHolder viewHolder, int position) {
         Swrl swrlToAdd = swrls.get(position);
+        final SwrlPreferences preferences = new SwrlPreferences(activity);
         if (swrls.contains(swrlToAdd)) {
             swrls.remove(position);
             collectionManager.save(swrlToAdd);
+            if (preferences.loggedIn()) {
+                new AsyncTask<Swrl, Void, Void>() {
+                    @Override
+                    protected Void doInBackground(Swrl... swrls) {
+                        Swrl mSwrl = swrls[0];
+                        SwrlCoActions.respond(mSwrl, SwrlCoActions.LATER, preferences, null);
+                        return null;
+                    }
+                }.execute(swrlToAdd);
+            }
             notifyItemRemoved(position);
             navListAdapter.notifyDataSetChanged();
             activity.setNoSwrlsText();
