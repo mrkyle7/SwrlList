@@ -29,7 +29,7 @@ import com.getbase.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 
 import co.swrl.list.R;
-import co.swrl.list.SwrlPreferences;
+import co.swrl.list.utils.SwrlPreferences;
 import co.swrl.list.collection.CollectionManager;
 import co.swrl.list.collection.SQLiteCollectionManager;
 import co.swrl.list.item.Details;

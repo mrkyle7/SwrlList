@@ -1,3 +1,6 @@
+Version 14 (17 December 2017)
+- Register and forgotten password links on the login page
+
 Version 13.1 (11 December 2017)
 - Keep up to date with swrl.co with all your actions!
 
@@ -9,7 +12,3 @@ Version 12 (02 December 2017)
 
 Version 11.1.1 (29 November 2017)
 - See progress of refresh all details
-
-Version 11 (28 November 2017)
-- Added User Profile image of the author of the Swrl
-- Avoid refreshing the lists all the time with caching improvements

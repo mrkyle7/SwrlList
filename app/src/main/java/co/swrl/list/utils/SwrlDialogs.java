@@ -1,11 +1,10 @@
-package co.swrl.list.ui;
+package co.swrl.list.utils;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.net.Uri;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -17,6 +16,7 @@ import co.swrl.list.R;
 
 import static android.content.DialogInterface.BUTTON_NEUTRAL;
 import static android.content.DialogInterface.BUTTON_POSITIVE;
+import static co.swrl.list.utils.URLUtils.openURL;
 
 public class SwrlDialogs {
     private final Activity activity;
@@ -59,7 +59,7 @@ public class SwrlDialogs {
                 .setNeutralButton(R.string.whatsNewMoreButtonText, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        openURL(Uri.parse("https://github.com/mrkyle7/SwrlList/blob/master/app/src/main/play/en-GB/whatsnew"));
+                        openURL(Uri.parse("https://github.com/mrkyle7/SwrlList/blob/master/app/src/main/play/en-GB/whatsnew"), activity);
                     }
                 });
     }
@@ -69,10 +69,5 @@ public class SwrlDialogs {
         dismissWhatsNew.setId(R.id.dismissWhatsNewButton);
         Button whatsMore = whatsNewDialog.getButton(BUTTON_NEUTRAL);
         whatsMore.setId(R.id.whatsNewMoreButton);
-    }
-
-    private void openURL(Uri uri){
-        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-        activity.startActivity(intent);
     }
 }

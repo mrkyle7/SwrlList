@@ -9,7 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import co.swrl.list.SwrlPreferences;
+import co.swrl.list.utils.SwrlPreferences;
 import co.swrl.list.collection.SQLiteCollectionManager;
 import co.swrl.list.item.Swrl;
 import okhttp3.HttpUrl;

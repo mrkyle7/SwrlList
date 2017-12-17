@@ -5,6 +5,8 @@
     <string name="pkey_version_number">version_number</string>
     <string name="whatsNewLatest">
         <![CDATA[
+        <h4>Version 14 (17 December 2017)</h4>
+        \u2022 Register and forgotten password links on the login page
         <h4>Version 13.1 (11 December 2017)</h4>
         \u2022 Keep up to date with swrl.co with all your actions!
         <h4>Version 13 (03 December 2017)</h4>
@@ -157,4 +159,5 @@
     <string name="profile_image">profile image</string>
     <string name="refresh_all_details">Refresh Details</string>
     <string name="sync_swrls_with_swrl_co">Sync Swrls with swrl.co</string>
+    <string name="login_forgot_password">Forgot your password? Click here</string>
 </resources>

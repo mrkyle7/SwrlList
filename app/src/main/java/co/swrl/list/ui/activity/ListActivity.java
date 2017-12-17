@@ -45,7 +45,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import co.swrl.list.R;
-import co.swrl.list.SwrlPreferences;
+import co.swrl.list.utils.SwrlPreferences;
 import co.swrl.list.collection.CollectionManager;
 import co.swrl.list.collection.SQLiteCollectionManager;
 import co.swrl.list.item.Details;
@@ -53,7 +53,7 @@ import co.swrl.list.item.Swrl;
 import co.swrl.list.item.Type;
 import co.swrl.list.item.actions.SwrlCoActions;
 import co.swrl.list.item.search.Search;
-import co.swrl.list.ui.SwrlDialogs;
+import co.swrl.list.utils.SwrlDialogs;
 import co.swrl.list.ui.list.ActiveSwrlListRecyclerAdapter;
 import co.swrl.list.ui.list.DiscoverSwrlListRecyclerAdapter;
 import co.swrl.list.ui.list.DoneSwrlListRecyclerAdapter;

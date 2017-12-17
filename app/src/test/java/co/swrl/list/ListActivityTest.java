@@ -3,7 +3,8 @@ package co.swrl.list;
 import org.junit.Test;
 
 import co.swrl.list.ui.activity.ListActivity;
-import co.swrl.list.ui.SwrlDialogs;
+import co.swrl.list.utils.SwrlDialogs;
+import co.swrl.list.utils.SwrlPreferences;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;

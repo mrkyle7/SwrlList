@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-import co.swrl.list.SwrlPreferences;
+import co.swrl.list.utils.SwrlPreferences;
 import co.swrl.list.collection.CollectionManager;
 import co.swrl.list.item.Details;
 import co.swrl.list.item.Swrl;

@@ -1,6 +1,9 @@
 package co.swrl.list.ui.activity;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.graphics.Paint;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -16,13 +19,15 @@ import com.google.gson.Gson;
 import java.util.concurrent.TimeUnit;
 
 import co.swrl.list.R;
-import co.swrl.list.SwrlPreferences;
+import co.swrl.list.utils.SwrlPreferences;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+
+import static co.swrl.list.utils.URLUtils.openURL;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -31,6 +36,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText passwordText;
     private Button loginButton;
     private SwrlPreferences preferences;
+    private final Activity mActivity = this;
 
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
@@ -41,7 +47,23 @@ public class LoginActivity extends AppCompatActivity {
         emailText = (EditText) findViewById(R.id.login_username);
         passwordText = (EditText) findViewById(R.id.login_password);
         loginButton = (Button) findViewById(R.id.btn_login);
-        TextView signupLink = (TextView) findViewById(R.id.link_signup);
+        TextView signUpLink = (TextView) findViewById(R.id.link_signup);
+        signUpLink.setPaintFlags(signUpLink.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+        signUpLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openURL(Uri.parse("https://www.swrl.co/register"), mActivity);
+            }
+        });
+
+        TextView forgotPasswordLink = (TextView) findViewById(R.id.link_forgot_password);
+        forgotPasswordLink.setPaintFlags(forgotPasswordLink.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+        forgotPasswordLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openURL(Uri.parse("https://www.swrl.co/forgot-password"), mActivity);
+            }
+        });
 
         preferences = new SwrlPreferences(this);
 

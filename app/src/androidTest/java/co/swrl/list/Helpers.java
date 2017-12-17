@@ -24,6 +24,7 @@ import co.swrl.list.collection.SQLiteCollectionManager;
 import co.swrl.list.item.Details;
 import co.swrl.list.item.Swrl;
 import co.swrl.list.item.Type;
+import co.swrl.list.utils.SwrlPreferences;
 
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
@@ -92,7 +93,7 @@ public class Helpers {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(applicationContext);
 
         int currentVersion = Integer.MAX_VALUE;
-        settings.edit().putInt(String.valueOf(R.string.pkey_version_number), currentVersion).apply();
+        settings.edit().putInt(SwrlPreferences.KEY_VERSION_NUMBER, currentVersion).apply();
     }
 
     static Activity restartActivity(Activity activity, ActivityTestRule testRule) {

@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Objects;
 
 import co.swrl.list.R;
-import co.swrl.list.SwrlPreferences;
+import co.swrl.list.utils.SwrlPreferences;
 import co.swrl.list.collection.CollectionManager;
 import co.swrl.list.item.Details;
 import co.swrl.list.item.Swrl;
