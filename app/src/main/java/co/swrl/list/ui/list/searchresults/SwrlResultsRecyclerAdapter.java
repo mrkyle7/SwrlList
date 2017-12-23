@@ -1,4 +1,4 @@
-package co.swrl.list.ui.list;
+package co.swrl.list.ui.list.searchresults;
 
 import java.util.List;
 

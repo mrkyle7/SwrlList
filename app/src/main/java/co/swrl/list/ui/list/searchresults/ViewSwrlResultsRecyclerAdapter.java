@@ -1,7 +1,6 @@
-package co.swrl.list.ui.list;
+package co.swrl.list.ui.list.searchresults;
 
 import android.app.Activity;
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
@@ -10,19 +9,24 @@ import java.util.List;
 
 import co.swrl.list.collection.CollectionManager;
 import co.swrl.list.item.Swrl;
+import co.swrl.list.ui.list.common.SwrlRow;
 
-import static co.swrl.list.ui.activity.ViewActivity.ViewType.ADD;
 
+public class ViewSwrlResultsRecyclerAdapter extends RecyclerView.Adapter implements SwrlResultsRecyclerAdapter {
 
-public class AddSwrlResultsRecyclerAdapter extends RecyclerView.Adapter implements SwrlResultsRecyclerAdapter {
-
-    private final Context context;
+    private final Activity activity;
     private final List<Swrl> swrls = new ArrayList<>();
+    private final List<Swrl> orignalSwrls;
+    private final Swrl originalSwrl;
+    private final int originalPosition;
     private final CollectionManager collectionManager;
 
-    public AddSwrlResultsRecyclerAdapter(Context context, CollectionManager collectionManager) {
-        this.context = context;
+    public ViewSwrlResultsRecyclerAdapter(Activity activity, CollectionManager collectionManager, List<Swrl> originalSwrls, Swrl originalSwrl, int originalPosition) {
+        this.activity = activity;
         this.collectionManager = collectionManager;
+        this.orignalSwrls = originalSwrls;
+        this.originalSwrl = originalSwrl;
+        this.originalPosition = originalPosition;
     }
 
     @Override
@@ -38,9 +42,8 @@ public class AddSwrlResultsRecyclerAdapter extends RecyclerView.Adapter implemen
         swrlRow.setTitle(swrl);
         swrlRow.setSubTitle(swrl);
         swrlRow.setSubtitle2(swrl);
-        swrlRow.setImage(swrl, context);
-        swrlRow.setAddButton(swrl, collectionManager, (Activity) context);
-        swrlRow.setRowClickToOpenViewByType(position, swrls, context, ADD);
+        swrlRow.setImage(swrl, activity);
+        swrlRow.setRowClickToReplaceViewWithDetails(swrl, originalSwrl, orignalSwrls, originalPosition, collectionManager, activity);
     }
 
     @Override

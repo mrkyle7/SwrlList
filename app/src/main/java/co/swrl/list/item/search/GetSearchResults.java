@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import co.swrl.list.item.Details;
 import co.swrl.list.item.Swrl;
 import co.swrl.list.item.Type;
-import co.swrl.list.ui.list.SwrlResultsRecyclerAdapter;
+import co.swrl.list.ui.list.searchresults.SwrlResultsRecyclerAdapter;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;

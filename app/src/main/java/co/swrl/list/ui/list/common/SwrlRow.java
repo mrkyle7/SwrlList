@@ -1,4 +1,4 @@
-package co.swrl.list.ui.list;
+package co.swrl.list.ui.list.common;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -45,7 +45,7 @@ import static co.swrl.list.R.drawable.ic_add_black_24dp;
 import static co.swrl.list.ui.activity.ViewActivity.ViewType.VIEW;
 
 
-class SwrlRow extends RecyclerView.ViewHolder {
+public class SwrlRow extends RecyclerView.ViewHolder {
 
     private final TextView title;
     private final TextView subtitle;
@@ -55,7 +55,7 @@ class SwrlRow extends RecyclerView.ViewHolder {
     private final ImageButton addButton;
     private final ImageView profileImage;
 
-    SwrlRow(ViewGroup parent) {
+    public SwrlRow(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.list_row, parent, false));
         title = (TextView) itemView.findViewById(R.id.list_title);
         subtitle = (TextView) itemView.findViewById(R.id.list_subtitle1);

@@ -22,8 +22,8 @@ import co.swrl.list.collection.SQLiteCollectionManager;
 import co.swrl.list.item.Swrl;
 import co.swrl.list.item.Type;
 import co.swrl.list.item.search.GetSearchResults;
-import co.swrl.list.ui.list.AddSwrlResultsRecyclerAdapter;
-import co.swrl.list.ui.list.SwrlListViewFactory;
+import co.swrl.list.ui.list.searchresults.AddSwrlResultsRecyclerAdapter;
+import co.swrl.list.ui.list.utils.SwrlListViewFactory;
 
 import static android.view.View.GONE;
 

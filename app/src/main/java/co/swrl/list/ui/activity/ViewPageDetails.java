@@ -33,8 +33,8 @@ import co.swrl.list.item.Details;
 import co.swrl.list.item.Swrl;
 import co.swrl.list.item.Type;
 import co.swrl.list.item.search.GetSearchResults;
-import co.swrl.list.ui.list.SwrlListViewFactory;
-import co.swrl.list.ui.list.ViewSwrlResultsRecyclerAdapter;
+import co.swrl.list.ui.list.utils.SwrlListViewFactory;
+import co.swrl.list.ui.list.searchresults.ViewSwrlResultsRecyclerAdapter;
 
 import static android.view.View.GONE;
 

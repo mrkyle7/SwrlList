@@ -1,4 +1,4 @@
-package co.swrl.list.ui.list;
+package co.swrl.list.ui.list.utils;
 
 import android.app.Activity;
 import android.support.v7.widget.LinearLayoutManager;

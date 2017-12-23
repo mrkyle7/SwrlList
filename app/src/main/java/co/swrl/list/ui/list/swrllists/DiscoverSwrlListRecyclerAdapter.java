@@ -1,4 +1,4 @@
-package co.swrl.list.ui.list;
+package co.swrl.list.ui.list.swrllists;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
+import co.swrl.list.ui.list.menus.DrawerListAdapter;
+import co.swrl.list.ui.list.common.SwrlRow;
 import co.swrl.list.utils.SwrlPreferences;
 import co.swrl.list.collection.CollectionManager;
 import co.swrl.list.item.Swrl;
@@ -32,13 +34,13 @@ public class DiscoverSwrlListRecyclerAdapter extends RecyclerView.Adapter implem
     private final Context context;
     private final List<Swrl> swrls;
     private List<Swrl> cachedSwrls;
-    private final ListActivity.DrawerListAdapter navListAdapter;
+    private final DrawerListAdapter navListAdapter;
     private final ListActivity activity;
     private final SwrlCoLists swrlGetter;
     private final CollectionManager collectionManager;
     private AsyncTask<Void, Void, List<Swrl>> backgroundSearch;
 
-    private DiscoverSwrlListRecyclerAdapter(ListActivity activity, CollectionManager collectionManager, ListActivity.DrawerListAdapter navListAdapter, SwrlCoLists swrlGetter) {
+    private DiscoverSwrlListRecyclerAdapter(ListActivity activity, CollectionManager collectionManager, DrawerListAdapter navListAdapter, SwrlCoLists swrlGetter) {
         this.activity = activity;
         this.swrlGetter = swrlGetter;
         this.context = this.activity.getApplicationContext();
@@ -47,15 +49,15 @@ public class DiscoverSwrlListRecyclerAdapter extends RecyclerView.Adapter implem
         this.navListAdapter = navListAdapter;
     }
 
-    public static DiscoverSwrlListRecyclerAdapter publicDiscover(ListActivity activity, CollectionManager collectionManager, ListActivity.DrawerListAdapter navListAdapter) {
+    public static DiscoverSwrlListRecyclerAdapter publicDiscover(ListActivity activity, CollectionManager collectionManager, DrawerListAdapter navListAdapter) {
         return new DiscoverSwrlListRecyclerAdapter(activity, collectionManager, navListAdapter, publicSwrls(collectionManager));
     }
 
-    public static DiscoverSwrlListRecyclerAdapter weightedDiscover(ListActivity activity, CollectionManager collectionManager, ListActivity.DrawerListAdapter navListAdapter, SwrlPreferences preferences) {
+    public static DiscoverSwrlListRecyclerAdapter weightedDiscover(ListActivity activity, CollectionManager collectionManager, DrawerListAdapter navListAdapter, SwrlPreferences preferences) {
         return new DiscoverSwrlListRecyclerAdapter(activity, collectionManager, navListAdapter, weightedSwrls(collectionManager, preferences));
     }
 
-    public static DiscoverSwrlListRecyclerAdapter inboxDiscover(ListActivity activity, CollectionManager collectionManager, ListActivity.DrawerListAdapter navListAdapter, SwrlPreferences preferences) {
+    public static DiscoverSwrlListRecyclerAdapter inboxDiscover(ListActivity activity, CollectionManager collectionManager, DrawerListAdapter navListAdapter, SwrlPreferences preferences) {
         return new DiscoverSwrlListRecyclerAdapter(activity, collectionManager, navListAdapter, inboxSwrls(collectionManager, preferences));
     }
 
@@ -183,7 +185,7 @@ public class DiscoverSwrlListRecyclerAdapter extends RecyclerView.Adapter implem
     }
 
     @Override
-    public void swipeAction(RecyclerView.ViewHolder viewHolder, int position) {
+    public void swipeLeftAction(RecyclerView.ViewHolder viewHolder, int position) {
         Swrl swrlToAdd = swrls.get(position);
         final SwrlPreferences preferences = new SwrlPreferences(activity);
         if (swrls.contains(swrlToAdd)) {
@@ -204,6 +206,11 @@ public class DiscoverSwrlListRecyclerAdapter extends RecyclerView.Adapter implem
             activity.setNoSwrlsText();
             showUndoSnackbar(swrlToAdd, viewHolder.itemView, position);
         }
+    }
+
+    @Override
+    public void swipeRightAction(RecyclerView.ViewHolder viewHolder, int position) {
+        swipeLeftAction(viewHolder, position);
     }
 
     private void showUndoSnackbar(final Swrl swrl, View row, final int position) {
