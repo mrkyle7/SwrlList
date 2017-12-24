@@ -7,6 +7,8 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import co.swrl.list.ui.activity.ListActivity;
 
 public class SwipeItemDecoration extends RecyclerView.ItemDecoration {
@@ -16,9 +18,9 @@ public class SwipeItemDecoration extends RecyclerView.ItemDecoration {
     // we want to cache this and not allocate anything repeatedly in the onDraw method
     private Drawable background;
     private boolean initiated;
-    private final int swipeColor;
+    private final AtomicInteger swipeColor;
 
-    public SwipeItemDecoration(ListActivity listActivity, int swipeColor) {
+    public SwipeItemDecoration(ListActivity listActivity, AtomicInteger swipeColor) {
         this.listActivity = listActivity;
         this.swipeColor = swipeColor;
     }
@@ -26,7 +28,7 @@ public class SwipeItemDecoration extends RecyclerView.ItemDecoration {
     private void init() {
         Log.d(LOG_TAG, "Initiating Animation decoration Helper");
         //noinspection deprecation
-        background = new ColorDrawable(listActivity.getResources().getColor(swipeColor));
+        background = new ColorDrawable(listActivity.getResources().getColor(swipeColor.intValue()));
         initiated = true;
     }
 

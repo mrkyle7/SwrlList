@@ -29,6 +29,7 @@ import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import co.swrl.list.R;
 import co.swrl.list.collection.CollectionManager;
@@ -36,14 +37,14 @@ import co.swrl.list.collection.SQLiteCollectionManager;
 import co.swrl.list.item.Type;
 import co.swrl.list.tasks.RefreshAllDetailsTask;
 import co.swrl.list.tasks.SyncAllSwrlsTask;
+import co.swrl.list.ui.list.menus.DrawerListAdapter;
 import co.swrl.list.ui.list.swrllists.ActiveSwrlListRecyclerAdapter;
 import co.swrl.list.ui.list.swrllists.DiscoverSwrlListRecyclerAdapter;
 import co.swrl.list.ui.list.swrllists.DoneSwrlListRecyclerAdapter;
-import co.swrl.list.ui.list.menus.DrawerListAdapter;
 import co.swrl.list.ui.list.swrllists.SwrlListRecyclerAdapter;
-import co.swrl.list.ui.list.utils.SwrlListViewFactory;
 import co.swrl.list.ui.list.utils.SwipeItemDecoration;
 import co.swrl.list.ui.list.utils.SwipeSimpleCallback;
+import co.swrl.list.ui.list.utils.SwrlListViewFactory;
 import co.swrl.list.utils.SwrlDialogs;
 import co.swrl.list.utils.SwrlPreferences;
 
@@ -55,16 +56,20 @@ import static co.swrl.list.ui.list.swrllists.DiscoverSwrlListRecyclerAdapter.wei
 
 public class ListActivity extends AppCompatActivity {
 
-    private final int doneColor = R.color.add;
-    private final int deleteColor = R.color.delete;
-    private final int discoverColor = R.color.add;
     public final SwrlPreferences preferences = new SwrlPreferences(this);
-    private int swipeColor = doneColor;
+
+    private final int green = R.color.add;
+    private final int red = R.color.delete;
+    public AtomicInteger swipeLeftColor = new AtomicInteger(green);
+    public AtomicInteger swipeRightColor = new AtomicInteger(green);
+    public AtomicInteger animationColor = new AtomicInteger(green);
 
     private final int doneIcon = R.drawable.ic_done_black_24dp;
     private final int deleteIcon = R.drawable.ic_delete_black_24dp;
-    private final int discoverIcon = R.drawable.ic_add_black_24dp;
-    private int swipeIcon = doneIcon;
+    private final int addIcon = R.drawable.ic_add_black_24dp;
+    private final int shareIcon = R.drawable.ic_share_black_24dp;
+    private AtomicInteger swipeLeftIcon = new AtomicInteger(doneIcon);
+    private AtomicInteger swipeRightIcon = new AtomicInteger(shareIcon);
 
     private final int swrl_list_title = R.string.app_title;
     private final int done_title = R.string.done_title;
@@ -95,7 +100,7 @@ public class ListActivity extends AppCompatActivity {
     private final DrawerListAdapter navListAdapter = new DrawerListAdapter(this, this, Type.values(), typeFilter);
     private static final String LOG_TAG = "ListActivity";
     private SwipeSimpleCallback swipeCallback;
-    private final SwipeItemDecoration swipeItemDecoration = new SwipeItemDecoration(this, swipeColor);
+    private final SwipeItemDecoration swipeItemDecoration = new SwipeItemDecoration(this, animationColor);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -279,72 +284,73 @@ public class ListActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id = item.getItemId();
                 if (id == R.id.active_swrls) {
-                    Log.d(LOG_TAG, "clicked active swrls");
                     if (swrlListAdapter instanceof DiscoverSwrlListRecyclerAdapter) {
                         ((DiscoverSwrlListRecyclerAdapter) swrlListAdapter).cancelExistingSearches();
                     }
-                    swrlListAdapter = activeSwrlListAdapter;
-                    swipeColor = doneColor;
-                    swipeIcon = doneIcon;
-                    setUpList();
-                    title = swrl_list_title;
-                    resetTitle();
-                    navListAdapter.notifyDataSetChanged();
-                    noSwrlsText = listNoSwrlsText;
-                    setNoSwrlsText();
+                    switchViewToCurrentTab(activeSwrlListAdapter,
+                            green,
+                            doneIcon,
+                            green,
+                            doneIcon, // TODO:  should be shareIcon
+                            swrl_list_title,
+                            listNoSwrlsText, "clicked active swrls");
                 }
                 if (id == R.id.done_swrls) {
-                    Log.d(LOG_TAG, "clicked done swrls");
                     if (swrlListAdapter instanceof DiscoverSwrlListRecyclerAdapter) {
                         ((DiscoverSwrlListRecyclerAdapter) swrlListAdapter).cancelExistingSearches();
                     }
-                    swrlListAdapter = doneSwrlListAdapter;
-                    swipeColor = deleteColor;
-                    swipeIcon = deleteIcon;
-                    setUpList();
-                    title = done_title;
-                    resetTitle();
-                    navListAdapter.notifyDataSetChanged();
-                    noSwrlsText = doneNoSwrlsText;
-                    setNoSwrlsText();
+                    switchViewToCurrentTab(doneSwrlListAdapter,
+                            red,
+                            deleteIcon,
+                            red, // TODO: make green
+                            deleteIcon, // TODO: make shareIcon
+                            done_title,
+                            doneNoSwrlsText, "clicked done swrls");
                 }
                 if (id == R.id.discover) {
-                    Log.d(LOG_TAG, "clicked discover");
-                    swrlListAdapter = discoverSwrlListAdapter;
-                    swipeColor = discoverColor;
-                    swipeIcon = discoverIcon;
-                    setUpList();
-                    title = discover_title;
-                    resetTitle();
-                    navListAdapter.notifyDataSetChanged();
-                    noSwrlsText = discoverNoSwrlsText;
-                    setNoSwrlsText();
+                    switchViewToCurrentTab(discoverSwrlListAdapter,
+                            red,
+                            deleteIcon,
+                            green,
+                            addIcon,
+                            discover_title,
+                            discoverNoSwrlsText, "clicked discover");
                 }
                 if (id == R.id.discover_weighted) {
-                    Log.d(LOG_TAG, "clicked discover weighted");
-                    swrlListAdapter = weightedDiscoverSwrlListAdapter;
-                    swipeColor = discoverColor;
-                    swipeIcon = discoverIcon;
-                    setUpList();
-                    title = discover_title;
-                    resetTitle();
-                    navListAdapter.notifyDataSetChanged();
-                    noSwrlsText = discoverNoSwrlsText;
-                    setNoSwrlsText();
+                    switchViewToCurrentTab(weightedDiscoverSwrlListAdapter,
+                            red,
+                            deleteIcon,
+                            green,
+                            addIcon,
+                            discover_title,
+                            discoverNoSwrlsText,
+                            "clicked discover weighted");
                 }
                 if (id == R.id.inbox) {
-                    Log.d(LOG_TAG, "clicked inbox");
-                    swrlListAdapter = inboxDiscoverSwrlListAdapter;
-                    swipeColor = discoverColor;
-                    swipeIcon = discoverIcon;
-                    setUpList();
-                    title = inbox_title;
-                    resetTitle();
-                    navListAdapter.notifyDataSetChanged();
-                    noSwrlsText = inboxNoSwrlsText;
-                    setNoSwrlsText();
+                    switchViewToCurrentTab(inboxDiscoverSwrlListAdapter,
+                            red,
+                            deleteIcon,
+                            green,
+                            addIcon,
+                            inbox_title,
+                            inboxNoSwrlsText, "clicked inbox");
                 }
                 return true;
+            }
+
+            private void switchViewToCurrentTab(SwrlListRecyclerAdapter swrlListAdapter, int swipeLeftColor, int swipeLeftIcon, int swipeRightColor, int swipeRightIcon, int title, int noSwrlsText, String logMessage) {
+                Log.d(LOG_TAG, logMessage);
+                ListActivity.this.swrlListAdapter = swrlListAdapter;
+                ListActivity.this.swipeLeftColor.set(swipeLeftColor);
+                ListActivity.this.swipeLeftIcon.set(swipeLeftIcon);
+                ListActivity.this.swipeRightColor.set(swipeRightColor);
+                ListActivity.this.swipeRightIcon.set(swipeRightIcon);
+                ListActivity.this.title = title;
+                ListActivity.this.noSwrlsText = noSwrlsText;
+                setUpList();
+                resetTitle();
+                navListAdapter.notifyDataSetChanged();
+                setNoSwrlsText();
             }
         });
     }
@@ -421,7 +427,7 @@ public class ListActivity extends AppCompatActivity {
 
     private void setUpItemTouchHelper(final RecyclerView recyclerView) {
         if (swipeCallback == null) {
-            swipeCallback = new SwipeSimpleCallback(this, recyclerView, swipeColor, swipeIcon);
+            swipeCallback = new SwipeSimpleCallback(this, recyclerView, swipeItemDecoration, swipeLeftColor, swipeLeftIcon, swipeRightColor, swipeRightIcon);
         }
         ItemTouchHelper mItemTouchHelper = new ItemTouchHelper(swipeCallback);
         mItemTouchHelper.attachToRecyclerView(recyclerView);

@@ -1,24 +1,21 @@
 package co.swrl.list.ui.list.swrllists;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import co.swrl.list.ui.list.menus.DrawerListAdapter;
-import co.swrl.list.ui.list.common.SwrlRow;
-import co.swrl.list.utils.SwrlPreferences;
 import co.swrl.list.collection.CollectionManager;
 import co.swrl.list.item.Swrl;
 import co.swrl.list.item.Type;
 import co.swrl.list.item.actions.SwrlCoActions;
 import co.swrl.list.ui.activity.ListActivity;
+import co.swrl.list.ui.list.common.SwipeActions;
+import co.swrl.list.ui.list.common.SwrlRow;
+import co.swrl.list.ui.list.menus.DrawerListAdapter;
 
 import static co.swrl.list.ui.activity.ViewActivity.ViewType.DONE;
 
@@ -106,69 +103,26 @@ public class DoneSwrlListRecyclerAdapter extends RecyclerView.Adapter implements
 
     @Override
     public void swipeLeftAction(RecyclerView.ViewHolder viewHolder, int position) {
-        Swrl swrlToRemove = swrls.get(position);
-        final SwrlPreferences preferences = new SwrlPreferences(activity);
-        if (swrls.contains(swrlToRemove)) {
-            swrls.remove(position);
-            int cachePosition = cachedSwrls.indexOf(swrlToRemove);
-            cachedSwrls.remove(swrlToRemove);
-            collectionManager.markAsDismissed(swrlToRemove);
-            AsyncTask<Swrl, Void, Void> dismissSwrlInBackground = new AsyncTask<Swrl, Void, Void>() {
-                @Override
-                protected Void doInBackground(Swrl... swrls) {
-                    Swrl mSwrl = swrls[0];
-                    SwrlCoActions.respond(mSwrl, SwrlCoActions.DISMISSED, preferences, collectionManager);
-                    return null;
-                }
-            };
-            if (preferences.loggedIn()) {
-                dismissSwrlInBackground.execute(swrlToRemove);
+        SwipeActions.CollectionManagerAction action = new SwipeActions.CollectionManagerAction() {
+            @Override
+            public void execute(Swrl swrl) {
+                collectionManager.permanentlyDelete(swrl);
             }
-            notifyItemRemoved(position);
-            navListAdapter.notifyDataSetChanged();
-            activity.setNoSwrlsText();
-            showUndoSnackbar(swrlToRemove, viewHolder.itemView, position, cachePosition, dismissSwrlInBackground);
-        }
+        };
+        SwipeActions.CollectionManagerAction undoAction = new SwipeActions.CollectionManagerAction() {
+            @Override
+            public void execute(Swrl swrl) {
+                collectionManager.save(swrl);
+                collectionManager.markAsDone(swrl);
+            }
+        };
+        SwipeActions.swipeAction(swrls, position, cachedSwrls, "deleted", action, undoAction, SwrlCoActions.DISMISSED, SwrlCoActions.DONE,
+                activity, this, navListAdapter, viewHolder.itemView);
     }
 
     @Override
     public void swipeRightAction(RecyclerView.ViewHolder viewHolder, int position) {
         swipeLeftAction(viewHolder, position);
-    }
-
-    private void showUndoSnackbar(final Swrl swrl, View row, final int position, final int cachePosition,
-                                  final AsyncTask<Swrl, Void, Void> backgroundTask) {
-        String undoTitle = "\"" + swrl.getTitle() + "\" " + "deleted";
-        Snackbar.make(row, undoTitle, Snackbar.LENGTH_LONG)
-                .setAction("Undo", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        v.clearAnimation();
-                        backgroundTask.cancel(true);
-                        reAddSwrl(position, swrl, cachePosition);
-                    }
-                }).show();
-    }
-
-    private void reAddSwrl(int position, Swrl swrl, int cachePosition) {
-        swrls.add(position, swrl);
-        cachedSwrls.add(cachePosition, swrl);
-        collectionManager.save(swrl);
-        collectionManager.markAsDone(swrl);
-        final SwrlPreferences preferences = new SwrlPreferences(activity);
-        if (preferences.loggedIn()) {
-            new AsyncTask<Swrl, Void, Void>() {
-                @Override
-                protected Void doInBackground(Swrl... swrls) {
-                    Swrl mSwrl = swrls[0];
-                    SwrlCoActions.respond(mSwrl, SwrlCoActions.DONE, preferences, null);
-                    return null;
-                }
-            }.execute(swrl);
-        }
-        notifyItemInserted(position);
-        navListAdapter.notifyDataSetChanged();
-        activity.setNoSwrlsText();
     }
 
 }

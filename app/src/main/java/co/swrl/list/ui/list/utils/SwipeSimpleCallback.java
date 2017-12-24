@@ -11,6 +11,8 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.View;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import co.swrl.list.R;
 import co.swrl.list.ui.activity.ListActivity;
 import co.swrl.list.ui.list.swrllists.SwrlListRecyclerAdapter;
@@ -21,27 +23,44 @@ public class SwipeSimpleCallback extends ItemTouchHelper.SimpleCallback {
     private ListActivity listActivity;
     private final RecyclerView recyclerView;
     // we want to cache these and not allocate anything repeatedly in the onChildDraw method
-    private Drawable background;
-    private Drawable xMark;
+    private Drawable swipeLeftBackground;
+    private Drawable swipeRightBackground;
+    private Drawable leftIconMark;
+    private Drawable rightIconMark;
     private int xMarkMargin;
     private boolean initiated;
-    private final int swipeColor;
-    private final int swipeIcon;
+    private final SwipeItemDecoration swipeItemDecoration;
+    private final AtomicInteger swipeLeftColor;
+    private final AtomicInteger swipeLeftIcon;
+    private final AtomicInteger swipeRightColor;
+    private final AtomicInteger swipeRightIcon;
+    private int lastSwipeDir;
 
-    public SwipeSimpleCallback(ListActivity listActivity, RecyclerView recyclerView, int swipeColor, int swipeIcon) {
+    public SwipeSimpleCallback(ListActivity listActivity, RecyclerView recyclerView,
+                               SwipeItemDecoration swipeItemDecoration,
+                               AtomicInteger swipeLeftColor, AtomicInteger swipeLeftIcon,
+                               AtomicInteger swipeRightColor, AtomicInteger SwipeRightIcon) {
         super(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
         this.listActivity = listActivity;
         this.recyclerView = recyclerView;
-        this.swipeColor = swipeColor;
-        this.swipeIcon = swipeIcon;
+        this.swipeItemDecoration = swipeItemDecoration;
+        this.swipeLeftColor = swipeLeftColor;
+        this.swipeLeftIcon = swipeLeftIcon;
+        this.swipeRightColor = swipeRightColor;
+        swipeRightIcon = SwipeRightIcon;
     }
 
     private void init() {
         Log.d(LOG_TAG, "Initiating Item Touch Helper");
+        Log.d(LOG_TAG, "Colors: left: " + swipeLeftColor + " right: " + swipeRightColor);
+        Log.d(LOG_TAG, "Icons: left: " + swipeLeftIcon + " right: " + swipeRightIcon);
         //noinspection deprecation
-        background = new ColorDrawable(listActivity.getResources().getColor(swipeColor));
-        xMark = ContextCompat.getDrawable(listActivity, swipeIcon);
-        xMark.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
+        swipeLeftBackground = new ColorDrawable(listActivity.getResources().getColor(swipeLeftColor.intValue()));
+        swipeRightBackground = new ColorDrawable(listActivity.getResources().getColor(swipeRightColor.intValue()));
+        leftIconMark = ContextCompat.getDrawable(listActivity, swipeLeftIcon.intValue());
+        leftIconMark.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
+        rightIconMark = ContextCompat.getDrawable(listActivity, swipeRightIcon.intValue());
+        rightIconMark.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
         xMarkMargin = (int) listActivity.getResources().getDimension(R.dimen.ic_clear_margin);
         initiated = true;
     }
@@ -58,9 +77,19 @@ public class SwipeSimpleCallback extends ItemTouchHelper.SimpleCallback {
 
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+        if (lastSwipeDir != swipeDir){
+            lastSwipeDir = swipeDir;
+            int newAnimationColor = swipeDir == ItemTouchHelper.RIGHT ? listActivity.swipeRightColor.intValue() : listActivity.swipeLeftColor.intValue();
+            listActivity.animationColor.set(newAnimationColor);
+            swipeItemDecoration.forceReDraw();
+        }
         int swipedPosition = viewHolder.getAdapterPosition();
         SwrlListRecyclerAdapter adapter = (SwrlListRecyclerAdapter) recyclerView.getAdapter();
-        adapter.swipeLeftAction(viewHolder, swipedPosition);
+        if (swipeDir == ItemTouchHelper.RIGHT) {
+            adapter.swipeRightAction(viewHolder, swipedPosition);
+        } else {
+            adapter.swipeLeftAction(viewHolder, swipedPosition);
+        }
     }
 
     @Override
@@ -83,18 +112,25 @@ public class SwipeSimpleCallback extends ItemTouchHelper.SimpleCallback {
             init();
         }
 
-        // draw green background
-        if (dX > 0) { //swipe right
-            background.setBounds(itemView.getLeft() - (int) dX, itemView.getTop(), itemView.getRight(), itemView.getBottom());
+        if (swipeRight(dX)) {
+            swipeRightBackground.setBounds(itemView.getLeft() - (int) dX, itemView.getTop(), itemView.getRight(), itemView.getBottom());
+            swipeRightBackground.draw(c);
         } else {
-            background.setBounds(itemView.getRight() + (int) dX, itemView.getTop(), itemView.getRight(), itemView.getBottom());
+            swipeLeftBackground.setBounds(itemView.getRight() + (int) dX, itemView.getTop(), itemView.getRight(), itemView.getBottom());
+            swipeLeftBackground.draw(c);
         }
-        background.draw(c);
 
         // draw mark
         int itemHeight = itemView.getBottom() - itemView.getTop();
-        int intrinsicWidth = xMark.getIntrinsicWidth();
-        int intrinsicHeight = xMark.getIntrinsicWidth();
+        int intrinsicWidth;
+        int intrinsicHeight;
+        if (swipeRight(dX)) {
+            intrinsicWidth = rightIconMark.getIntrinsicWidth();
+            intrinsicHeight = rightIconMark.getIntrinsicWidth();
+        } else {
+            intrinsicWidth = leftIconMark.getIntrinsicWidth();
+            intrinsicHeight = leftIconMark.getIntrinsicWidth();
+        }
 
         int xMarkTop = itemView.getTop() + (itemHeight - intrinsicHeight) / 2;
         int xMarkBottom = xMarkTop + intrinsicHeight;
@@ -102,17 +138,24 @@ public class SwipeSimpleCallback extends ItemTouchHelper.SimpleCallback {
         int xMarkLeft;
         int xMarkRight;
 
-        if (dX > 0) { //swipe Right
+        if (swipeRight(dX)) {
             xMarkLeft = itemView.getLeft() + xMarkMargin;
             xMarkRight = itemView.getLeft() + xMarkMargin + intrinsicWidth;
+            rightIconMark.setBounds(xMarkLeft, xMarkTop, xMarkRight, xMarkBottom);
+            rightIconMark.draw(c);
         } else {
             xMarkLeft = itemView.getRight() - xMarkMargin - intrinsicWidth;
             xMarkRight = itemView.getRight() - xMarkMargin;
+            leftIconMark.setBounds(xMarkLeft, xMarkTop, xMarkRight, xMarkBottom);
+            leftIconMark.draw(c);
         }
-        xMark.setBounds(xMarkLeft, xMarkTop, xMarkRight, xMarkBottom);
-        xMark.draw(c);
+
 
         super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+    }
+
+    private boolean swipeRight(float dX) {
+        return dX > 0;
     }
 
 }

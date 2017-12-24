@@ -116,6 +116,10 @@ public class Swrl implements Serializable {
         return id;
     }
 
+    public String getSwrlUrl(){
+        return id != 0 ? "https://www.swrl.co/swirls/" + id : null;
+    }
+
     public void setAuthorId(int authorId) {
         this.authorId = authorId;
     }

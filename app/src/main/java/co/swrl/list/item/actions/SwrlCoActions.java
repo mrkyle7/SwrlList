@@ -30,6 +30,7 @@ public class SwrlCoActions {
     public static final String LATER = "Later";
     public static final String DONE = "Done";
     public static final String DISMISSED = "Dismissed";
+    public static final String REMOVE_RESPONSE = "";
 
     private static class RespondBody {
         String auth_token;

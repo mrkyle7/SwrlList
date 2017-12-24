@@ -132,6 +132,7 @@ public class ViewPageDetails extends Fragment {
         addTextCard(inflater, detailsLayout, "Publication Date", details.getPublicationDate(), false);
         addTextCard(inflater, detailsLayout, "Players", details.getMinToMaxPlayers(), false);
         addTextCard(inflater, detailsLayout, "Playtime", details.getMinToMaxPlaytime(), false);
+        addTextCard(inflater, detailsLayout, "Swrl.co URL", swrl.getSwrlUrl(), false);
         addTextCard(inflater, detailsLayout, "URL", details.getUrl(), false);
         addTextCard(inflater, detailsLayout, "IMDB URL", details.getIMDBURL(), false);
         addTextCard(inflater, detailsLayout, "Overview", details.getOverview(), true);

@@ -29,7 +29,6 @@ import com.getbase.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 
 import co.swrl.list.R;
-import co.swrl.list.utils.SwrlPreferences;
 import co.swrl.list.collection.CollectionManager;
 import co.swrl.list.collection.SQLiteCollectionManager;
 import co.swrl.list.item.Details;
@@ -37,6 +36,7 @@ import co.swrl.list.item.Swrl;
 import co.swrl.list.item.actions.SwrlCoActions;
 import co.swrl.list.item.search.Search;
 import co.swrl.list.users.SwrlUserHelpers;
+import co.swrl.list.utils.SwrlPreferences;
 
 import static co.swrl.list.ui.activity.ViewActivity.ViewType.ADD;
 
@@ -126,6 +126,37 @@ public class ViewActivity extends AppCompatActivity {
                     && !currentSwrl.getDetails().getId().isEmpty()) {
                 new GetSwrlDetails((SwipeRefreshLayout) findViewById(R.id.swiperefresh), this).execute(currentSwrl.getDetails().getId());
             }
+            return true;
+        } else if (id == R.id.action_reAdd) {
+            final SwrlPreferences preferences = new SwrlPreferences(this);
+            Log.d(LOG_TAG, "Current Swrl = " + currentSwrl);
+            AlertDialog.Builder confirmDialog = new AlertDialog.Builder(this);
+            confirmDialog.setTitle("Mark the Swrl as 'Later'?");
+            confirmDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Swrl swrl = (Swrl) swrls.get(position);
+                    db.markAsActive(swrl);
+                    if (preferences.loggedIn()) {
+                        new AsyncTask<Swrl, Void, Void>() {
+                            @Override
+                            protected Void doInBackground(Swrl... swrls) {
+                                Swrl mSwrl = swrls[0];
+                                SwrlCoActions.respond(mSwrl, SwrlCoActions.LATER, preferences, null);
+                                return null;
+                            }
+                        }.execute(swrl);
+                    }
+                    mSectionsPagerAdapter.deletePage(position);
+                }
+            });
+            confirmDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            confirmDialog.show();
             return true;
         } else if (id == R.id.action_markAsDone) {
             final SwrlPreferences preferences = new SwrlPreferences(this);
