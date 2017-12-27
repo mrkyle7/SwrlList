@@ -1,3 +1,6 @@
+Version 16 (27 December 2017)
+- List remembers last scroll position when pressing back
+
 Version 15 (24 December 2017)
 - Christmas update!
 - Swipe left to dismiss discovered Swrls
@@ -11,6 +14,3 @@ Version 13.1 (11 December 2017)
 
 Version 13 (03 December 2017)
 - Added IMDB URL to details for films
-
-Version 12 (02 December 2017)
-- Syncing all swrls with swrl.co backs up active and done swrls

@@ -19,13 +19,11 @@ public class DrawerListAdapter extends BaseAdapter {
     private ListActivity listActivity;
     private final Context mContext;
     private final Type[] mNavItems;
-    private final Type typeFilter;
 
-    public DrawerListAdapter(ListActivity listActivity, Context context, Type[] navItems, Type typeFilter) {
+    public DrawerListAdapter(ListActivity listActivity, Context context, Type[] navItems) {
         this.listActivity = listActivity;
         this.mContext = context;
         this.mNavItems = navItems;
-        this.typeFilter = typeFilter;
     }
 
     @Override
@@ -58,7 +56,7 @@ public class DrawerListAdapter extends BaseAdapter {
         TextView titleView = (TextView) view.findViewById(R.id.title);
 
         Type navItem = mNavItems[position];
-        if ((typeFilter == null && navItem == Type.UNKNOWN) || navItem == typeFilter) {
+        if ((listActivity.typeFilter == null && navItem == Type.UNKNOWN) || navItem == listActivity.typeFilter) {
             //noinspection deprecation
             view.setBackgroundColor(listActivity.getResources().getColor(R.color.rowHighlight));
         } else {

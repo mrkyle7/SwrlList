@@ -77,6 +77,13 @@ public class ListActivity extends AppCompatActivity {
     private final int inbox_title = R.string.inbox_title;
     private int title = swrl_list_title;
 
+    private final static int ACTIVE = 1;
+    private final static int DONE = 2;
+    private final static int DISCOVER = 3;
+    private final static int DISCOVER_WEIGHTED = 4;
+    private final static int INBOX = 5;
+    private int currentListType = ACTIVE;
+
     private final int listNoSwrlsText = R.string.listNoSwrlsText;
     private final int doneNoSwrlsText = R.string.doneNoSwrlsText;
     private final int discoverNoSwrlsText = R.string.discoverNoSwrlsText;
@@ -95,9 +102,9 @@ public class ListActivity extends AppCompatActivity {
     private boolean showingMainButtons = true;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
-    private Type typeFilter;
+    public Type typeFilter = Type.UNKNOWN;
     private LinearLayout nav_drawer;
-    private final DrawerListAdapter navListAdapter = new DrawerListAdapter(this, this, Type.values(), typeFilter);
+    private final DrawerListAdapter navListAdapter = new DrawerListAdapter(this, this, Type.values());
     private static final String LOG_TAG = "ListActivity";
     private SwipeSimpleCallback swipeCallback;
     private final SwipeItemDecoration swipeItemDecoration = new SwipeItemDecoration(this, animationColor);
@@ -287,7 +294,8 @@ public class ListActivity extends AppCompatActivity {
                     if (swrlListAdapter instanceof DiscoverSwrlListRecyclerAdapter) {
                         ((DiscoverSwrlListRecyclerAdapter) swrlListAdapter).cancelExistingSearches();
                     }
-                    switchViewToCurrentTab(activeSwrlListAdapter,
+                    switchViewToCurrentTab(ACTIVE,
+                            activeSwrlListAdapter,
                             green,
                             doneIcon,
                             green,
@@ -299,7 +307,8 @@ public class ListActivity extends AppCompatActivity {
                     if (swrlListAdapter instanceof DiscoverSwrlListRecyclerAdapter) {
                         ((DiscoverSwrlListRecyclerAdapter) swrlListAdapter).cancelExistingSearches();
                     }
-                    switchViewToCurrentTab(doneSwrlListAdapter,
+                    switchViewToCurrentTab(DONE,
+                            doneSwrlListAdapter,
                             red,
                             deleteIcon,
                             red, // TODO: make green
@@ -308,7 +317,8 @@ public class ListActivity extends AppCompatActivity {
                             doneNoSwrlsText, "clicked done swrls");
                 }
                 if (id == R.id.discover) {
-                    switchViewToCurrentTab(discoverSwrlListAdapter,
+                    switchViewToCurrentTab(DISCOVER,
+                            discoverSwrlListAdapter,
                             red,
                             deleteIcon,
                             green,
@@ -317,7 +327,8 @@ public class ListActivity extends AppCompatActivity {
                             discoverNoSwrlsText, "clicked discover");
                 }
                 if (id == R.id.discover_weighted) {
-                    switchViewToCurrentTab(weightedDiscoverSwrlListAdapter,
+                    switchViewToCurrentTab(DISCOVER_WEIGHTED,
+                            weightedDiscoverSwrlListAdapter,
                             red,
                             deleteIcon,
                             green,
@@ -327,7 +338,8 @@ public class ListActivity extends AppCompatActivity {
                             "clicked discover weighted");
                 }
                 if (id == R.id.inbox) {
-                    switchViewToCurrentTab(inboxDiscoverSwrlListAdapter,
+                    switchViewToCurrentTab(INBOX,
+                            inboxDiscoverSwrlListAdapter,
                             red,
                             deleteIcon,
                             green,
@@ -338,19 +350,25 @@ public class ListActivity extends AppCompatActivity {
                 return true;
             }
 
-            private void switchViewToCurrentTab(SwrlListRecyclerAdapter swrlListAdapter, int swipeLeftColor, int swipeLeftIcon, int swipeRightColor, int swipeRightIcon, int title, int noSwrlsText, String logMessage) {
-                Log.d(LOG_TAG, logMessage);
-                ListActivity.this.swrlListAdapter = swrlListAdapter;
-                ListActivity.this.swipeLeftColor.set(swipeLeftColor);
-                ListActivity.this.swipeLeftIcon.set(swipeLeftIcon);
-                ListActivity.this.swipeRightColor.set(swipeRightColor);
-                ListActivity.this.swipeRightIcon.set(swipeRightIcon);
-                ListActivity.this.title = title;
-                ListActivity.this.noSwrlsText = noSwrlsText;
-                setUpList();
-                resetTitle();
-                navListAdapter.notifyDataSetChanged();
-                setNoSwrlsText();
+            private void switchViewToCurrentTab(int listType, SwrlListRecyclerAdapter swrlListAdapter, int swipeLeftColor, int swipeLeftIcon, int swipeRightColor, int swipeRightIcon, int title, int noSwrlsText, String logMessage) {
+                if (listType != currentListType) {
+                    currentListType = listType;
+                    Log.d(LOG_TAG, logMessage);
+                    ListActivity.this.swrlListAdapter = swrlListAdapter;
+                    ListActivity.this.swipeLeftColor.set(swipeLeftColor);
+                    ListActivity.this.swipeLeftIcon.set(swipeLeftIcon);
+                    ListActivity.this.swipeRightColor.set(swipeRightColor);
+                    ListActivity.this.swipeRightIcon.set(swipeRightIcon);
+                    ListActivity.this.title = title;
+                    ListActivity.this.noSwrlsText = noSwrlsText;
+                    setUpList();
+                    resetTitle();
+                    navListAdapter.notifyDataSetChanged();
+                    setNoSwrlsText();
+                } else {
+                    Log.i(LOG_TAG, "Already showing current List view. Just needs Refreshing");
+                    refreshList(false);
+                }
             }
         });
     }

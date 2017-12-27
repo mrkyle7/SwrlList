@@ -5,6 +5,8 @@
     <string name="pkey_version_number">version_number</string>
     <string name="whatsNewLatest">
         <![CDATA[
+        <h4>Version 16 (27 December 2017)</h4>
+        \u2022 List remembers last scroll position when pressing back
         <h4>Version 15 (24 December 2017)</h4>
         \u2022 Christmas update!<br/>
         \u2022 Swipe left to dismiss discovered Swrls<br/>

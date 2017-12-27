@@ -14,11 +14,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import co.swrl.list.item.Swrl;
+import co.swrl.list.item.Type;
 import co.swrl.list.ui.activity.ListActivity;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
+import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.swipeRight;
 import static android.support.test.espresso.action.ViewActions.typeText;
@@ -35,6 +37,7 @@ import static co.swrl.list.Helpers.BILLIONS;
 import static co.swrl.list.Helpers.GARDEN_STATE_RECOMMENDATION;
 import static co.swrl.list.Helpers.HUNGER_GAMES_BOOK;
 import static co.swrl.list.Helpers.THE_MATRIX;
+import static co.swrl.list.Helpers.THE_MATRIX_DETAILS;
 import static co.swrl.list.Helpers.THE_MATRIX_RELOADED;
 import static co.swrl.list.Helpers.THE_MATRIX_REVOLUTIONS;
 import static co.swrl.list.Helpers.atPosition;
@@ -46,6 +49,7 @@ import static co.swrl.list.Helpers.numberOfChildren;
 import static co.swrl.list.Helpers.purgeDatabase;
 import static co.swrl.list.Helpers.restartActivity;
 import static co.swrl.list.Helpers.setSavedVersionToHugeNumber;
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -285,6 +289,28 @@ public class InteractingWithTheList {
 
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
         onView(withText(R.string.refresh)).check(matches(isCompletelyDisplayed()));
+    }
+
+    @Test
+    public void listRemembersLastPositionWhenPressingBack() throws Exception {
+        Swrl[] swrls = new Swrl[21];
+        swrls[0] = THE_MATRIX;
+        THE_MATRIX.setDetails(THE_MATRIX_DETAILS);
+        for (int x = 1; x <= 20; x++){
+            swrls[x] = new Swrl(String.valueOf(x), Type.BOARD_GAME);
+        }
+        activity = launchAndAvoidWhatsNewDialog(listActivityActivityTestRule,
+                swrls, null);
+
+        onView(withId(R.id.listView)).perform(RecyclerViewActions.scrollToPosition(20));
+        onView(withId(R.id.listView)).check(matches(atPosition(20, hasDescendant(withText("The Matrix")))));
+
+        onView(withId(R.id.listView)).perform(RecyclerViewActions.actionOnItem(hasDescendant(withText("The Matrix")), click()));
+        onView(allOf(withText("The Matrix"), withId(R.id.title))).check(matches(isCompletelyDisplayed()));
+
+        pressBack();
+
+        onView(withId(R.id.listView)).check(matches(atPosition(20, hasDescendant(withText("The Matrix")))));
     }
 }
 
