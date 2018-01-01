@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ import static co.swrl.list.ui.activity.ViewActivity.ViewType.VIEW;
 
 public class ActiveSwrlListRecyclerAdapter extends RecyclerView.Adapter implements SwrlListRecyclerAdapter {
 
+    private static final String LOG_TAG = "ActiveSwrlListRecycler";
     private final Context context;
     private final List<Swrl> swrls;
     private List<Swrl> cachedSwrls;
@@ -73,15 +75,16 @@ public class ActiveSwrlListRecyclerAdapter extends RecyclerView.Adapter implemen
     }
 
     @Override
-    public void refreshList(Type type, boolean updateFromSource) {
+    public void refreshList(Type type, String textFilter, boolean updateFromSource) {
         if (cachedSwrls == null || updateFromSource || cachedSwrls.size() != collectionManager.countActive()) {
             activity.showSpinner(true);
             activity.setBackgroundDimming(true);
             cachedSwrls = collectionManager.getActive();
         }
         List<Swrl> newSwrls = cachedSwrls;
-        if (type != null && type != Type.UNKNOWN) {
-            newSwrls = getFilteredSwrls(type);
+        if (typeFilterSet(type) || !textFilter.isEmpty()) {
+            Log.d(LOG_TAG, "Filtering the list with type=" + type + " text=" + textFilter);
+            newSwrls = getFilteredSwrls(type, textFilter);
         }
         swrls.clear();
         swrls.addAll(newSwrls);
@@ -93,14 +96,25 @@ public class ActiveSwrlListRecyclerAdapter extends RecyclerView.Adapter implemen
     }
 
     @NonNull
-    private List<Swrl> getFilteredSwrls(Type type) {
+    private List<Swrl> getFilteredSwrls(Type type, String textFilter) {
         List<Swrl> filtered = new ArrayList<>();
+        textFilter = textFilter.toLowerCase();
         for (Swrl swrl : cachedSwrls) {
-            if (swrl.getType() == type) {
+            String swrlTextToSearch;
+            if (swrl.getDetails() != null) {
+                swrlTextToSearch = swrl.getTitle() + swrl.getAuthor() + swrl.getDetails().toString();
+            } else {
+                swrlTextToSearch = swrl.getTitle() + swrl.getAuthor();
+            }
+            if ((swrl.getType() == type || !typeFilterSet(type)) && swrlTextToSearch.toLowerCase().contains(textFilter)) {
                 filtered.add(swrl);
             }
         }
         return filtered;
+    }
+
+    private boolean typeFilterSet(Type type) {
+        return type != null && type != Type.UNKNOWN;
     }
 
     @Override

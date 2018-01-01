@@ -71,7 +71,7 @@ public class SwrlRow extends RecyclerView.ViewHolder {
             profileImage.setVisibility(VISIBLE);
             Picasso picasso = Picasso.with(context);
 //            picasso.setIndicatorsEnabled(true);
-            picasso.setLoggingEnabled(true);
+            picasso.setLoggingEnabled(false);
             picasso.load(swrl.getAuthorAvatarURL())
                     .placeholder(R.drawable.progress_spinner)
                     .error(R.drawable.ic_person_black_24dp)

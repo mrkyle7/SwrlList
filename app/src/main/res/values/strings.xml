@@ -5,6 +5,8 @@
     <string name="pkey_version_number">version_number</string>
     <string name="whatsNewLatest">
         <![CDATA[
+        <h4>Version 18 (01 January 2018)</h4>
+        \u2022 Search filters now available on the lists!
         <h4>Version 17 (01 January 2018)</h4>
         \u2022 Swipe right from your list to recommend Swrls
         <h4>Version 16 (27 December 2017)</h4>
@@ -172,4 +174,5 @@
     <string name="add_swrl_users_or_email_addresses">Add Swrl Users or email addresses</string>
     <string name="why_would_your_friends_like_this_swrl">Why would your friends like this Swrl?</string>
     <string name="send_recommendation">Send Recommendation</string>
+    <string name="action_search">Search</string>
 </resources>

@@ -108,7 +108,7 @@ public class DiscoverSwrlListRecyclerAdapter extends RecyclerView.Adapter implem
     }
 
     @Override
-    public void refreshList(final Type type, boolean updateFromSource) {
+    public void refreshList(final Type type, final String textFilter, boolean updateFromSource) {
         if (type == null) {
             Log.d(LOG_TAG, "Refresh All with no filter");
         } else {
@@ -130,7 +130,7 @@ public class DiscoverSwrlListRecyclerAdapter extends RecyclerView.Adapter implem
                 @Override
                 protected void onPostExecute(List<Swrl> discoveredSwrls) {
                     cachedSwrls = discoveredSwrls;
-                    updateAdapter(type);
+                    updateAdapter(type, textFilter);
                 }
 
                 @Override
@@ -140,14 +140,14 @@ public class DiscoverSwrlListRecyclerAdapter extends RecyclerView.Adapter implem
             };
             backgroundSearch.execute();
         } else {
-            updateAdapter(type);
+            updateAdapter(type, textFilter);
         }
     }
 
-    private void updateAdapter(Type type) {
+    private void updateAdapter(Type type, String textFilter) {
         List<Swrl> newSwrls = cachedSwrls;
-        if (typeFilterSet(type)) {
-            newSwrls = getFilteredSwrls(type);
+        if ((type != null && type != Type.UNKNOWN) || !textFilter.isEmpty()) {
+            newSwrls = getFilteredSwrls(type, textFilter);
         }
         setSpinner(false);
         swrls.clear();
@@ -168,10 +168,17 @@ public class DiscoverSwrlListRecyclerAdapter extends RecyclerView.Adapter implem
     }
 
     @NonNull
-    private List<Swrl> getFilteredSwrls(Type type) {
+    private List<Swrl> getFilteredSwrls(Type type, String textFilter) {
         List<Swrl> filtered = new ArrayList<>();
+        textFilter = textFilter.toLowerCase();
         for (Swrl swrl : cachedSwrls) {
-            if (swrl.getType() == type) {
+            String swrlTextToSearch;
+            if (swrl.getDetails() != null) {
+                swrlTextToSearch = swrl.getTitle() + swrl.getAuthor() + swrl.getDetails().toString();
+            } else {
+                swrlTextToSearch = swrl.getTitle() + swrl.getAuthor();
+            }
+            if ((swrl.getType() == type || !typeFilterSet(type)) && swrlTextToSearch.toLowerCase().contains(textFilter)) {
                 filtered.add(swrl);
             }
         }

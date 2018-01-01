@@ -305,8 +305,25 @@ public class Details implements Serializable {
     public String toString() {
         return "Details{" +
                 "title='" + title + '\'' +
-                ", id='" + getId() + '\'' +
+                ", overview='" + overview + '\'' +
+                ", id='" + id + '\'' +
+                ", posterURL='" + posterURL + '\'' +
+                ", type=" + type +
+                ", categories=" + categories +
+                ", tagline='" + tagline + '\'' +
+                ", releaseYear='" + releaseYear + '\'' +
+                ", publicationDate='" + publicationDate + '\'' +
+                ", url='" + url + '\'' +
+                ", imdbID='" + imdbID + '\'' +
+                ", creator='" + creator + '\'' +
+                ", actors='" + actors + '\'' +
+                ", runtime='" + runtime + '\'' +
+                ", ratings=" + ratings +
+                ", minPlayers='" + minPlayers + '\'' +
+                ", maxPlayers='" + maxPlayers + '\'' +
+                ", minPlaytime='" + minPlaytime + '\'' +
+                ", maxPlaytime='" + maxPlaytime + '\'' +
+                ", platform='" + platform + '\'' +
                 '}';
     }
-
 }

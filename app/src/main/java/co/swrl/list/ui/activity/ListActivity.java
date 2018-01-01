@@ -7,12 +7,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
@@ -103,6 +105,7 @@ public class ListActivity extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
     public Type typeFilter = Type.UNKNOWN;
+    private String textFilter = "";
     private LinearLayout nav_drawer;
     private final DrawerListAdapter navListAdapter = new DrawerListAdapter(this, this, Type.values());
     private static final String LOG_TAG = "ListActivity";
@@ -146,6 +149,23 @@ public class ListActivity extends AppCompatActivity {
         } else {
             getMenuInflater().inflate(R.menu.menu_list_logged_out, menu);
         }
+        final MenuItem searchItem = menu.findItem(R.id.action_search);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                textFilter = query;
+                refreshList(false);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                textFilter = newText;
+                refreshList(false);
+                return true;
+            }
+        });
         return true;
     }
 
@@ -201,7 +221,7 @@ public class ListActivity extends AppCompatActivity {
 
 
     public void refreshList(boolean updateFromSource) {
-        swrlListAdapter.refreshList(typeFilter, updateFromSource);
+        swrlListAdapter.refreshList(typeFilter, textFilter, updateFromSource);
         navListAdapter.notifyDataSetChanged();
         setNoSwrlsText();
     }
