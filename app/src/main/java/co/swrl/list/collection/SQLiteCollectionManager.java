@@ -282,6 +282,12 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
     }
 
     @Override
+    public void saveRecommendation(Swrl swrl) {
+        save(swrl);
+        markAs(swrl, Swrls.STATUS_RECOMMENDED);
+    }
+
+    @Override
     public void markAsDone(Swrl swrl) {
         markAs(swrl, Swrls.STATUS_DONE);
     }
@@ -304,9 +310,11 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
 
         String title = swrl.getTitle();
         String type = swrl.getType().toString();
+        String id = String.valueOf(swrl.getId());
         String whereClause = Swrls.COLUMN_NAME_TITLE + " = ? AND " +
-                Swrls.COLUMN_NAME_TYPE + " = ?";
-        String[] whereArgs = {title, type};
+                Swrls.COLUMN_NAME_TYPE + " = ? AND " +
+                Swrls.COLUMN_NAME_SWRL_ID + " = ?";
+        String[] whereArgs = {title, type, id};
 
         dbWriter.update(
                 Swrls.TABLE_NAME,
@@ -391,9 +399,12 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
 
         String oldTitle = swrl.getTitle();
         String type = swrl.getType().toString();
+        String id = String.valueOf(swrl.getId());
+
         String whereClause = Swrls.COLUMN_NAME_TITLE + " = ? AND " +
-                Swrls.COLUMN_NAME_TYPE + " = ?";
-        String[] whereArgs = {oldTitle, type};
+                Swrls.COLUMN_NAME_TYPE + " = ? AND " +
+                Swrls.COLUMN_NAME_SWRL_ID + " = ?";
+        String[] whereArgs = {oldTitle, type, id};
 
         dbWriter.updateWithOnConflict(
                 Swrls.TABLE_NAME,
@@ -408,7 +419,7 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
     private class DBHelper extends SQLiteOpenHelper {
 
         private static final String DATABASE_NAME = "swrlList.db";
-        private static final int DATABASE_VERSION = 5;
+        private static final int DATABASE_VERSION = 6;
 
         private static final String TEXT_TYPE = " TEXT";
         private static final String INTEGER_TYPE = " INTEGER";
@@ -463,6 +474,18 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
                 "ALTER TABLE " + Swrls.TABLE_NAME +
                         " ADD COLUMN " + Swrls.COLUMN_NAME_SWRL_ID + INTEGER_TYPE;
 
+        private static final String SQL_DROP_UNIQUE_INDEX_TITLE_TYPE =
+                "DROP INDEX " + Swrls.UNIQUE_INDEX_TITLE_TYPE ;
+
+        private static final String SQL_CREATE_UNIQUE_INDEX_TITLE_TYPE_ID =
+                "CREATE UNIQUE INDEX " + Swrls.UNIQUE_INDEX_TITLE_TYPE_ID +
+                        " ON " + Swrls.TABLE_NAME +
+                        "( "
+                        + Swrls.COLUMN_NAME_TITLE + COMMA_SEP
+                        + Swrls.COLUMN_NAME_SWRL_ID + COMMA_SEP
+                        + Swrls.COLUMN_NAME_TYPE + ")";
+
+
         DBHelper(Context context) {
             super(context, DATABASE_NAME, null, DATABASE_VERSION);
         }
@@ -470,7 +493,7 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
         @Override
         public void onCreate(SQLiteDatabase db) {
             db.execSQL(SQL_CREATE_ENTRIES_SWRLS);
-            db.execSQL(SQL_CREATE_UNIQUE_INDEX_TITLE_TYPE);
+            db.execSQL(SQL_CREATE_UNIQUE_INDEX_TITLE_TYPE_ID);
         }
 
         @Override
@@ -490,6 +513,10 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
             }
             if (oldVersion < 5) {
                 db.execSQL(SQL_ADD_AUTHOR_AVATAR_URL_COLUMN);
+            }
+            if (oldVersion < 6) {
+                db.execSQL(SQL_DROP_UNIQUE_INDEX_TITLE_TYPE);
+                db.execSQL(SQL_CREATE_UNIQUE_INDEX_TITLE_TYPE_ID);
             }
         }
     }

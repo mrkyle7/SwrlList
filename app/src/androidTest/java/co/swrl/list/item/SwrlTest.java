@@ -25,7 +25,7 @@ public class SwrlTest {
         assertTrue(swrl.equals(sameSwrl));
         assertTrue(sameSwrl.equals(swrl));
         assertTrue(swrl.equals(unknownSwrl)); //because default is type UNKNOWN
-        assertTrue(swrl.equals(swrlRecommendation)); //because default is type UNKNOWN
+        assertFalse(swrl.equals(swrlRecommendation)); //because id is different
         assertTrue(unknownSwrl.equals(swrl));
         assertFalse(swrl.equals(albumSwrl));
         assertFalse(albumSwrl.equals(swrlRecommendation));

@@ -7,7 +7,9 @@ final class DBContract {
 
     static class Swrls implements BaseColumns {
         static final String TABLE_NAME = "swrls";
+
         static final String UNIQUE_INDEX_TITLE_TYPE = "unique_index_title_type";
+        static final String UNIQUE_INDEX_TITLE_TYPE_ID = "unique_index_title_type_id";
 
         static final String COLUMN_NAME_TITLE = "title";
         static final String COLUMN_NAME_STATUS = "status";
@@ -18,10 +20,11 @@ final class DBContract {
         static final String COLUMN_NAME_AUTHOR = "author";
         static final String COLUMN_NAME_AUTHOR_ID = "author_id";
         static final String COLUMN_NAME_AUTHOR_AVATAR_URL = "author_avatar_url";
-        static final String COLUMN_NAME_SWRL_ID = "swrl_id";
 
+        static final String COLUMN_NAME_SWRL_ID = "swrl_id";
         static final int STATUS_ACTIVE = 0;
         static final int STATUS_DONE = 1;
         static final int STATUS_DISMISSED = 2;
+        static final int STATUS_RECOMMENDED = 3;
     }
 }

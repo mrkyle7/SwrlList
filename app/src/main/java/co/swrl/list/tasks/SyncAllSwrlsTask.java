@@ -73,6 +73,7 @@ public class SyncAllSwrlsTask extends AsyncTask<Void, String, Void> {
                     + String.valueOf(totalToProcess)
                     + "...");
             SwrlCoActions.create(swrl, response, listActivity.preferences, collectionManager);
+            SwrlCoActions.create(swrl, response, listActivity.preferences, collectionManager);
         }
     }
 

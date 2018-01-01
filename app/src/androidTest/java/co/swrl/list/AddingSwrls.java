@@ -55,7 +55,7 @@ public class AddingSwrls {
     @Test
     public void newItemsInTheListAreAddedOnTop() throws Exception {
 
-        activity = launchAndAvoidWhatsNewDialog(listActivityActivityTestRule, new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED}, null);
+        activity = launchAndAvoidWhatsNewDialog(listActivityActivityTestRule, new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED}, null, false);
 
         onView(withId(R.id.listView)).check(matches(atPosition(0, hasDescendant(withText("The Matrix Reloaded")))));
         onView(withId(R.id.listView)).check(matches(atPosition(1, hasDescendant(withText("The Matrix")))));
@@ -73,8 +73,8 @@ public class AddingSwrls {
     }
 
     @Test
-    public void duplicateItemsReplaceExisting() throws Exception {
-        activity = launchAndAvoidWhatsNewDialog(listActivityActivityTestRule, new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED}, null);
+    public void duplicateItemsReplaceExistingUnlessHasDifferentSwrlID() throws Exception {
+        activity = launchAndAvoidWhatsNewDialog(listActivityActivityTestRule, new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED}, null, false);
 
         onView(withId(R.id.listView)).check(matches(atPosition(0, hasDescendant(withText("The Matrix Reloaded")))));
         onView(withId(R.id.listView)).check(matches(atPosition(1, hasDescendant(withText("The Matrix")))));
@@ -94,7 +94,7 @@ public class AddingSwrls {
 
     @Test
     public void cannotAddSwrlWithNoTitle() throws Exception {
-        activity = launchAndAvoidWhatsNewDialog(listActivityActivityTestRule, null, null);
+        activity = launchAndAvoidWhatsNewDialog(listActivityActivityTestRule, null, null, false);
 
         onView(withId(R.id.fab_expand_menu_button)).perform(click());
         onView(withId(R.id.add_film)).perform(click());
@@ -109,7 +109,7 @@ public class AddingSwrls {
 
     @Test
     public void itemsOnTheListArePersistedAfterRestart() throws Exception {
-        activity = launchAndAvoidWhatsNewDialog(listActivityActivityTestRule, new Swrl[]{THE_MATRIX}, null);
+        activity = launchAndAvoidWhatsNewDialog(listActivityActivityTestRule, new Swrl[]{THE_MATRIX}, null, false);
         onView(withId(R.id.listView)).check(matches(atPosition(0, hasDescendant(withText("The Matrix")))));
 
         activity = restartActivity(activity, listActivityActivityTestRule);

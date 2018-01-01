@@ -14,8 +14,8 @@ public class SwrlPreferences {
     private static final String LOG_TAG = "SWRL_PREFERENCES";
     private final Context context;
     public static final String KEY_VERSION_NUMBER = "VERSION_NUMBER";
-    private static final String KEY_AUTH_TOKEN = "AUTH_TOKEN";
-    private static final String KEY_USER_ID = "USER_ID";
+    public static final String KEY_AUTH_TOKEN = "AUTH_TOKEN";
+    public static final String KEY_USER_ID = "USER_ID";
 
     public SwrlPreferences(Context context) {
         this.context = context;

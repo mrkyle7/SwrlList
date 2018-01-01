@@ -22,7 +22,7 @@ import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.action.ViewActions.swipeRight;
+import static android.support.test.espresso.action.ViewActions.swipeLeft;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
@@ -101,12 +101,12 @@ public class InteractingWithTheList {
 
     @Test
     public void canDeleteAndReAddItemsOnTheList() throws Exception {
-        activity = launchAndAvoidWhatsNewDialog(listActivityActivityTestRule, new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED}, null);
+        activity = launchAndAvoidWhatsNewDialog(listActivityActivityTestRule, new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED}, null, false);
 
         onView(withId(R.id.listView)).check(matches(atPosition(0, hasDescendant(withText("The Matrix Reloaded")))));
         onView(withId(R.id.listView)).check(matches(atPosition(1, hasDescendant(withText("The Matrix")))));
 
-        onView(withId(R.id.listView)).perform(RecyclerViewActions.actionOnItem(hasDescendant(withText("The Matrix")), swipeRight()));
+        onView(withId(R.id.listView)).perform(RecyclerViewActions.actionOnItem(hasDescendant(withText("The Matrix")), swipeLeft()));
 
         onView(withId(R.id.listView)).check(matches(not(atPosition(1, hasDescendant(withText("The Matrix"))))));
         onView(withId(R.id.listView)).check(matches(doesNotExistAtPosition(1)));
@@ -137,15 +137,15 @@ public class InteractingWithTheList {
     @Test
     public void markingItemsAsDonePutsThemOnDoneList() throws Exception {
         activity = launchAndAvoidWhatsNewDialog(listActivityActivityTestRule,
-                new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED, THE_MATRIX_REVOLUTIONS}, null);
+                new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED, THE_MATRIX_REVOLUTIONS}, null, false);
 
         onView(withId(R.id.listView)).check(matches(atPosition(0, hasDescendant(withText("The Matrix Revolutions")))));
         onView(withId(R.id.listView)).check(matches(atPosition(1, hasDescendant(withText("The Matrix Reloaded")))));
         onView(withId(R.id.listView)).check(matches(atPosition(2, hasDescendant(withText("The Matrix")))));
 
-        onView(withId(R.id.listView)).perform(RecyclerViewActions.actionOnItem(hasDescendant(withText("The Matrix")), swipeRight()));
+        onView(withId(R.id.listView)).perform(RecyclerViewActions.actionOnItem(hasDescendant(withText("The Matrix")), swipeLeft()));
 
-        onView(withId(R.id.listView)).perform(RecyclerViewActions.actionOnItem(hasDescendant(withText("The Matrix Reloaded")), swipeRight()));
+        onView(withId(R.id.listView)).perform(RecyclerViewActions.actionOnItem(hasDescendant(withText("The Matrix Reloaded")), swipeLeft()));
 
         onView(withId(R.id.snackbar_text)).check(matches(withText("\"The Matrix Reloaded\" marked as done")));
         onView(withId(R.id.snackbar_action)).perform(click());
@@ -163,13 +163,13 @@ public class InteractingWithTheList {
     @Test
     public void canUndoMarkingItemsAsDone() throws Exception {
         activity = launchAndAvoidWhatsNewDialog(listActivityActivityTestRule,
-                new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED, THE_MATRIX_REVOLUTIONS}, null);
+                new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED, THE_MATRIX_REVOLUTIONS}, null, false);
 
         onView(withId(R.id.listView)).check(matches(atPosition(0, hasDescendant(withText("The Matrix Revolutions")))));
         onView(withId(R.id.listView)).check(matches(atPosition(1, hasDescendant(withText("The Matrix Reloaded")))));
         onView(withId(R.id.listView)).check(matches(atPosition(2, hasDescendant(withText("The Matrix")))));
 
-        onView(withId(R.id.listView)).perform(RecyclerViewActions.actionOnItem(hasDescendant(withText("The Matrix Reloaded")), swipeRight()));
+        onView(withId(R.id.listView)).perform(RecyclerViewActions.actionOnItem(hasDescendant(withText("The Matrix Reloaded")), swipeLeft()));
 
         onView(withId(R.id.snackbar_text)).check(matches(withText("\"The Matrix Reloaded\" marked as done")));
         onView(withId(R.id.snackbar_action)).perform(click());
@@ -191,7 +191,7 @@ public class InteractingWithTheList {
     public void canFilterTheList() throws Exception {
         activity = launchAndAvoidWhatsNewDialog(listActivityActivityTestRule,
                 new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED, BILLIONS},
-                new Swrl[]{GARDEN_STATE_RECOMMENDATION, HUNGER_GAMES_BOOK});
+                new Swrl[]{GARDEN_STATE_RECOMMENDATION, HUNGER_GAMES_BOOK}, false);
 
         onView(withId(R.id.listView)).check(matches(atPosition(0, hasDescendant(withText("Billions")))));
         onView(withId(R.id.listView)).check(matches(atPosition(1, hasDescendant(withText("The Matrix Reloaded")))));
@@ -252,8 +252,8 @@ public class InteractingWithTheList {
 
         onView(withId(R.id.drawer_layout)).perform(DrawerActions.close());
 
-        onView(withId(R.id.listView)).perform(RecyclerViewActions.actionOnItem(hasDescendant(withText("The Matrix")), swipeRight()));
-        onView(withId(R.id.listView)).perform(RecyclerViewActions.actionOnItem(hasDescendant(withText("The Matrix Reloaded")), swipeRight()));
+        onView(withId(R.id.listView)).perform(RecyclerViewActions.actionOnItem(hasDescendant(withText("The Matrix")), swipeLeft()));
+        onView(withId(R.id.listView)).perform(RecyclerViewActions.actionOnItem(hasDescendant(withText("The Matrix Reloaded")), swipeLeft()));
 
         onView(withId(R.id.snackbar_text)).check(matches(withText("\"The Matrix Reloaded\" marked as done")));
         onView(withId(R.id.snackbar_action)).perform(click());
@@ -285,7 +285,7 @@ public class InteractingWithTheList {
     @Test
     public void refreshAllActionIsAvailable() throws Exception {
         activity = launchAndAvoidWhatsNewDialog(listActivityActivityTestRule,
-                new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED, BILLIONS}, null);
+                new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED, BILLIONS}, null, false);
 
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
         onView(withText(R.string.refresh)).check(matches(isCompletelyDisplayed()));
@@ -300,7 +300,7 @@ public class InteractingWithTheList {
             swrls[x] = new Swrl(String.valueOf(x), Type.BOARD_GAME);
         }
         activity = launchAndAvoidWhatsNewDialog(listActivityActivityTestRule,
-                swrls, null);
+                swrls, null, false);
 
         onView(withId(R.id.listView)).perform(RecyclerViewActions.scrollToPosition(20));
         onView(withId(R.id.listView)).check(matches(atPosition(20, hasDescendant(withText("The Matrix")))));

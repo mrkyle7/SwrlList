@@ -299,7 +299,7 @@ public class ListActivity extends AppCompatActivity {
                             green,
                             doneIcon,
                             green,
-                            doneIcon, // TODO:  should be shareIcon
+                            shareIcon,
                             swrl_list_title,
                             listNoSwrlsText, "clicked active swrls");
                 }
@@ -311,8 +311,8 @@ public class ListActivity extends AppCompatActivity {
                             doneSwrlListAdapter,
                             red,
                             deleteIcon,
-                            red, // TODO: make green
-                            deleteIcon, // TODO: make shareIcon
+                            green,
+                            shareIcon,
                             done_title,
                             doneNoSwrlsText, "clicked done swrls");
                 }

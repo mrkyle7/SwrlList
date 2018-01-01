@@ -21,6 +21,7 @@ import co.swrl.list.item.Type;
 import co.swrl.list.ui.activity.AddSwrlActivity;
 import co.swrl.list.ui.activity.ListActivity;
 import co.swrl.list.ui.activity.LoginActivity;
+import co.swrl.list.ui.activity.RecommendationCreationActivity;
 import co.swrl.list.ui.activity.ViewActivity;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
@@ -28,6 +29,7 @@ import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.action.ViewActions.swipeRight;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.intent.Intents.intended;
 import static android.support.test.espresso.intent.matcher.BundleMatchers.hasEntry;
@@ -42,6 +44,7 @@ import static co.swrl.list.Helpers.THE_MATRIX;
 import static co.swrl.list.Helpers.THE_MATRIX_DETAILS;
 import static co.swrl.list.Helpers.THE_MATRIX_RELOADED;
 import static co.swrl.list.Helpers.THE_MATRIX_RELOADED_DETAILS;
+import static co.swrl.list.Helpers.THE_MATRIX_REVOLUTIONS;
 import static co.swrl.list.Helpers.atPosition;
 import static co.swrl.list.Helpers.clearAllSettings;
 import static co.swrl.list.Helpers.launchAndAvoidWhatsNewDialog;
@@ -72,7 +75,7 @@ public class ActivityNavigationTest {
     public void canNavigateBetweenListAndView() throws Exception {
         THE_MATRIX.setDetails(THE_MATRIX_DETAILS);
         THE_MATRIX_RELOADED.setDetails(THE_MATRIX_RELOADED_DETAILS);
-        activity = launchAndAvoidWhatsNewDialog(listActivityIntents, new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED}, null);
+        activity = launchAndAvoidWhatsNewDialog(listActivityIntents, new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED}, null, false);
 
         onView(withId(R.id.listView)).perform(RecyclerViewActions.actionOnItem(hasDescendant(withText("The Matrix")), click()));
 
@@ -103,10 +106,48 @@ public class ActivityNavigationTest {
     }
 
     @Test
+    public void canNavigateBetweenListAndRecommendScreen() throws Exception {
+        THE_MATRIX.setDetails(THE_MATRIX_DETAILS);
+        THE_MATRIX_RELOADED.setDetails(THE_MATRIX_RELOADED_DETAILS);
+        activity = launchAndAvoidWhatsNewDialog(listActivityIntents, new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED}, new Swrl[]{THE_MATRIX_REVOLUTIONS}, true);
+
+        onView(withId(R.id.listView)).perform(RecyclerViewActions.actionOnItem(hasDescendant(withText("The Matrix")), swipeRight()));
+
+        intended(allOf(
+                hasComponent(RecommendationCreationActivity.class.getName()),
+                hasExtras(hasEntry(equalTo("swrl"), equalTo(THE_MATRIX)))));
+
+        onView(isAssignableFrom(Toolbar.class)).check(matches(withToolbarTitle(is("Recommend The Matrix to friends"))));
+
+        pressBack();
+
+        onView(withId(R.id.listView))
+                .perform(RecyclerViewActions.actionOnItem(hasDescendant(withText("The Matrix Reloaded")), swipeRight()));
+
+        intended(allOf(
+                hasComponent(RecommendationCreationActivity.class.getName()),
+                hasExtras(hasEntry(equalTo("swrl"), equalTo(THE_MATRIX_RELOADED)))));
+
+        onView(isAssignableFrom(Toolbar.class)).check(matches(withToolbarTitle(is("Recommend The Matrix Reloaded to friends"))));
+
+        pressBack();
+
+        onView(withId(R.id.done_swrls)).perform(click());
+
+        onView(withId(R.id.listView)).perform(RecyclerViewActions.actionOnItem(hasDescendant(withText("The Matrix Revolutions")), swipeRight()));
+
+        intended(allOf(
+                hasComponent(RecommendationCreationActivity.class.getName()),
+                hasExtras(hasEntry(equalTo("swrl"), equalTo(THE_MATRIX_REVOLUTIONS)))));
+
+        onView(isAssignableFrom(Toolbar.class)).check(matches(withToolbarTitle(is("Recommend The Matrix Revolutions to friends"))));
+    }
+
+    @Test
     public void canNavigateBetweenListAndAddSwrlScreen() throws Exception {
         THE_MATRIX.setDetails(THE_MATRIX_DETAILS);
         THE_MATRIX_RELOADED.setDetails(THE_MATRIX_RELOADED_DETAILS);
-        activity = launchAndAvoidWhatsNewDialog(listActivityIntents, new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED}, null);
+        activity = launchAndAvoidWhatsNewDialog(listActivityIntents, new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED}, null, false);
 
         onView(withId(R.id.listView))
                 .check(matches(atPosition(0, hasDescendant(withText("The Matrix Reloaded")))));
@@ -180,7 +221,7 @@ public class ActivityNavigationTest {
 
     @Test
     public void pressingCancelOnAddNewSwrlScreenTakesYouBackToList() throws Exception {
-        activity = launchAndAvoidWhatsNewDialog(listActivityIntents, new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED}, null);
+        activity = launchAndAvoidWhatsNewDialog(listActivityIntents, new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED}, null, false);
 
         onView(withId(R.id.listView)).check(matches(atPosition(0, hasDescendant(withText("The Matrix Reloaded")))));
 
@@ -199,7 +240,7 @@ public class ActivityNavigationTest {
 
     @Test
     public void canNavigateToTheLoginScreen() throws Exception {
-        activity = launchAndAvoidWhatsNewDialog(listActivityIntents, null, null);
+        activity = launchAndAvoidWhatsNewDialog(listActivityIntents, null, null, false);
 
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
         onView(withText(R.string.login_menu_link)).perform(click());

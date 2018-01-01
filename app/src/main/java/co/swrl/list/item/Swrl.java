@@ -71,25 +71,29 @@ public class Swrl implements Serializable {
     }
 
     @Override
-    public String toString() {
-        return title + " (" + type.toString() + ")";
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Swrl)) return false;
 
         Swrl swrl = (Swrl) o;
 
-        return title.equals(swrl.title) && type == swrl.type;
+        if (id != swrl.id) return false;
+        if (!title.equals(swrl.title)) return false;
+        return type == swrl.type;
+
     }
 
     @Override
     public int hashCode() {
         int result = title.hashCode();
         result = 31 * result + type.hashCode();
+        result = 31 * result + id;
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return title + " (" + type.toString() + ")";
     }
 
     private Object assertNonNull(Object value, String parameter) {

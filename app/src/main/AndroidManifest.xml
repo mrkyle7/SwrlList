@@ -36,6 +36,9 @@
         <activity
             android:name=".ui.activity.LoginActivity"
             android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".ui.activity.RecommendationCreationActivity"
+            android:windowSoftInputMode="stateHidden" />
     </application>
 
 </manifest>

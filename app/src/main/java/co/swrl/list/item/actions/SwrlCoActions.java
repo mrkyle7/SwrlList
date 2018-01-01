@@ -6,14 +6,15 @@ import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-import co.swrl.list.utils.SwrlPreferences;
 import co.swrl.list.collection.CollectionManager;
 import co.swrl.list.item.Details;
 import co.swrl.list.item.Swrl;
 import co.swrl.list.item.Type;
+import co.swrl.list.utils.SwrlPreferences;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -31,6 +32,8 @@ public class SwrlCoActions {
     public static final String DONE = "Done";
     public static final String DISMISSED = "Dismissed";
     public static final String REMOVE_RESPONSE = "";
+    public static final String SWRLED = "Swrled";
+    private static final HttpUrl CREATE_URL = HttpUrl.parse("https://www.swrl.co/api/v1/swrl-actions/create-swrl");
 
     private static class RespondBody {
         String auth_token;
@@ -78,7 +81,7 @@ public class SwrlCoActions {
         try {
             Response swrlResponse = client.newCall(request).execute();
             Log.d(LOG_TAG, "response: " + swrlResponse.body().string());
-            if (Objects.equals(response, DISMISSED) && swrlResponse.code() == HTTP_OK && collectionManager != null){
+            if (Objects.equals(response, DISMISSED) && swrlResponse.code() == HTTP_OK && collectionManager != null) {
                 Log.i(LOG_TAG, "Deleting Swrl: " + swrl.toString());
                 collectionManager.permanentlyDelete(swrl);
             }
@@ -137,18 +140,26 @@ public class SwrlCoActions {
         @SerializedName(value = "quick-response")
         String response;
 
-        Details details;
+        @SerializedName(value = "users-and-emails-to-notify")
+        List<String> usersAndEmailsToNotify;
 
+        String review;
+
+        Details details;
     }
 
     public static void create(Swrl swrl, String response, SwrlPreferences preferences,
                               CollectionManager collectionManager) {
-        HttpUrl url = HttpUrl.parse("https://www.swrl.co/api/v1/swrl-actions/create-swrl");
-        create(url, swrl, response, preferences, collectionManager);
+        create(CREATE_URL, swrl, response, preferences, collectionManager, false, null, null);
     }
 
-    public static void create(HttpUrl createURL, Swrl swrl, String response, SwrlPreferences preferences,
-                              CollectionManager collectionManager) {
+    public static Swrl createRecommendation(Swrl swrl, String review, List<String> recipients,
+                                            SwrlPreferences preferences, CollectionManager collectionManager) {
+        return create(CREATE_URL, swrl, SWRLED, preferences, collectionManager, false, recipients, review);
+    }
+
+    static Swrl create(HttpUrl createURL, Swrl swrl, String response, SwrlPreferences preferences,
+                       CollectionManager collectionManager, boolean recommendation, List<String> recipients, String review) {
         OkHttpClient client =
                 new OkHttpClient.Builder()
                         .readTimeout(30, TimeUnit.SECONDS)
@@ -163,6 +174,8 @@ public class SwrlCoActions {
         createBody.imageUrl = swrl.getDetails() != null ? swrl.getDetails().getPosterURL() : null;
         createBody.isPrivate = false;
         createBody.response = response;
+        createBody.usersAndEmailsToNotify = recipients;
+        createBody.review = review;
         createBody.details = swrl.getDetails();
 
         String json = new Gson().toJson(createBody);
@@ -179,10 +192,16 @@ public class SwrlCoActions {
             String body = creationResponse.body().string();
             Log.d(LOG_TAG, "response: " + body);
             Swrl swrlCreated = new Gson().fromJson(body, Swrl.class);
-            collectionManager.updateSwrlID(swrl, swrlCreated.getId());
+            if (recommendation){
+                collectionManager.saveRecommendation(swrlCreated);
+            } else {
+                collectionManager.updateSwrlID(swrl, swrlCreated.getId());
+            }
+            return swrlCreated;
         } catch (Exception e) {
             Log.i(LOG_TAG, "Creation Failed.");
             e.printStackTrace();
+            return null;
         }
     }
 }

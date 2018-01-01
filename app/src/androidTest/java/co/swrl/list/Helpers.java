@@ -56,14 +56,14 @@ public class Helpers {
     static final Details THE_MATRIX_REVOLUTIONS_DETAILS = new Gson().fromJson("{\"title\":\"The Matrix Revolutions (1992)\",\"overview\":\"an overview\",\"tmdb-id\":\"405\"}", Details.class);
     public static final Details BLACK_MIRROR_DETAILS = new Gson().fromJson(
             "{\"large-image-url\":\"https://image.tmdb.org/t/p/original/djUxgzSIdfS5vNP2EHIBDIz9I8A.jpg\"," +
-            "\"creator\":\"Charlie Brooker, Another Creator\"," +
-            "\"genres\":[\"Drama\",\"Sci-Fi & Fantasy\"]," +
-            "\"tmdb-id\":42009," +
-            "\"thumbnail-url\":\"https://image.tmdb.org/t/p/original/djUxgzSIdfS5vNP2EHIBDIz9I8A.jpg\"," +
-            "\"overview\":\"Black Mirror is a British television drama series created by Charlie Brooker\"," +
-            "\"title\":\"Black Mirror\"," +
-            "\"runtime\":60," +
-            "\"url\":\"http://www.channel4.com/programmes/black-mirror/\"}", Details.class);
+                    "\"creator\":\"Charlie Brooker, Another Creator\"," +
+                    "\"genres\":[\"Drama\",\"Sci-Fi & Fantasy\"]," +
+                    "\"tmdb-id\":42009," +
+                    "\"thumbnail-url\":\"https://image.tmdb.org/t/p/original/djUxgzSIdfS5vNP2EHIBDIz9I8A.jpg\"," +
+                    "\"overview\":\"Black Mirror is a British television drama series created by Charlie Brooker\"," +
+                    "\"title\":\"Black Mirror\"," +
+                    "\"runtime\":60," +
+                    "\"url\":\"http://www.channel4.com/programmes/black-mirror/\"}", Details.class);
 
     static void clearAllSettings() {
         Context applicationContext = InstrumentationRegistry.getTargetContext();
@@ -71,8 +71,9 @@ public class Helpers {
         settings.edit().clear().apply();
     }
 
-    static Activity launchAndAvoidWhatsNewDialog(ActivityTestRule testRule, Swrl[] swrls, Swrl[] doneSwrls) {
+    static Activity launchAndAvoidWhatsNewDialog(ActivityTestRule testRule, Swrl[] swrls, Swrl[] doneSwrls, boolean fakeLogIn) {
         setSavedVersionToHugeNumber();
+        if (fakeLogIn) setFakeLoginCredentials();
         SQLiteCollectionManager db = new SQLiteCollectionManager(InstrumentationRegistry.getTargetContext());
         if (swrls != null) {
             for (Swrl swrl : swrls) {
@@ -86,6 +87,14 @@ public class Helpers {
             }
         }
         return launchAndWakeUpActivity(testRule);
+    }
+
+    private static void setFakeLoginCredentials() {
+        Context applicationContext = InstrumentationRegistry.getTargetContext();
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(applicationContext);
+
+        settings.edit().putString(SwrlPreferences.KEY_AUTH_TOKEN, "auth123").apply();
+        settings.edit().putInt(SwrlPreferences.KEY_USER_ID, 123).apply();
     }
 
     static void setSavedVersionToHugeNumber() {

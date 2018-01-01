@@ -18,6 +18,7 @@ public interface CollectionManager {
     int countDone();
     int countDone(Type typeFilter);
     void save(Swrl swrl);
+    void saveRecommendation(Swrl swrl);
     void markAsDone(Swrl swrl);
     void markAsActive(Swrl swrl);
     void markAsDismissed(Swrl swrl);

@@ -1,6 +1,7 @@
 package co.swrl.list.ui.list.swrllists;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
@@ -13,10 +14,12 @@ import co.swrl.list.item.Swrl;
 import co.swrl.list.item.Type;
 import co.swrl.list.item.actions.SwrlCoActions;
 import co.swrl.list.ui.activity.ListActivity;
+import co.swrl.list.ui.activity.RecommendationCreationActivity;
 import co.swrl.list.ui.list.common.SwipeActions;
 import co.swrl.list.ui.list.common.SwrlRow;
 import co.swrl.list.ui.list.menus.DrawerListAdapter;
 
+import static android.support.v4.content.ContextCompat.startActivity;
 import static co.swrl.list.ui.activity.ViewActivity.ViewType.VIEW;
 
 
@@ -120,6 +123,9 @@ public class ActiveSwrlListRecyclerAdapter extends RecyclerView.Adapter implemen
 
     @Override
     public void swipeRightAction(RecyclerView.ViewHolder viewHolder, int position) {
-        swipeLeftAction(viewHolder, position);
+        Swrl swrlToRecommend = swrls.get(position);
+        Intent recommendationActivity = new Intent(activity, RecommendationCreationActivity.class);
+        recommendationActivity.putExtra(RecommendationCreationActivity.EXTRAS_SWRL, swrlToRecommend);
+        startActivity(activity, recommendationActivity, null);
     }
 }

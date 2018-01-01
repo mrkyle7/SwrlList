@@ -21,7 +21,7 @@ public class SwrlCoLists {
     private final CollectionManager db;
     private final SwrlPreferences preferences;
 
-    public SwrlCoLists(HttpUrl url, CollectionManager db, SwrlPreferences preferences) {
+    SwrlCoLists(HttpUrl url, CollectionManager db, SwrlPreferences preferences) {
         this.url = url;
         this.db = db;
         this.preferences = preferences;
