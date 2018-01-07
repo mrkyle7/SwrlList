@@ -1,3 +1,6 @@
+Version 18.1 (07 January 2017)
+- Fix to search filter being hidden when pressing back
+
 Version 18 (01 January 2017)
 - Search filters now available on the lists!
 
@@ -11,6 +14,3 @@ Version 15 (24 December 2017)
 - Christmas update!
 - Swipe left to dismiss discovered Swrls
 - Re-add Swrls you previously marked as Done
-
-Version 14 (17 December 2017)
-- Register and forgotten password links on the login page

@@ -5,6 +5,8 @@
     <string name="pkey_version_number">version_number</string>
     <string name="whatsNewLatest">
         <![CDATA[
+        <h4>Version 18.1 (07 January 2018)</h4>
+        \u2022 Fix to search filter being hidden when pressing back
         <h4>Version 18 (01 January 2018)</h4>
         \u2022 Search filters now available on the lists!
         <h4>Version 17 (01 January 2018)</h4>

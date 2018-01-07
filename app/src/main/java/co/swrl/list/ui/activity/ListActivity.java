@@ -111,6 +111,7 @@ public class ListActivity extends AppCompatActivity {
     private static final String LOG_TAG = "ListActivity";
     private SwipeSimpleCallback swipeCallback;
     private final SwipeItemDecoration swipeItemDecoration = new SwipeItemDecoration(this, animationColor);
+    private SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -149,8 +150,16 @@ public class ListActivity extends AppCompatActivity {
         } else {
             getMenuInflater().inflate(R.menu.menu_list_logged_out, menu);
         }
+
         final MenuItem searchItem = menu.findItem(R.id.action_search);
-        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+
+        if (!textFilter.isEmpty()) {
+            Log.d(LOG_TAG, "Opening the search action");
+            searchView.setIconified(false);
+            searchView.setQuery(textFilter, false);
+            searchView.clearFocus();
+        }
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {

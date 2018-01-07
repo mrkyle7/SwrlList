@@ -2,10 +2,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="co.swrl.list.ui.activity.ListActivity">
-    <item android:id="@+id/action_search"
+    <item
+        android:id="@+id/action_search"
+        android:iconifiedByDefault="true"
         android:title="@string/action_search"
         app:actionViewClass="android.support.v7.widget.SearchView"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="always" />
     <item
         android:id="@+id/action_go_to_login"
         android:orderInCategory="100"
