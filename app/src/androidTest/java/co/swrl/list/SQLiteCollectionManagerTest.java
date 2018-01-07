@@ -247,6 +247,7 @@ public class SQLiteCollectionManagerTest {
         db.saveDetails(THE_MATRIX, THE_MATRIX_RELOADED_DETAILS);
 
         assertThat(db.getActive(), contains(THE_MATRIX));
+        assertEquals(1, db.countActive());
 
         Details detailsFromDB = db.getActive().get(0).getDetails();
 
