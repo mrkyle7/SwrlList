@@ -1,3 +1,6 @@
+Version 18.4 (08 January 2017)
+- List can handle opening view when 200+ swrls
+
 Version 18.3 (08 January 2017)
 - Fix issue on view where removing items displayed the wrong title
 
@@ -9,6 +12,3 @@ Version 18.1 (07 January 2017)
 
 Version 18 (01 January 2017)
 - Search filters now available on the lists!
-
-Version 17 (01 January 2017)
-- Swipe right from your list to recommend Swrls

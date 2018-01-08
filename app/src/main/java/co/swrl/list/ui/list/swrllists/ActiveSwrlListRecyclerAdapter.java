@@ -56,7 +56,14 @@ public class ActiveSwrlListRecyclerAdapter extends RecyclerView.Adapter implemen
         swrlRow.setSubtitle2(swrl);
         swrlRow.setImage(swrl, context);
         swrlRow.setProfileImage(swrl, context);
-        swrlRow.setRowClickToOpenViewByType(position, swrls, context, VIEW);
+        int firstPage = (position - 50 <= 0) ? 0 : position - 50;
+        int lastPage = firstPage + 100 >= swrls.size() ? swrls.size() : firstPage + 100;
+        ArrayList<Swrl> swrlsToPage = new ArrayList<>();
+        if (swrls.size() != 0) {
+            swrlsToPage.addAll(swrls.subList(firstPage, lastPage));
+        }
+        int pagePosition = swrlsToPage.indexOf(swrl);
+        swrlRow.setRowClickToOpenViewByType(pagePosition, swrlsToPage, context, VIEW);
     }
 
     @Override
