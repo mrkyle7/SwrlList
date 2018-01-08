@@ -144,6 +144,7 @@ public class ViewPageDetails extends Fragment {
         TextView titleText = (TextView) rootView.findViewById(R.id.title);
         String title = swrl.getTitle();
         titleText.setText(title);
+        titleText.setId(View.generateViewId());
 
         TextView subtitle = (TextView) rootView.findViewById(R.id.sub_title);
         if (details.getCreator() != null && !details.getCreator().isEmpty()) {
@@ -151,6 +152,7 @@ public class ViewPageDetails extends Fragment {
         } else {
             subtitle.setVisibility(GONE);
         }
+        subtitle.setId(View.generateViewId());
     }
 
     private void setPoster(Details details, final View rootView, Type type) {

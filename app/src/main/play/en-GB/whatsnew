@@ -1,3 +1,6 @@
+Version 18.3 (08 January 2017)
+- Fix issue on view where removing items displayed the wrong title
+
 Version 18.2 (07 January 2017)
 - Fix to swrls being duplicated when searching for details
 
@@ -9,6 +12,3 @@ Version 18 (01 January 2017)
 
 Version 17 (01 January 2017)
 - Swipe right from your list to recommend Swrls
-
-Version 16 (27 December 2017)
-- List remembers last scroll position when pressing back
