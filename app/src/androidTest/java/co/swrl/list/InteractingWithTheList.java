@@ -32,6 +32,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.isClickable;
 import static android.support.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withParent;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static co.swrl.list.Helpers.BILLIONS;
 import static co.swrl.list.Helpers.GARDEN_STATE_RECOMMENDATION;
@@ -306,7 +307,7 @@ public class InteractingWithTheList {
         onView(withId(R.id.listView)).check(matches(atPosition(20, hasDescendant(withText("The Matrix")))));
 
         onView(withId(R.id.listView)).perform(RecyclerViewActions.actionOnItem(hasDescendant(withText("The Matrix")), click()));
-        onView(allOf(withText("The Matrix"), withId(R.id.title))).check(matches(isCompletelyDisplayed()));
+        onView(allOf(withText("The Matrix"), withParent(withId(R.id.titleLayout)))).check(matches(isDisplayed()));
 
         pressBack();
 

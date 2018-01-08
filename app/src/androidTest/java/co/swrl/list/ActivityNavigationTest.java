@@ -106,6 +106,24 @@ public class ActivityNavigationTest {
     }
 
     @Test
+    public void canOpenViewWhenOver3000SwrlsOnList() throws Exception {
+        Swrl[] swrls = new Swrl[3001];
+        swrls[0] = THE_MATRIX;
+        THE_MATRIX.setDetails(THE_MATRIX_DETAILS);
+        for (int x = 1; x <= 3000; x++){
+            swrls[x] = new Swrl(String.valueOf(x), Type.BOARD_GAME);
+        }
+        activity = launchAndAvoidWhatsNewDialog(listActivityIntents,
+                swrls, null, false);
+
+        onView(withId(R.id.listView)).perform(RecyclerViewActions.scrollToPosition(3000));
+        onView(withId(R.id.listView)).check(matches(atPosition(3000, hasDescendant(withText("The Matrix")))));
+
+        onView(withId(R.id.listView)).perform(RecyclerViewActions.actionOnItem(hasDescendant(withText("The Matrix")), click()));
+        onView(isAssignableFrom(Toolbar.class)).check(matches(withToolbarTitle(is("The Matrix"))));
+    }
+
+    @Test
     public void canNavigateBetweenListAndRecommendScreen() throws Exception {
         THE_MATRIX.setDetails(THE_MATRIX_DETAILS);
         THE_MATRIX_RELOADED.setDetails(THE_MATRIX_RELOADED_DETAILS);

@@ -61,6 +61,7 @@
                     card_view:contentPadding="10dp">
 
                     <LinearLayout
+                        android:id="@+id/titleLayout"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_margin="0dp"

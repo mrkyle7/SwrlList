@@ -27,6 +27,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static android.support.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withParent;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static co.swrl.list.Helpers.THE_MATRIX;
 import static co.swrl.list.Helpers.THE_MATRIX_DETAILS;
@@ -60,11 +61,11 @@ public class InteractingWithTheView {
 
         onView(withId(R.id.container)).perform(swipeRight());
 
-        onView(allOf(withText("The Matrix Reloaded"), withId(R.id.title))).check(matches(isDisplayed()));
+        onView(allOf(withText("The Matrix Reloaded"), withParent(withId(R.id.titleLayout)))).check(matches(isDisplayed()));
 
         onView(withId(R.id.container)).perform(swipeLeft());
 
-        onView(allOf(withText("The Matrix"), withId(R.id.title))).check(matches(isDisplayed()));
+        onView(allOf(withText("The Matrix"), withParent(withId(R.id.titleLayout)))).check(matches(isDisplayed()));
     }
 
     @Test
@@ -77,13 +78,13 @@ public class InteractingWithTheView {
         int OK = android.R.id.button1;
         onView(withId(OK)).perform(click());
 
-        onView(allOf(withText("The Matrix Reloaded"), withId(R.id.title))).check(matches(isCompletelyDisplayed()));
+        onView(allOf(withText("The Matrix Reloaded"), withParent(withId(R.id.titleLayout)))).check(matches(isCompletelyDisplayed()));
 
         onView(withId(R.id.container)).perform(swipeRight());
-        onView(allOf(withText("The Matrix Reloaded"), withId(R.id.title))).check(matches(isCompletelyDisplayed()));
+        onView(allOf(withText("The Matrix Reloaded"), withParent(withId(R.id.titleLayout)))).check(matches(isCompletelyDisplayed()));
 
         onView(withId(R.id.container)).perform(swipeLeft());
-        onView(allOf(withText("The Matrix Reloaded"), withId(R.id.title))).check(matches(isCompletelyDisplayed()));
+        onView(allOf(withText("The Matrix Reloaded"), withParent(withId(R.id.titleLayout)))).check(matches(isCompletelyDisplayed()));
 
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
         onView(withText("Mark As Done")).perform(click());
@@ -91,7 +92,7 @@ public class InteractingWithTheView {
         int CANCEL = android.R.id.button2;
         onView(withId(CANCEL)).perform(click());
 
-        onView(allOf(withText("The Matrix Reloaded"), withId(R.id.title))).check(matches(isCompletelyDisplayed()));
+        onView(allOf(withText("The Matrix Reloaded"), withParent(withId(R.id.titleLayout)))).check(matches(isCompletelyDisplayed()));
     }
 
     @Test
@@ -104,13 +105,13 @@ public class InteractingWithTheView {
         int OK = android.R.id.button1;
         onView(withId(OK)).perform(click());
 
-        onView(allOf(withText("The Matrix Reloaded"), withId(R.id.title))).check(matches(isCompletelyDisplayed()));
+        onView(allOf(withText("The Matrix Reloaded"), withParent(withId(R.id.titleLayout)))).check(matches(isCompletelyDisplayed()));
 
         onView(withId(R.id.container)).perform(swipeRight());
-        onView(allOf(withText("The Matrix Reloaded"), withId(R.id.title))).check(matches(isCompletelyDisplayed()));
+        onView(allOf(withText("The Matrix Reloaded"), withParent(withId(R.id.titleLayout)))).check(matches(isCompletelyDisplayed()));
 
         onView(withId(R.id.container)).perform(swipeLeft());
-        onView(allOf(withText("The Matrix Reloaded"), withId(R.id.title))).check(matches(isCompletelyDisplayed()));
+        onView(allOf(withText("The Matrix Reloaded"), withParent(withId(R.id.titleLayout)))).check(matches(isCompletelyDisplayed()));
 
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
         onView(withText("Mark As Later")).perform(click());
@@ -118,7 +119,7 @@ public class InteractingWithTheView {
         int CANCEL = android.R.id.button2;
         onView(withId(CANCEL)).perform(click());
 
-        onView(allOf(withText("The Matrix Reloaded"), withId(R.id.title))).check(matches(isCompletelyDisplayed()));
+        onView(allOf(withText("The Matrix Reloaded"), withParent(withId(R.id.titleLayout)))).check(matches(isCompletelyDisplayed()));
 
         pressBack();
 
@@ -135,7 +136,7 @@ public class InteractingWithTheView {
 
         onView(withId(R.id.listView)).perform(RecyclerViewActions.actionOnItem(hasDescendant(withText("The Matrix")), click()));;
 
-        onView(allOf(withText("The Matrix"), withId(R.id.title))).check(matches(isCompletelyDisplayed()));
+        onView(allOf(withText("The Matrix"), withParent(withId(R.id.titleLayout)))).check(matches(isCompletelyDisplayed()));
     }
 
     private void launchDoneViewWithTheMatrixSelected() {
@@ -147,6 +148,6 @@ public class InteractingWithTheView {
 
         onView(withId(R.id.listView)).perform(RecyclerViewActions.actionOnItem(hasDescendant(withText("The Matrix")), click()));;
 
-        onView(allOf(withText("The Matrix"), withId(R.id.title))).check(matches(isCompletelyDisplayed()));
+        onView(allOf(withText("The Matrix"), withParent(withId(R.id.titleLayout)))).check(matches(isCompletelyDisplayed()));
     }
 }

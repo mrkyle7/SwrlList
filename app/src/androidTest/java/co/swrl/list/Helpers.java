@@ -51,9 +51,9 @@ public class Helpers {
     static final Swrl BILLIONS = new Swrl("Billions", Type.TV);
     static final Swrl HUNGER_GAMES_BOOK = new Swrl("Hunger Games", Type.BOOK);
     public static final Swrl BLACK_MIRROR_TV = new Swrl("Black Mirror", Type.TV);
-    static final Details THE_MATRIX_DETAILS = new Gson().fromJson("{\"title\":\"The Matrix (1991)\",\"overview\":\"an overview\",\"tmdb-id\":\"403\"}", Details.class);
-    static final Details THE_MATRIX_RELOADED_DETAILS = new Gson().fromJson("{\"title\":\"The Matrix Reloaded (1992)\",\"an overview\":\"overview\",\"tmdb-id\":\"404\"}", Details.class);
-    static final Details THE_MATRIX_REVOLUTIONS_DETAILS = new Gson().fromJson("{\"title\":\"The Matrix Revolutions (1992)\",\"overview\":\"an overview\",\"tmdb-id\":\"405\"}", Details.class);
+    static final Details THE_MATRIX_DETAILS = new Gson().fromJson("{\"title\":\"The Matrix (1991)\",\"overview\":\"an overview for the matrix\",\"tmdb-id\":\"403\"}", Details.class);
+    static final Details THE_MATRIX_RELOADED_DETAILS = new Gson().fromJson("{\"title\":\"The Matrix Reloaded (1992)\",\"overview\":\"an overview for the matrix reloaded\",\"tmdb-id\":\"404\"}", Details.class);
+    static final Details THE_MATRIX_REVOLUTIONS_DETAILS = new Gson().fromJson("{\"title\":\"The Matrix Revolutions (1992)\",\"overview\":\"an overview for the matrix revolutions\",\"tmdb-id\":\"405\"}", Details.class);
     public static final Details BLACK_MIRROR_DETAILS = new Gson().fromJson(
             "{\"large-image-url\":\"https://image.tmdb.org/t/p/original/djUxgzSIdfS5vNP2EHIBDIz9I8A.jpg\"," +
                     "\"creator\":\"Charlie Brooker, Another Creator\"," +
