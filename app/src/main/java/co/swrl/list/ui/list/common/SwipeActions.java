@@ -21,7 +21,7 @@ public class SwipeActions {
         void execute(Swrl swrl);
     }
 
-    public static void swipeAction(List<Swrl> swrls, int position, List<Swrl> cachedSwrls, String actionTitle, CollectionManagerAction collectionManagerCollectionManagerAction, CollectionManagerAction undoAction,
+    public static void swipeAction(List<Swrl> swrls, int position, List<Swrl> cachedSwrls, String actionTitle, CollectionManagerAction collectionManagerAction, CollectionManagerAction undoAction,
                                    final String swrlCoResponse, String undoSwrlCoResponse, ListActivity activity,
                                    RecyclerView.Adapter adapter, DrawerListAdapter navListAdapter, View row) {
         Swrl swrlToAction = swrls.get(position);
@@ -29,7 +29,8 @@ public class SwipeActions {
         final SwrlPreferences preferences = new SwrlPreferences(activity);
         if (swrls.contains(swrlToAction)) {
             swrls.remove(swrlToAction);
-            collectionManagerCollectionManagerAction.execute(swrlToAction);
+            cachedSwrls.remove(swrlToAction);
+            collectionManagerAction.execute(swrlToAction);
             if (preferences.loggedIn()) {
                 new AsyncTask<Swrl, Void, Void>() {
                     @Override

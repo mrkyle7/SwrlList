@@ -101,7 +101,7 @@ public class InteractingWithTheList {
     }
 
     @Test
-    public void canDeleteAndReAddItemsOnTheList() throws Exception {
+    public void canMarkAsDoneAndReAddItemsOnTheList() throws Exception {
         activity = launchAndAvoidWhatsNewDialog(listActivityActivityTestRule, new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED}, null, false);
 
         onView(withId(R.id.listView)).check(matches(atPosition(0, hasDescendant(withText("The Matrix Reloaded")))));
@@ -132,6 +132,40 @@ public class InteractingWithTheList {
         onView(withId(R.id.listView)).check(matches(atPosition(0, hasDescendant(withText("The Matrix")))));
         onView(withId(R.id.listView)).check(matches(atPosition(1, hasDescendant(withText("The Matrix Reloaded")))));
         onView(withId(R.id.listView)).check(matches(numberOfChildren(is(2))));
+    }
+
+    @Test
+    public void canDeleteAndUndoItemsOnTheList() throws Exception {
+        activity = launchAndAvoidWhatsNewDialog(listActivityActivityTestRule, null, new Swrl[]{THE_MATRIX, THE_MATRIX_RELOADED}, false);
+
+        onView(withId(R.id.done_swrls)).perform(click());
+
+        onView(withId(R.id.listView)).check(matches(atPosition(0, hasDescendant(withText("The Matrix Reloaded")))));
+        onView(withId(R.id.listView)).check(matches(atPosition(1, hasDescendant(withText("The Matrix")))));
+
+        onView(withId(R.id.listView)).perform(RecyclerViewActions.actionOnItem(hasDescendant(withText("The Matrix")), swipeLeft()));
+
+        onView(withId(R.id.listView)).check(matches(not(atPosition(1, hasDescendant(withText("The Matrix"))))));
+        onView(withId(R.id.listView)).check(matches(doesNotExistAtPosition(1)));
+        onView(withId(R.id.listView)).check(matches(numberOfChildren(is(1))));
+        onView(withId(R.id.listView)).check(matches(atPosition(0, hasDescendant(withText("The Matrix Reloaded")))));
+
+        activity = restartActivity(activity, listActivityActivityTestRule);
+        onView(withId(R.id.done_swrls)).perform(click());
+
+
+        onView(withId(R.id.listView)).check(matches(not(atPosition(1, hasDescendant(withText("The Matrix"))))));
+        onView(withId(R.id.listView)).check(matches(doesNotExistAtPosition(1)));
+        onView(withId(R.id.listView)).check(matches(numberOfChildren(is(1))));
+        onView(withId(R.id.listView)).check(matches(atPosition(0, hasDescendant(withText("The Matrix Reloaded")))));
+
+        onView(withId(R.id.listView)).perform(RecyclerViewActions.actionOnItem(hasDescendant(withText("The Matrix Reloaded")), swipeLeft()));
+
+        onView(withId(R.id.snackbar_text)).check(matches(withText("\"The Matrix Reloaded\" deleted")));
+        onView(withId(R.id.snackbar_action)).perform(click());
+
+        onView(withId(R.id.listView)).check(matches(atPosition(0, hasDescendant(withText("The Matrix Reloaded")))));
+
     }
 
 

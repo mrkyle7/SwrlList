@@ -1,3 +1,6 @@
+Version 19 (12 January 2017)
+- Loading the active list is more responsive
+
 Version 18.4 (08 January 2017)
 - List can handle opening view when 200+ swrls
 
@@ -9,6 +12,3 @@ Version 18.2 (07 January 2017)
 
 Version 18.1 (07 January 2017)
 - Fix to search filter being hidden when pressing back
-
-Version 18 (01 January 2017)
-- Search filters now available on the lists!

@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import co.swrl.list.item.SwrlListGenerator;
 import co.swrl.list.utils.SwrlPreferences;
 import co.swrl.list.collection.CollectionManager;
 import co.swrl.list.item.Swrl;
@@ -16,7 +17,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class SwrlCoLists {
+public class SwrlCoLists implements SwrlListGenerator{
     private final HttpUrl url;
     private final CollectionManager db;
     private final SwrlPreferences preferences;
@@ -39,6 +40,7 @@ public class SwrlCoLists {
          return new SwrlCoLists(HttpUrl.parse("https://www.swrl.co/api/v1/discover/inbox"), db, preferences);
     }
 
+    @Override
     public List<Swrl> get() {
         String authToken = preferences != null ? preferences.getAuthToken() : null;
         int userID = preferences != null ? preferences.getUserID() : 0;

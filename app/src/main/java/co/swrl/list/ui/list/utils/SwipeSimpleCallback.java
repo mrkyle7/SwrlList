@@ -86,9 +86,9 @@ public class SwipeSimpleCallback extends ItemTouchHelper.SimpleCallback {
         int swipedPosition = viewHolder.getAdapterPosition();
         SwrlListRecyclerAdapter adapter = (SwrlListRecyclerAdapter) recyclerView.getAdapter();
         if (swipeDir == ItemTouchHelper.RIGHT) {
-            adapter.swipeRightAction(viewHolder, swipedPosition);
+            adapter.swipeRight(viewHolder, swipedPosition);
         } else {
-            adapter.swipeLeftAction(viewHolder, swipedPosition);
+            adapter.swipeLeft(viewHolder, swipedPosition);
         }
     }
 

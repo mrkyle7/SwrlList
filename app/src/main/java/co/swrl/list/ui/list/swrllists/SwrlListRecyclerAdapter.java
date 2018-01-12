@@ -6,8 +6,8 @@ import co.swrl.list.item.Type;
 
 public interface SwrlListRecyclerAdapter {
     void refreshList(Type type, String textFilter, boolean updateFromSource);
-    void swipeLeftAction(RecyclerView.ViewHolder viewHolder, int position);
-    void swipeRightAction(RecyclerView.ViewHolder viewHolder, int position);
+    void swipeLeft(RecyclerView.ViewHolder viewHolder, int position);
+    void swipeRight(RecyclerView.ViewHolder viewHolder, int position);
     int getSwrlCount();
     int getSwrlCount(Type type);
 }

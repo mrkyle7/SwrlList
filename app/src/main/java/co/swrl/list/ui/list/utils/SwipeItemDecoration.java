@@ -49,7 +49,7 @@ public class SwipeItemDecoration extends RecyclerView.ItemDecoration {
             // some items might be animating down and some items might be animating up to close the gap left by the removed item
             // this is not exclusive, both movement can be happening at the same time
             // to reproduce this leave just enough items so the first one and the last one would be just a little off screen
-            // then swipeLeftAction one from the middle
+            // then swipe one from the middle
 
             // find first child with translationY > 0
             // and last one with translationY < 0

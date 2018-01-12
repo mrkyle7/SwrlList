@@ -40,9 +40,7 @@ import co.swrl.list.item.Type;
 import co.swrl.list.tasks.RefreshAllDetailsTask;
 import co.swrl.list.tasks.SyncAllSwrlsTask;
 import co.swrl.list.ui.list.menus.DrawerListAdapter;
-import co.swrl.list.ui.list.swrllists.ActiveSwrlListRecyclerAdapter;
-import co.swrl.list.ui.list.swrllists.DiscoverSwrlListRecyclerAdapter;
-import co.swrl.list.ui.list.swrllists.DoneSwrlListRecyclerAdapter;
+import co.swrl.list.ui.list.swrllists.SwrlListRecyclerAdapterFactory;
 import co.swrl.list.ui.list.swrllists.SwrlListRecyclerAdapter;
 import co.swrl.list.ui.list.utils.SwipeItemDecoration;
 import co.swrl.list.ui.list.utils.SwipeSimpleCallback;
@@ -52,9 +50,11 @@ import co.swrl.list.utils.SwrlPreferences;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
-import static co.swrl.list.ui.list.swrllists.DiscoverSwrlListRecyclerAdapter.inboxDiscover;
-import static co.swrl.list.ui.list.swrllists.DiscoverSwrlListRecyclerAdapter.publicDiscover;
-import static co.swrl.list.ui.list.swrllists.DiscoverSwrlListRecyclerAdapter.weightedDiscover;
+import static co.swrl.list.ui.list.swrllists.SwrlListRecyclerAdapterFactory.activeList;
+import static co.swrl.list.ui.list.swrllists.SwrlListRecyclerAdapterFactory.doneList;
+import static co.swrl.list.ui.list.swrllists.SwrlListRecyclerAdapterFactory.inboxDiscover;
+import static co.swrl.list.ui.list.swrllists.SwrlListRecyclerAdapterFactory.publicDiscover;
+import static co.swrl.list.ui.list.swrllists.SwrlListRecyclerAdapterFactory.weightedDiscover;
 
 public class ListActivity extends AppCompatActivity {
 
@@ -253,8 +253,8 @@ public class ListActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(title);
-        activeSwrlListAdapter = new ActiveSwrlListRecyclerAdapter(this, collectionManager, navListAdapter);
-        doneSwrlListAdapter = new DoneSwrlListRecyclerAdapter(this, collectionManager, navListAdapter);
+        activeSwrlListAdapter = activeList(this, collectionManager, navListAdapter);
+        doneSwrlListAdapter = doneList(this, collectionManager, navListAdapter);
         discoverSwrlListAdapter = publicDiscover(this, collectionManager, navListAdapter);
         weightedDiscoverSwrlListAdapter = weightedDiscover(this, collectionManager, navListAdapter, preferences);
         inboxDiscoverSwrlListAdapter = inboxDiscover(this, collectionManager, navListAdapter, preferences);
@@ -320,8 +320,8 @@ public class ListActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id = item.getItemId();
                 if (id == R.id.active_swrls) {
-                    if (swrlListAdapter instanceof DiscoverSwrlListRecyclerAdapter) {
-                        ((DiscoverSwrlListRecyclerAdapter) swrlListAdapter).cancelExistingSearches();
+                    if (swrlListAdapter instanceof SwrlListRecyclerAdapterFactory) {
+                        ((SwrlListRecyclerAdapterFactory) swrlListAdapter).cancelExistingGetters();
                     }
                     switchViewToCurrentTab(ACTIVE,
                             activeSwrlListAdapter,
@@ -333,8 +333,8 @@ public class ListActivity extends AppCompatActivity {
                             listNoSwrlsText, "clicked active swrls");
                 }
                 if (id == R.id.done_swrls) {
-                    if (swrlListAdapter instanceof DiscoverSwrlListRecyclerAdapter) {
-                        ((DiscoverSwrlListRecyclerAdapter) swrlListAdapter).cancelExistingSearches();
+                    if (swrlListAdapter instanceof SwrlListRecyclerAdapterFactory) {
+                        ((SwrlListRecyclerAdapterFactory) swrlListAdapter).cancelExistingGetters();
                     }
                     switchViewToCurrentTab(DONE,
                             doneSwrlListAdapter,
@@ -568,8 +568,8 @@ public class ListActivity extends AppCompatActivity {
                 view.setVisibility(GONE);
                 FloatingActionsMenu addSwrlMenu = (FloatingActionsMenu) findViewById(R.id.addItemFAB);
                 addSwrlMenu.collapse();
-                if (swrlListAdapter instanceof DiscoverSwrlListRecyclerAdapter) {
-                    ((DiscoverSwrlListRecyclerAdapter) swrlListAdapter).cancelExistingSearches();
+                if (swrlListAdapter instanceof SwrlListRecyclerAdapterFactory) {
+                    ((SwrlListRecyclerAdapterFactory) swrlListAdapter).cancelExistingGetters();
                 }
             }
         });
