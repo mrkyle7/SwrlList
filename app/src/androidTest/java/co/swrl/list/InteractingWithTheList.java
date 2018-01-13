@@ -283,6 +283,15 @@ public class InteractingWithTheList {
         onView(withId(R.id.drawer_layout)).perform(DrawerActions.close());
 
         onView(withId(R.id.listView)).perform(RecyclerViewActions.actionOnItem(hasDescendant(withText("The Matrix")), swipeLeft()));
+
+        onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
+
+        onView(withText("TV Shows (1)")).check(matches(isCompletelyDisplayed()));
+        onView(withText("Films (1)")).check(matches(isCompletelyDisplayed()));
+        onView(withText("Books (0)")).check(matches(isCompletelyDisplayed()));
+
+        onView(withId(R.id.drawer_layout)).perform(DrawerActions.close());
+
         onView(withId(R.id.listView)).perform(RecyclerViewActions.actionOnItem(hasDescendant(withText("The Matrix Reloaded")), swipeLeft()));
 
         onView(withId(R.id.snackbar_text)).check(matches(withText("\"The Matrix Reloaded\" marked as done")));
