@@ -3,10 +3,12 @@ package co.swrl.list.ui.list.common;
 import android.os.AsyncTask;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
+import android.util.TypedValue;
 import android.view.View;
 
 import java.util.List;
 
+import co.swrl.list.R;
 import co.swrl.list.item.Swrl;
 import co.swrl.list.item.actions.SwrlCoActions;
 import co.swrl.list.ui.activity.ListActivity;
@@ -23,7 +25,7 @@ public class SwipeActions {
 
     public static void swipeAction(List<Swrl> swrls, int position, List<Swrl> cachedSwrls, String actionTitle, CollectionManagerAction collectionManagerAction, CollectionManagerAction undoAction,
                                    final String swrlCoResponse, String undoSwrlCoResponse, ListActivity activity,
-                                   RecyclerView.Adapter adapter, DrawerListAdapter navListAdapter, View row) {
+                                   RecyclerView.Adapter adapter, DrawerListAdapter navListAdapter) {
         Swrl swrlToAction = swrls.get(position);
         int cachePosition = cachedSwrls.indexOf(swrlToAction);
         final SwrlPreferences preferences = new SwrlPreferences(activity);
@@ -47,7 +49,7 @@ public class SwipeActions {
             showUndoSnackbar(swrlToAction, swrls, position, cachedSwrls, cachePosition,
                     undoAction, undoSwrlCoResponse, actionTitle,
                     adapter, navListAdapter,
-                    activity, preferences, row);
+                    activity, preferences, activity.findViewById(R.id.snackbar));
         }
     }
 
@@ -85,5 +87,7 @@ public class SwipeActions {
         navListAdapter.notifyDataSetChanged();
         activity.setNoSwrlsText();
     }
-
+    private static int getDPI(int i, View rootView) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, i, rootView.getContext().getResources().getDisplayMetrics());
+    }
 }

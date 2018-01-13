@@ -180,11 +180,6 @@ public class InteractingWithTheList {
 
         onView(withId(R.id.listView)).perform(RecyclerViewActions.actionOnItem(hasDescendant(withText("The Matrix")), swipeLeft()));
 
-        onView(withId(R.id.listView)).perform(RecyclerViewActions.actionOnItem(hasDescendant(withText("The Matrix Reloaded")), swipeLeft()));
-
-        onView(withId(R.id.snackbar_text)).check(matches(withText("\"The Matrix Reloaded\" marked as done")));
-        onView(withId(R.id.snackbar_action)).perform(click());
-
         onView(withId(R.id.listView)).check(matches(atPosition(0, hasDescendant(withText("The Matrix Revolutions")))));
         onView(withId(R.id.listView)).check(matches(atPosition(1, hasDescendant(withText("The Matrix Reloaded")))));
         onView(withId(R.id.listView)).check(matches(numberOfChildren(is(2))));

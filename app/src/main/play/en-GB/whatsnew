@@ -1,3 +1,6 @@
+Version 20 (13 January 2017)
+- Undo snackbar no longer hides the navigation bar
+
 Version 19 (12 January 2017)
 - Loading the active list is more responsive
 
@@ -9,6 +12,3 @@ Version 18.3 (08 January 2017)
 
 Version 18.2 (07 January 2017)
 - Fix to swrls being duplicated when searching for details
-
-Version 18.1 (07 January 2017)
-- Fix to search filter being hidden when pressing back

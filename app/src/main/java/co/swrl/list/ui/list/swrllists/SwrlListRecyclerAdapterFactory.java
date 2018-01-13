@@ -78,7 +78,7 @@ public class SwrlListRecyclerAdapterFactory extends RecyclerView.Adapter impleme
                 }
             };
             SwipeActions.swipeAction(swrls, position, cachedSwrls, "dismissed", action, undoAction, SwrlCoActions.DISMISSED, SwrlCoActions.REMOVE_RESPONSE,
-                    activity, adapter, navListAdapter, viewHolder.itemView);
+                    activity, adapter, navListAdapter);
         }
     };
 
@@ -100,7 +100,7 @@ public class SwrlListRecyclerAdapterFactory extends RecyclerView.Adapter impleme
                 }
             };
             SwipeActions.swipeAction(swrls, position, cachedSwrls, "added", action, undoAction, SwrlCoActions.LATER, SwrlCoActions.REMOVE_RESPONSE,
-                    activity, adapter, navListAdapter, viewHolder.itemView);
+                    activity, adapter, navListAdapter);
         }
     };
 
@@ -174,7 +174,7 @@ public class SwrlListRecyclerAdapterFactory extends RecyclerView.Adapter impleme
                             }
                         };
                         SwipeActions.swipeAction(swrls, position, cachedSwrls, "marked as done", action, undoAction, SwrlCoActions.DONE, SwrlCoActions.LATER,
-                                activity, adapter, navListAdapter, viewHolder.itemView);
+                                activity, adapter, navListAdapter);
 
                     }
                 },
@@ -214,7 +214,7 @@ public class SwrlListRecyclerAdapterFactory extends RecyclerView.Adapter impleme
                             }
                         };
                         SwipeActions.swipeAction(swrls, position, cachedSwrls, "deleted", action, undoAction, SwrlCoActions.DISMISSED, SwrlCoActions.DONE,
-                                activity, adapter, navListAdapter, viewHolder.itemView);
+                                activity, adapter, navListAdapter);
 
                     }
                 },
