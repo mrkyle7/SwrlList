@@ -25,6 +25,6 @@ final class DBContract {
         static final int STATUS_ACTIVE = 0;
         static final int STATUS_DONE = 1;
         static final int STATUS_DISMISSED = 2;
-        static final int STATUS_RECOMMENDED = 3;
+        static final int STATUS_SWRLED = 3;
     }
 }

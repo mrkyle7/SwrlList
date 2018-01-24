@@ -1,3 +1,6 @@
+Version 21 (24 January 2017)
+- Syncing all swrls now restores Swrls backed up to swrl.co
+
 Version 20 (13 January 2017)
 - Undo snackbar no longer hides the navigation bar
 
@@ -9,6 +12,3 @@ Version 18.4 (08 January 2017)
 
 Version 18.3 (08 January 2017)
 - Fix issue on view where removing items displayed the wrong title
-
-Version 18.2 (07 January 2017)
-- Fix to swrls being duplicated when searching for details

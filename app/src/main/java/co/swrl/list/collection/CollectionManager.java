@@ -12,6 +12,7 @@ public interface CollectionManager {
     List<Swrl> getActive(Type typeFilter);
     int countActive();
     int countActive(Type typeFilter);
+    List<Swrl> getSwrled();
     List<Swrl> getDone();
     List<Swrl> getDone(Type typeFilter);
     List<Swrl> getDismissed();

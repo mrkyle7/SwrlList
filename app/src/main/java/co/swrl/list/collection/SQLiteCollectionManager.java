@@ -142,6 +142,11 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
     }
 
     @Override
+    public List<Swrl> getSwrled() {
+        return getSwrlsByStatus(Swrls.STATUS_SWRLED);
+    }
+
+    @Override
     public List<Swrl> getDone() {
         return getSwrlsByStatus(Swrls.STATUS_DONE);
     }
@@ -284,7 +289,7 @@ public class SQLiteCollectionManager implements CollectionManager, Serializable 
     @Override
     public void saveRecommendation(Swrl swrl) {
         save(swrl);
-        markAs(swrl, Swrls.STATUS_RECOMMENDED);
+        markAs(swrl, Swrls.STATUS_SWRLED);
     }
 
     @Override
