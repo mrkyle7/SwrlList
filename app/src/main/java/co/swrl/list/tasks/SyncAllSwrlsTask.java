@@ -68,6 +68,7 @@ public class SyncAllSwrlsTask extends AsyncTask<Void, String, Void> {
         updateSwrlCoResponse(collectionManager.getActive(), userLists.active, "Syncing Swrl Co Active swrls", new CollectionManagerOperation() {
             @Override
             public void execute(Swrl swrl) {
+                Log.d(LOG_TAG, "saving " + swrl.toString() + " id: " + swrl.getId());
                 collectionManager.save(swrl);
             }
         }, processed);
@@ -97,8 +98,10 @@ public class SyncAllSwrlsTask extends AsyncTask<Void, String, Void> {
     private void backUpSwrls(List<Swrl> swrlsFromDB, String publishMessage, String response, CollectionManager collectionManager) {
         ArrayList<Swrl> swrlsToProcess = new ArrayList<>();
         for (Swrl swrl : swrlsFromDB) {
-            Log.d(LOG_TAG, swrl.toString() + " id: " + swrl.getId());
-            if (swrl.getId() == 0) swrlsToProcess.add(swrl);
+            if (swrl.getId() == 0) {
+                Log.d(LOG_TAG, publishMessage + swrl.toString() + " id: " + swrl.getId());
+                swrlsToProcess.add(swrl);
+            }
         }
         int totalToProcess = swrlsToProcess.size();
         for (Swrl swrl : swrlsToProcess) {
@@ -115,8 +118,8 @@ public class SyncAllSwrlsTask extends AsyncTask<Void, String, Void> {
     private void updateLocalResponse(List<Swrl> swrlsFromDB, String publishMessage, String response, CollectionManager collectionManager, List<Swrl> processed, List<Swrl> ignore) {
         ArrayList<Swrl> swrlsToProcess = new ArrayList<>();
         for (Swrl swrl : swrlsFromDB) {
-            Log.d(LOG_TAG, swrl.toString() + " id: " + swrl.getId());
-            if (!ignore.contains(swrl)) {
+            if (ignore != null && !ignore.contains(swrl)) {
+                Log.d(LOG_TAG, publishMessage + swrl.toString() + " id: " + swrl.getId());
                 swrlsToProcess.add(swrl);
             }
         }
@@ -138,10 +141,11 @@ public class SyncAllSwrlsTask extends AsyncTask<Void, String, Void> {
     }
 
     private void updateSwrlCoResponse(List<Swrl> swrlsFromDB, List<Swrl> swrlsFromSwrlCo, String publishMessage, CollectionManagerOperation operation, List<Swrl> processed) {
+        if (swrlsFromSwrlCo == null) return;
         ArrayList<Swrl> swrlsToProcess = new ArrayList<>();
         for (Swrl swrl : swrlsFromSwrlCo) {
-            Log.d(LOG_TAG, swrl.toString() + " id: " + swrl.getId());
             if (!swrlsFromDB.contains(swrl) && !processed.contains(swrl)) {
+                Log.d(LOG_TAG, publishMessage + swrl.toString() + " id: " + swrl.getId());
                 swrlsToProcess.add(swrl);
             }
         }
