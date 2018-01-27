@@ -186,7 +186,6 @@ public class ListActivity extends AppCompatActivity {
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
-
         int id = item.getItemId();
         // Handle your other action bar items...
         if (id == R.id.action_refresh) {
