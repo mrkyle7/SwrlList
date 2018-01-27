@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:hint="@string/add_swrl_users_or_email_addresses"
         android:imeOptions="actionDone"
+        android:inputType="text"
         android:maxLines="1" />
 
     <ListView
