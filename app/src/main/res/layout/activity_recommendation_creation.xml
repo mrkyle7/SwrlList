@@ -16,6 +16,11 @@
         android:inputType="text"
         android:maxLines="1" />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/sending_to"/>
+
     <ListView
         android:id="@+id/selected_users"
         android:layout_width="fill_parent"

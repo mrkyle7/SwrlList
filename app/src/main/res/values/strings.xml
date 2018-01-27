@@ -5,6 +5,8 @@
     <string name="pkey_version_number">version_number</string>
     <string name="whatsNewLatest">
         <![CDATA[
+        <h4>Version 22 (27 January 2018)</h4>
+        \u2022 Add ability to respond to Swrls!
         <h4>Version 21 (24 January 2018)</h4>
         \u2022 Syncing all swrls now restores Swrls backed up to swrl.co
         <h4>Version 20 (13 January 2018)</h4>
@@ -189,4 +191,12 @@
     <string name="why_would_your_friends_like_this_swrl">Why would your friends like this Swrl?</string>
     <string name="send_recommendation">Send Recommendation</string>
     <string name="action_search">Search</string>
+    <string name="comment">Comment</string>
+    <string name="leave_a_comment">Leave a comment</string>
+    <string name="not_for_me">Not for me</string>
+    <string name="loved_it">Loved It!</string>
+    <string name="not_bad">Not bad</string>
+    <string name="sending_to">Sending to:</string>
+    <string name="recommend">Recommend</string>
+    <string name="respond">Respond</string>
 </resources>

@@ -33,6 +33,9 @@ public class SwrlCoActions {
     public static final String DISMISSED = "Dismissed";
     public static final String REMOVE_RESPONSE = "";
     public static final String SWRLED = "Swrled";
+    public static final String NOT_BAD = "Not bad";
+    public static final String NOT_FOR_ME = "Not for me";
+    public static final String LOVED_IT = "Loved it";
     private static final HttpUrl CREATE_URL = HttpUrl.parse("https://www.swrl.co/api/v1/swrl-actions/create-swrl");
 
     private static class RespondBody {
@@ -41,6 +44,11 @@ public class SwrlCoActions {
 
         @SerializedName(value = "response-summary")
         String responseSummary;
+    }
+    private static class CommentBody {
+        String auth_token;
+        String user_id;
+        String comment;
     }
 
     public static void respond(Swrl swrl, String response, SwrlPreferences preferences, CollectionManager collectionManager) {
@@ -85,6 +93,52 @@ public class SwrlCoActions {
                 Log.i(LOG_TAG, "Deleting Swrl: " + swrl.toString());
                 collectionManager.permanentlyDelete(swrl);
             }
+        } catch (IOException e) {
+            Log.i(LOG_TAG, "Response Failed.");
+            e.printStackTrace();
+        }
+
+
+    }
+
+    public static void comment(Swrl swrl, String comment, SwrlPreferences preferences, CollectionManager collectionManager) {
+        OkHttpClient client =
+                new OkHttpClient.Builder()
+                        .readTimeout(30, TimeUnit.SECONDS)
+                        .build();
+
+        int swrlId = swrl.getId();
+        int userId = preferences.getUserID();
+        String authToken = preferences.getAuthToken();
+
+        if (swrlId == 0 || swrlId == -1 ||
+                userId == 0 || userId == -1 ||
+                authToken == null || authToken.isEmpty()) {
+            Log.i(LOG_TAG, String.format("No Swrl ID or not logged in. swrlId=%s, userId=%s, authtoken=%s",
+                    swrlId, userId, authToken));
+            return;
+        }
+
+        HttpUrl commentURL = HttpUrl.parse("https://www.swrl.co/api/v1/swrl-actions/" + swrlId + "/comment");
+
+        CommentBody commentBody = new CommentBody();
+        commentBody.auth_token = authToken;
+        commentBody.user_id = String.valueOf(userId);
+        commentBody.comment = comment;
+
+        String json = new Gson().toJson(commentBody);
+
+        Log.d(LOG_TAG, String.format("Commenting %s to swrl ID %s with URL %s and body %s",
+                comment, swrlId, commentURL, json));
+
+        RequestBody postBody = RequestBody.create(JSON, json);
+        Request request = new Request.Builder()
+                .url(commentURL)
+                .post(postBody)
+                .build();
+        try {
+            Response swrlResponse = client.newCall(request).execute();
+            Log.d(LOG_TAG, "response: " + swrlResponse.body().string());
         } catch (IOException e) {
             Log.i(LOG_TAG, "Response Failed.");
             e.printStackTrace();

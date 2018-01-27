@@ -13,9 +13,12 @@ import co.swrl.list.item.Swrl;
 import co.swrl.list.item.actions.SwrlCoActions;
 import co.swrl.list.ui.activity.ListActivity;
 import co.swrl.list.ui.list.menus.DrawerListAdapter;
+import co.swrl.list.utils.SwrlDialogs;
 import co.swrl.list.utils.SwrlPreferences;
 
 public class SwipeActions {
+    private static final String LOG_TAG = "SWIPE_ACTIONS";
+
     private SwipeActions() {
     }
 
@@ -46,6 +49,7 @@ public class SwipeActions {
             adapter.notifyItemRemoved(position);
             navListAdapter.notifyDataSetChanged();
             activity.setNoSwrlsText();
+            SwrlDialogs.showReviewPopUp(swrlToAction, preferences, activity);
             showUndoSnackbar(swrlToAction, swrls, position, cachedSwrls, cachePosition,
                     undoAction, undoSwrlCoResponse, actionTitle,
                     adapter, navListAdapter,
@@ -87,6 +91,7 @@ public class SwipeActions {
         navListAdapter.notifyDataSetChanged();
         activity.setNoSwrlsText();
     }
+
     private static int getDPI(int i, View rootView) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, i, rootView.getContext().getResources().getDisplayMetrics());
     }

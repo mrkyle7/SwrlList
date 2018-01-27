@@ -36,6 +36,7 @@ import co.swrl.list.item.Swrl;
 import co.swrl.list.item.actions.SwrlCoActions;
 import co.swrl.list.item.search.Search;
 import co.swrl.list.users.SwrlUserHelpers;
+import co.swrl.list.utils.SwrlDialogs;
 import co.swrl.list.utils.SwrlPreferences;
 
 import static co.swrl.list.ui.activity.ViewActivity.ViewType.ADD;
@@ -43,6 +44,7 @@ import static co.swrl.list.ui.activity.ViewActivity.ViewType.ADD;
 public class ViewActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = "VIEW_ACTIVITY";
+    private final SwrlPreferences preferences = new SwrlPreferences(this);
     private ArrayList<?> swrls;
     private int firstSwrlIndex;
     private ViewType viewType;
@@ -127,8 +129,16 @@ public class ViewActivity extends AppCompatActivity {
                 new GetSwrlDetails((SwipeRefreshLayout) findViewById(R.id.swiperefresh), this).execute(currentSwrl.getDetails().getId());
             }
             return true;
-        } else if (id == R.id.action_reAdd) {
-            final SwrlPreferences preferences = new SwrlPreferences(this);
+        }
+        else if (id == R.id.action_recommend){
+            Intent recommendationActivity = new Intent(this, RecommendationCreationActivity.class);
+            recommendationActivity.putExtra(RecommendationCreationActivity.EXTRAS_SWRL, currentSwrl);
+            startActivity(recommendationActivity);
+        }
+        else if (id == R.id.action_respond){
+            SwrlDialogs.showReviewPopUp(currentSwrl, preferences, this);
+        }
+        else if (id == R.id.action_reAdd) {
             Log.d(LOG_TAG, "Current Swrl = " + currentSwrl);
             AlertDialog.Builder confirmDialog = new AlertDialog.Builder(this);
             confirmDialog.setTitle("Mark the Swrl as 'Later'?");
@@ -159,7 +169,7 @@ public class ViewActivity extends AppCompatActivity {
             confirmDialog.show();
             return true;
         } else if (id == R.id.action_markAsDone) {
-            final SwrlPreferences preferences = new SwrlPreferences(this);
+            final SwrlPreferences preferences = this.preferences;
             Log.d(LOG_TAG, "Current Swrl = " + currentSwrl);
             AlertDialog.Builder confirmDialog = new AlertDialog.Builder(this);
             confirmDialog.setTitle("Mark the Swrl as 'done' and remove from list?");

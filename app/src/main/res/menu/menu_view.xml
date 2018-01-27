@@ -8,6 +8,16 @@
         android:title="@string/refresh_details"
         app:showAsAction="never" />
     <item
+        android:id="@+id/action_recommend"
+        android:orderInCategory="100"
+        android:title="@string/recommend"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_respond"
+        android:orderInCategory="100"
+        android:title="@string/respond"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/action_markAsDone"
         android:orderInCategory="100"
         android:title="@string/mark_as_done"
