@@ -162,7 +162,7 @@ public class ViewPageDetails extends Fragment {
         final RelativeLayout imageContainer = (RelativeLayout) rootView.findViewById(R.id.image_background);
 
         imageContainer.setBackgroundColor(Color.WHITE);
-        resizeView(poster, rootView);
+        setPosterForIconDimensions(poster, rootView);
         poster.setImageResource(iconResource);
 
         if (posterExists(details)) {
@@ -171,6 +171,7 @@ public class ViewPageDetails extends Fragment {
                     .into(background);
             Picasso.with(getActivity().getBaseContext())
                     .load(details.getPosterURL())
+                    .placeholder(iconResource)
                     .error(iconResource)
                     .into(poster, new Callback() {
                         @Override
@@ -180,7 +181,7 @@ public class ViewPageDetails extends Fragment {
 
                         @Override
                         public void onError() {
-                            resizeView(poster, rootView);
+                            setPosterForIconDimensions(poster, rootView);
                         }
                     });
         }
@@ -325,7 +326,7 @@ public class ViewPageDetails extends Fragment {
         return (actionId == EditorInfo.IME_ACTION_SEARCH) || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN);
     }
 
-    private void resizeView(ImageView view, View rootView) {
+    private void setPosterForIconDimensions(ImageView view, View rootView) {
         view.getLayoutParams().height = getDPI(150, rootView);
         view.getLayoutParams().width = getDPI(150, rootView);
     }
