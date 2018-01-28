@@ -33,8 +33,8 @@ import co.swrl.list.item.Details;
 import co.swrl.list.item.Swrl;
 import co.swrl.list.item.Type;
 import co.swrl.list.item.search.GetSearchResults;
-import co.swrl.list.ui.list.utils.SwrlListViewFactory;
 import co.swrl.list.ui.list.searchresults.ViewSwrlResultsRecyclerAdapter;
+import co.swrl.list.ui.list.utils.SwrlListViewFactory;
 
 import static android.view.View.GONE;
 
@@ -162,23 +162,20 @@ public class ViewPageDetails extends Fragment {
         final RelativeLayout imageContainer = (RelativeLayout) rootView.findViewById(R.id.image_background);
 
         imageContainer.setBackgroundColor(Color.WHITE);
+        resizeView(poster, rootView);
+        poster.setImageResource(iconResource);
 
-        if (details.getPosterURL() != null && !Objects.equals(details.getPosterURL(), "")) {
+        if (posterExists(details)) {
             Picasso.with(getActivity().getBaseContext())
                     .load(details.getPosterURL())
-                    .error(iconResource)
                     .into(background);
-        } else {
-            background.setImageResource(iconResource);
-        }
-        if (details.getPosterURL() != null && !Objects.equals(details.getPosterURL(), "")) {
             Picasso.with(getActivity().getBaseContext())
                     .load(details.getPosterURL())
-                    .placeholder(R.drawable.progress_spinner)
                     .error(iconResource)
                     .into(poster, new Callback() {
                         @Override
                         public void onSuccess() {
+                            setNormalPosterDimensions(imageContainer, poster);
                         }
 
                         @Override
@@ -186,32 +183,44 @@ public class ViewPageDetails extends Fragment {
                             resizeView(poster, rootView);
                         }
                     });
-        } else {
-            poster.setImageResource(iconResource);
         }
 
         poster.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (isImageFitToScreen) {
+                    setNormalPosterDimensions(imageContainer, poster);
                     isImageFitToScreen = false;
-                    imageContainer.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (int) getContext().getResources().getDimension(R.dimen.viewImageHeight)));
-
-                    RelativeLayout.LayoutParams posterLayout = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.MATCH_PARENT);
-                    posterLayout.addRule(RelativeLayout.CENTER_IN_PARENT);
-                    poster.setLayoutParams(posterLayout);
-                    poster.setAdjustViewBounds(true);
                 } else {
+                    setMaxPosterDimensions(imageContainer, poster);
                     isImageFitToScreen = true;
-                    imageContainer.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
-
-                    RelativeLayout.LayoutParams posterLayout = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
-                    poster.setLayoutParams(posterLayout);
-                    poster.setMaxHeight(Integer.MAX_VALUE);
-                    poster.setScaleType(ImageView.ScaleType.FIT_CENTER);
                 }
             }
         });
+    }
+
+    private boolean posterExists(Details details) {
+        return details.getPosterURL() != null && !Objects.equals(details.getPosterURL(), "");
+    }
+
+    private void setMaxPosterDimensions(RelativeLayout imageContainer, ImageView poster) {
+        imageContainer.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+
+        RelativeLayout.LayoutParams posterLayout = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+        poster.setLayoutParams(posterLayout);
+        poster.setMaxHeight(Integer.MAX_VALUE);
+        poster.setScaleType(ImageView.ScaleType.FIT_CENTER);
+    }
+
+    private void setNormalPosterDimensions(RelativeLayout imageContainer, ImageView poster) {
+        Context context = getContext();
+        if (context != null) {
+            imageContainer.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (int) context.getResources().getDimension(R.dimen.viewImageHeight)));
+            RelativeLayout.LayoutParams posterLayout = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+            posterLayout.addRule(RelativeLayout.CENTER_IN_PARENT);
+            poster.setLayoutParams(posterLayout);
+            poster.setAdjustViewBounds(true);
+        }
     }
 
     private void addTextCard(LayoutInflater inflater, LinearLayout detailsLayout, String title, String text, boolean isLast) {

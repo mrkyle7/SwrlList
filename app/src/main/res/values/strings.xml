@@ -5,6 +5,8 @@
     <string name="pkey_version_number">version_number</string>
     <string name="whatsNewLatest">
         <![CDATA[
+        <h4>Version 23 (28 January 2018)</h4>
+        \u2022 Improve image loading and remove the annoying spinners
         <h4>Version 22 (27 January 2018)</h4>
         \u2022 Add ability to respond to Swrls!
         <h4>Version 21 (24 January 2018)</h4>

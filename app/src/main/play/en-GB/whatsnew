@@ -1,3 +1,6 @@
+Version 23 (28 January 2017)
+- Improve image loading and remove the annoying spinners
+
 Version 22 (27 January 2017)
 - Add ability to respond to Swrls!
 
@@ -12,6 +15,3 @@ Version 19 (12 January 2017)
 
 Version 18.4 (08 January 2017)
 - List can handle opening view when 200+ swrls
-
-Version 18.3 (08 January 2017)
-- Fix issue on view where removing items displayed the wrong title

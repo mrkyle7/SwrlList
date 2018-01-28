@@ -73,11 +73,9 @@ public class SwrlRow extends RecyclerView.ViewHolder {
 //            picasso.setIndicatorsEnabled(true);
             picasso.setLoggingEnabled(false);
             picasso.load(swrl.getAuthorAvatarURL())
-                    .placeholder(R.drawable.progress_spinner)
                     .error(R.drawable.ic_person_black_24dp)
                     .resize(150, 150)
                     .centerInside()
-                    .noFade()
                     .into(profileImage, new Callback() {
                         @Override
                         public void onSuccess() {
@@ -180,11 +178,10 @@ public class SwrlRow extends RecyclerView.ViewHolder {
 //            picasso.setIndicatorsEnabled(true);
 //            picasso.setLoggingEnabled(true);
             picasso.load(details.getPosterURL())
-                    .placeholder(R.drawable.progress_spinner)
+                    .placeholder(iconResource)
                     .error(iconResource)
                     .resize(600, 600)
                     .centerInside()
-                    .noFade()
                     .into(thumbnail, new Callback() {
                         @Override
                         public void onSuccess() {
